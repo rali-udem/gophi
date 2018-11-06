@@ -1,0 +1,391 @@
+# AMR simple examples for debugging
+## to ease comparison with generated output, 
+##    examples have been adapted for using 
+##       - a definite determiner
+##       - present tense 
+
+# ::id Guy  paper example
+# ::snt The boy desires the girl who does not like him
+(d / desire-01
+    :ARG0 (b/boy)
+    :ARG1 (g/girl
+            :ARG0-of (l/like-01
+                        :polarity - 
+                        :ARG1 b)))
+
+### examples from Expressive Power of Abstract Meaning Representations, 
+### J. Bos, Computational Linguistics, Vol 42, no 3, p 528-535
+
+# ::id 0  polarity test
+# ::snt The marble is not small
+(s / small :domain (m / marble) :polarity -)
+
+# ::id 1a  Bos
+# ::snt the child moans
+(e/moan-01 :ARG0 (x/child))
+
+# ::id 1b  Bos
+# ::snt Ms Ribble gives the envelope to the child
+(e/give-01 ; a comment to be ignored...
+     :ARG0 (x/person :named "Ms Ribble")
+     :ARG2 (y/child)
+     :ARG1 (z/envelope)) ;and this one too
+
+# ::id 2  Bos
+# ::snt the girl reads the book
+(e/read-01 :ARG0 (x/girl) :ARG1 (y/book))
+
+# ::id 2a  Bos
+# ::snt the girl reads the book
+(x/girl :ARG0-of (e/read-01 :ARG1 (y/book)))
+
+# ::id 2aN  Bos
+# ::snt no girl reads the book
+(x/girl :ARG0-of (e/read-01 :ARG1 (y/book) :polarity -))
+
+# ::id 2b  Bos
+# ::snt the book that is read by the girl
+(y/book :ARG1-of (e/read-01 :ARG0 (x/girl)))
+
+# ::id 2bN  Bos
+# ::snt the book that is not read by the girl
+(y/book :ARG1-of (e/read-01 :ARG0 (x/girl):polarity -))
+
+# ::id 3  Bos
+# ::snt the teacher shouts
+(e/shout-01 :ARG0 (x/teacher))
+
+# ::id 4a  Bos
+# ::snt the boy does not giggle
+(e/giggle-01 :polarity - :ARG0 (x/boy))
+
+# ::id 4b  Bos
+# ::snt the language is not appropriate
+(x/language :domain-of (a / appropriate :polarity -))
+
+# ::id 4c  Bos
+# ::snt the language is appropriate
+(x/language :domain-of (a / appropriate))
+
+# ::id 5a  Bos
+# ::snt Mr Krupp dries himself
+    (e/dry-02
+         :ARG0 (x / person :named "Mr Krupp")
+         :ARG1 x)
+
+# ::id 5b  Bos
+# ::snt George wants to play
+(w/want-01
+     :ARG0 (g / person :named "George")
+     :ARG1 (p/play-01 :ARG3 g))
+
+# ::id 9a  Bos
+# ::snt every boy whistle
+(x / boy :polarity -
+        :ARG0-of (e / whistle-01
+                    :polarity -))
+
+###  https://github.com/amrisi/amr-guidelines/blob/master/amr.md#modality
+# ::id 01 GuideLines-Modality
+# ::snt It is possible that the boy goes.
+(p / possible-01
+   :ARG1 (g / go-02
+            :ARG0 (b / boy)))
+
+# ::id 02  GuideLines-Modality
+# ::snt It is not recommended that the boy goes.
+(p / recommend-01
+   :ARG1 (g / go-02
+   :ARG0 (b / boy)) :polarity -)
+
+# ::id 03  GuideLines-Modality
+# ::snt It is recommended that the boy does not go.
+(p / recommend-01
+   :ARG1 (g / go-02
+          :ARG0 (b / boy)
+          :polarity -) )
+
+## https://github.com/amrisi/amr-guidelines/blob/master/amr.md#wh-questions          
+# ::id 1  GuideLines-wh-questions 
+# ::snt What does the girl find?
+## jsReal: typ({"int":"wod"})
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (a / amr-unknown))
+
+# ::id 2  GuideLines-wh-questions 
+# ::snt Does the girl find the boy?
+## jsReal: typ({"int":"yon"})
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (b / boy)
+   :polarity (a / amr-unknown))
+
+#  https://github.com/amrisi/amr-guidelines/blob/master/amr.md#main-verb-be
+#  in principle :mod is "equivalent" to :domain-of
+
+# ::id 10  GuideLines-main-verb-be
+# ::snt the marble is small.
+(s / small :domain (m / marble))
+
+# ::id 11  GuideLines-main-verb-be
+# ::snt the man is the lawyer
+(l / lawyer :domain (m / man))
+
+# ::id 12  GuideLines-main-verb-be
+# ::snt the man who is the lawyer
+(m / man :mod (l / lawyer))
+
+#  dates
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#other-entities-dates-times-percentages-phone-email-urls
+
+# ::id 13  GuideLines-other-entities
+# ::snt February 29, 2012
+(d / date-entity :year 2012 :month 2 :day 29)
+
+# ::id 14 GuideLines-other-entities
+# ::snt April
+(d / date-entity :month 4)
+
+# ::id 15 GuideLines-other-entities
+# ::snt Friday
+(d / date-entity :weekday (f / friday))
+
+# ::id 16 GuideLines-other-entities
+# ::snt February 2012
+(d / date-entity :year 2012 :month 2)
+
+# ::id 17 GuideLines-other-entities
+# ::snt Wednesday, February 29, 16:30 PST
+(d / date-entity :month 2 :day 29 :weekday (w / wednesday) :time 16:30 :timezone (z / PST))
+
+# ::id 18 GuideLines-other-entities
+# ::snt 16:30
+(d / date-entity :time 16:30)
+
+# ::id 19 GuideLines-other-entities
+# ::snt Winter 2011-2012
+(d / date-entity :year 2011 :year2 2012 :season (w / winter))
+
+# ::id 20 GuideLines-other-entities
+# ::snt September 1, 1939 - May 8, 1945
+(d / date-interval
+   :op1 (d2 / date-entity :year 1939 :month 9 :day 1)
+   :op2 (d3 / date-entity :year 1945 :month 5 :day 8))
+
+# comparatifs et superlatifs
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#degree
+                   
+# ::id 21 GuideLines-degree 
+# ::snt That boy is brighter
+(b / bright :ARG1 (b2 / boy  :mod (t / that)) :degree (m / more))
+
+# ::id 22 GuideLines-degree 
+# ::snt That boy is the brightest
+(b / bright :ARG1 (b2 / boy  :mod (t / that)) :degree (m / most))
+
+# ::id 23 GuideLines-degree 
+# ::snt The earlier plan
+# ::rem ARG1-of is :time in the original...
+(p / plan :ARG1-of (e / early :degree (m / more)))
+
+# ::id 24 GuideLines-degree 
+# ::snt the better plan
+(p / plan :ARG1-of (g / good :degree (m / more)))
+
+# ::id 25 GuideLines-degree 
+# ::snt the worse plan
+(p / plan :ARG1-of (g / bad :degree (m / more)))
+
+# ::id 26 GuideLines-degree 
+# ::snt the plan that is too extreme
+(p / plan :ARG1-of (e / extreme :degree (t / too)))
+
+# ::id 27 GuideLines-degree 
+# ::snt the girl is taller than the boy
+(t / tall :degree (m / more) :domain (g / girl) :compared-to (b / boy))
+
+# ::id 21 GuideLines-degree 
+# ::snt she is the tallest girl on the team
+(g / girl :mod (t / tall  :degree (m / most) :compared-to (t2 / team)) :domain (s / she))
+
+# possession
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#possession
+
+# ::id 29 GuideLines-possession 
+# ::snt his car
+(c / car :poss (h / he))
+
+# ::id 30 GuideLines-possession 
+# ::snt the chief of the nation
+# ::rem chief is titan in the original 
+(c / chief :poss (n / nation))
+
+# ::id 31 GuideLines-possession 
+# ::snt I have no money
+# ::rem have-01 in the original...
+(h / have-03 
+    :polarity - 
+    :ARG0 (i / i) 
+    :ARG1 (m / money))
+
+## exemple de https://github.com/amrisi/amr-guidelines/blob/master/amr.md#abstract-meaning-representation-amr-10-specification
+
+# ::id spec-1  
+# ::snt The boy desires the girl to believe him.
+(w / want-01
+     :ARG0 (b / boy)
+     :ARG1 (b2 / believe-01
+           :ARG0 (g / girl)
+           :ARG1 b))
+
+##  exemple de https://amr.isi.edu/language.html
+# ::id Lang-2  
+# ::snt The boy wants to go
+(w / want-01
+      :ARG0 (b / boy)
+      :ARG1 (g / go-02
+            :ARG0 b))
+
+# ::id Lang-3 
+# ::snt About 14,000 people flee their homes at the weekend after a local tsunami warning was issued, the UN says on its Web site
+(s / say-01
+     :ARG0 (g / organization
+          :name (n / name
+                  :op1 "UN"))
+     :ARG1 (f / flee-05
+          :ARG0 (p / person
+                  :quant (a / about
+                           :op1 14000))
+          :ARG1 (h / home
+                  :poss p)
+          :time (w / weekend)
+          :time (a2 / after
+                  :op1 (w2 / warn-01
+                         :ARG1 (t / tsunami)
+                         :location (l / local))))
+      :medium (s2 / site
+            :poss g
+            :mod (w3 / web)))
+
+##  http://nlp.arizona.edu/SemEval-2017/pdf/SemEval090.pdf
+
+# ::id SemEval-1 
+# ::snt The soldier does not fear dying
+(f / fear-01
+     :polarity -
+     :ARG0 ( s / soldier )
+     :ARG1 ( d / die-01
+             :ARG1 s ))
+
+# ::id SemEval-3 
+# ::snt he claims the 28-year-old singer repeatedly exposes herself to him
+(c/claim-01
+   :ARG0 (h/he)
+   :ARG1 (e/expose-01
+            :ARG0 (p/person
+                     :ARG0-of (s/sing-01)
+                     :age (t/ temporal-quantity :quant 28
+                                :unit (y/year)))
+            :ARG1 p
+            :ARG2 h
+            :ARG1-of (r/repeat-01)))
+
+# ::id SemEval-5 
+# ::snt following the 1992-1995 war, bosnia remains ethnically divided and violence during major football matches occasionally occurs here.
+(a / and
+     :op1 (r / remain-01
+           :ARG1 (c / country :wiki "Bosnia_and_Herzegovina"
+                  :name (n / name :op1 "Bosnia"))
+           :ARG3 (d / divide-02
+                  :ARG1 c
+                  :topic (e / ethnic)))
+     :op2 (v / violence
+           :time (m / match
+                  :mod (f2 / football)
+                  :ARG1-of (m2 / major-02))
+           :location (h / here)
+           :frequency (o / occasional))
+     :time (f / follow-01
+            :ARG2 (w / war
+                   :time (d2 / date-interval
+                          :op1 (d3 / date-entity :year 1992)
+                          :op2 (d4 / date-entity :year 1995)))))
+
+#  AMR tutorial http://tiny.cc/amrtutorial
+# ::id Tut-01 
+# ::snt The dog is eating the bone
+(e / eat-01
+     :ARG0 (d / dog)
+     :ARG1 (b / bone))
+
+# ::id Tut-02a 
+# ::snt The dog wants to eat the bone
+# ::rem page 10 Tut-02a et Tut-02b donnent la meme sémantique 
+(w / want-01
+  :ARG0 (d / dog)
+  :ARG1 (e / eat-01
+         :ARG0 d
+         :ARG1 (b / bone)))
+
+# ::id Tut-02b
+# ::snt The dog wants to eat the bone
+# ::rem page 10 Tut-02a et Tut-02b donnent la meme sémantique 
+(w / want-01
+  :ARG0 d
+  :ARG1 (e / eat-01
+         :ARG0 (d / dog)
+         :ARG1 (b / bone)))
+
+# ::id Tut-03
+# ::snt The dog eats the bone that he finds
+(e / eat-01
+  :ARG0 (d / dog)
+  :ARG1 (b / bone
+         :ARG1-of (f / find-01
+                     :ARG0 d)))
+
+# ::id Konstas-F1
+# ::snt Obama was elected and his voters celebrated
+(a / and 
+      :op1 (e / elect-01 
+             :ARG0 (p / person 
+                      :name "Obama"))
+      :op2 (c / celebrate-01 
+             :ARG0 (p1 / person
+                     :poss p
+                     :ARG0-of (v / vote-01))))
+
+# ::id Konstas-F2
+# ::snt US officials held an expert group meeting in January 2002 in New York.
+(h / hold-04
+       :ARG0 (p2 / person
+                 :ARG0-of (h2 / have-org-role-91 
+                       :ARG1 (c2 / country
+                                :name (n3 / name
+                                         :op1 "United" 
+                                         :op2 "States"))
+                       :ARG2 (o / official))) 
+       :ARG1 (m / meet-03
+               :ARG0 (p / person
+                         :ARG1-of (e / expert-01)
+                         :ARG2-of (g / group-01)))
+       :time (d2 / date-entity :year 2002 :month 1)
+       :location (c / city
+                    :name (n / name 
+                              :op1 "New" 
+                              :op2 "York")))
+     
+# ::id Konstas-F3a (corrected by adding frame numbers)
+# ::snt The arms control treaty limits the number of conventional weapons that can be deployed west of the Ural Mountains.
+(l/limit-01
+       :ARG0 (t / treaty 
+               :ARG0-of (c / control-01 :ARG1 (a/arms)))
+       :ARG1 (n / number-01
+                :ARG1 (w / weapon 
+                         :mod conventional
+                         :ARG1-of (d / deploy-01
+                                    :ARG2 (r / relative-position 
+                                              :op1 "Ural Mountains" 
+                                              :direction "west" )
+                                    :ARG1-of (p / possible-01)))))

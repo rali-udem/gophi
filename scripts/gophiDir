@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+for file in $1/amr-*.txt; do
+    echo 'gophiFile:' $file
+    ./gophiFile $file > $1/$(basename "$file" .txt).amr2engtrace
+done
+

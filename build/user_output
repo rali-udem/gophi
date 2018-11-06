@@ -1,0 +1,172 @@
+# AMR simple examples for debugging
+## to ease comparison with generated output, 
+##    examples have been adapted for using 
+##       - a definite determiner
+##       - present tense 
+
+### examples from Expressive Power of Abstract Meaning Representations, 
+### J. Bos, Computational Linguistics, Vol 42, no 3, p 528-535
+
+#  https://github.com/amrisi/amr-guidelines/blob/master/amr.md#main-verb-be
+#  in principle :mod is "equivalent" to :domain-of
+
+#  dates
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#other-entities-dates-times-percentages-phone-email-urls
+
+# comparatifs et superlatifs
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#degree
+
+# possession
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#possession
+
+## exemple de https://github.com/amrisi/amr-guidelines/blob/master/amr.md#abstract-meaning-representation-amr-10-specification
+
+##  http://nlp.arizona.edu/SemEval-2017/pdf/SemEval090.pdf
+
+# ::id Konstas-F3a (corrected by adding frame numbers)
+# ::snt The arms control treaty limits the number of conventional weapons that can be deployed west of the Ural Mountains.
+# ::gophi The treaty that controls about the arms limits that the weapon that is conventional that deploys to Ural Mountains to west that it is possible numbers.
+# ::basegen treaty arms control limit weapon conventional deploy Ural Mountains relative west possible number
+(l/limit-01
+       :ARG0 (t / treaty 
+               :ARG0-of (c / control-01 :ARG1 (a/arms)))
+       :ARG1 (n / number-01
+                :ARG1 (w / weapon 
+                         :mod conventional
+                         :ARG1-of (d / deploy-01
+                                    :ARG2 (r / relative-position 
+                                              :op1 "Ural Mountains" 
+                                              :direction "west" )
+                                    :ARG1-of (p / possible-01)))))
+
+ines-degree 
+# ::snt The earlier plan
+# ::rem ARG1-of is :time in the original...
+# ::gophi the plan that is earlier
+# ::basegen plan early more
+(p / plan :ARG1-of (e / early :degree (m / more)))
+
+# ::id 24 GuideLines-degree 
+# ::snt the better plan
+# ::gophi the plan that is better
+# ::basegen plan good more
+(p / plan :ARG1-of (g / good :degree (m / more)))
+
+# ::id 25 GuideLines-degree 
+# ::snt the worse plan
+# ::gophi the plan that is worse
+# ::basegen plan bad more
+(p / plan :ARG1-of (g / bad :degree (m / more)))
+
+# ::id 26 GuideLines-degree 
+# ::snt the plan that is too extreme
+# ::gophi the plan that too is extreme
+# ::basegen plan extreme too
+(p / plan :ARG1-of (e / extreme :degree (t / too)))
+
+# possession
+# https://github.com/amrisi/amr-guidelines/blob/master/amr.md#possession
+
+## exemple de https://github.com/amrisi/amr-guidelines/blob/master/amr.md#abstract-meaning-representation-amr-10-specification
+
+##  http://nlp.arizona.edu/SemEval-2017/pdf/SemEval090.pdf
+
+# ::id SemEval-3 
+# ::snt he claims the 28-year-old singer repeatedly exposes herself to him
+# ::gophi He claims that the singer 28 year old exposes himself to him that repeats.
+# ::basegen he claim person sing temporal 28 year expose repeat
+(c/claim-01
+   :ARG0 (h/he)
+   :ARG1 (e/expose-01
+            :ARG0 (p/person
+                     :ARG0-of (s/sing-01)
+                     :age (t/ temporal-quantity :quant 28
+                                :unit (y/year)))
+            :ARG1 p
+            :ARG2 h
+            :ARG1-of (r/repeat-01)))
+
+# ::id SemEval-5 
+# ::snt following the 1992-1995 war, bosnia remains ethnically divided and violence during major football matches occasionally occurs here.
+# ::gophi <a href="https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina">Bosnia</a> remains under to divide it about ethnic, the violence the football match that is major in here occasional and follows the war from 1992 to 1995
+# ::basegen country Bosnia_and_Herzegovina Bosnia name remain divide ethnic and violence match football major here occasional follow war date 1992 date date 1995
+(a / and
+     :op1 (r / remain-01
+           :ARG1 (c / country :wiki "Bosnia_and_Herzegovina"
+                  :name (n / name :op1 "Bosnia"))
+           :ARG3 (d / divide-02
+                  :ARG1 c
+                  :topic (e / ethnic)))
+     :op2 (v / violence
+           :time (m / match
+                  :mod (f2 / football)
+                  :ARG1-of (m2 / major-02))
+           :location (h / here)
+           :frequency (o / occasional))
+     :time (f / follow-01
+            :ARG2 (w / war
+                   :time (d2 / date-interval
+                          :op1 (d3 / date-entity :year 1992)
+                          :op2 (d4 / date-entity :year 1995)))))
+
+# ::id Tut-03
+# ::snt The dog eats the bone that he finds
+# ::gophi The dog eats the bone that it finds.
+# ::basegen dog eat bone find
+(e / eat-01
+  :ARG0 (d / dog)
+  :ARG1 (b / bone
+         :ARG1-of (f / find-01
+                     :ARG0 d)))
+
+# ::id Konstas-F1
+# ::snt Obama was elected and his voters celebrated
+# ::gophi Obama elects and his voter celebrates
+# ::basegen person Obama elect and person vote celebrate
+(a / and 
+      :op1 (e / elect-01 
+             :ARG0 (p / person 
+                      :name "Obama"))
+      :op2 (c / celebrate-01 
+             :ARG0 (p1 / person
+                     :poss p
+                     :ARG0-of (v / vote-01))))
+
+# ::id Konstas-F2
+# ::snt US officials held an expert group meeting in January 2002 in New York.
+# ::gophi The person who is the official in United States holds that the person who is expert whom groups under him meets on January 2002 in New York.
+# ::basegen person country United name States have official hold person expert group meet date 2002 1 city New name York
+(h / hold-04
+       :ARG0 (p2 / person
+                 :ARG0-of (h2 / have-org-role-91 
+                       :ARG1 (c2 / country
+                                :name (n3 / name
+                                         :op1 "United" 
+                                         :op2 "States"))
+                       :ARG2 (o / official))) 
+       :ARG1 (m / meet-03
+               :ARG0 (p / person
+                         :ARG1-of (e / expert-01)
+                         :ARG2-of (g / group-01)))
+       :time (d2 / date-entity :year 2002 :month 1)
+       :location (c / city
+                    :name (n / name 
+                              :op1 "New" 
+                              :op2 "York")))
+
+# ::id Konstas-F3a (corrected by adding frame numbers)
+# ::snt The arms control treaty limits the number of conventional weapons that can be deployed west of the Ural Mountains.
+# ::gophi The treaty that controls about the arms limits that the weapon that is conventional that deploys to Ural Mountains to west that it is possible numbers.
+# ::basegen treaty arms control limit weapon conventional deploy Ural Mountains relative west possible number
+(l/limit-01
+       :ARG0 (t / treaty 
+               :ARG0-of (c / control-01 :ARG1 (a/arms)))
+       :ARG1 (n / number-01
+                :ARG1 (w / weapon 
+                         :mod conventional
+                         :ARG1-of (d / deploy-01
+                                    :ARG2 (r / relative-position 
+                                              :op1 "Ural Mountains" 
+                                              :direction "west" )
+                                    :ARG1-of (p / possible-01)))))
+

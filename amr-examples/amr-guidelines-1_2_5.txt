@@ -1,0 +1,2024 @@
+## examples extracted from ../AMR-docs/amr-guidelines-1_2_5.md
+# ::id 1
+# ::snt The boy desires the girl to believe him.
+# ::snt The boy desires to be believed by the girl.
+# ::snt The boy has a desire to be believed by the girl.
+# ::snt The boy’s desire is for the girl to believe him.
+# ::snt The boy is desirous of the girl believing him.
+(w / want-01
+   :ARG0 (b / boy)
+   :ARG1 (b2 / believe-01
+             :ARG0 (g / girl)
+             :ARG1 b))
+
+# ::id 2
+# ::snt The girl made adjustments to the machine.
+# ::snt The girl adjusted the machine.
+# ::snt The machine was adjusted by the girl.
+(a / adjust-01
+   :ARG0 (b / girl)
+   :ARG1 (m / machine))
+
+# ::id 3
+# ::snt The killing happened yesterday.
+# ::snt The killing took place yesterday.
+(k / kill-01
+   :time (y / yesterday))
+
+# ::id 4
+# ::snt the boy and the girl
+# ::snt both the boy and the girl
+(a / and
+   :op1 (b / boy)
+   :op2 (g / girl))
+
+# ::id 5
+# ::snt his boat
+# ::snt his own boat
+(b / boat
+   :poss (h / he))
+
+# ::id 6
+# ::snt The boy must not go.
+# ::snt It is obligatory that the boy not go.
+(o / obligate-01
+   :ARG2 (g / go-02
+            :ARG0 (b / boy)
+            :polarity -))
+
+# ::id 7
+# ::snt The boy may not go.
+# ::snt The boy is not permitted to go.
+# ::snt It is not permissible for the boy to go.
+# ::snt The boy does not have permission to go.
+(p / permit-01
+   :ARG1 (g / go-02
+            :ARG0 (b / boy))
+   :polarity -)
+
+# ::id 8
+# ::snt The marble is white.
+# ::snt the whiteness of the marble
+(w / white-03
+   :ARG1 (m / marble))
+
+# ::id 9
+# ::snt the white marble
+# ::snt the marble that is white
+(m / marble
+   :ARG1-of (w / white-03))
+
+# ::id 10
+# ::snt The boy sees that the marble is white.
+# ::snt The boy sees the whiteness of the marble.
+(s / see-01
+   :ARG0 (b / boy)
+   :ARG1 (w / white-03
+            :ARG1 (m / marble)))
+
+# ::id 11
+# ::snt The boy sees the white marble.
+# ::snt The boy sees the marble that is white.
+(s / see-01
+   :ARG0 (b / boy)
+   :ARG1 (m / marble
+            :ARG1-of (w / white-03)))
+
+# ::id 12
+# ::snt The boy saw the girl who wanted him.
+# ::snt The boy saw the girl who he was wanted by.
+# ::snt The girl who wanted the boy was seen by him.
+(s / see-01
+   :ARG0 (b / boy)
+   :ARG1 (g / girl
+            :ARG0-of (w / want-01
+                        :ARG1 b)))
+
+# ::id 13
+# ::snt The girl who was seen by the boy wants him.
+# ::snt The boy is wanted by the girl he saw.
+(w / want-01
+   :ARG0 (g / girl
+            :ARG1-of (s / see-01
+                        :ARG0 (b / boy)))
+   :ARG1 b)
+
+# ::id 14
+# ::snt The regulatory documents were changed.
+(c / change-01
+   :ARG1 (d / document
+            :instrument-of (r / regulate-01)))
+
+# ::id 15
+# ::snt The boy wants to believe.
+(w / want-01
+   :ARG0 (b / boy)
+   :ARG1 (b2 / believe-01
+             :ARG0 b))
+
+# ::id 16
+# ::snt The boy believes.
+(b / believe-01
+   :ARG0 (b1 / boy))
+
+# ::id 17
+# ::snt He described the mission as a failure.
+# ::snt As he described it, the mission was a failure.
+# ::snt His description of the mission: failure.
+(d / describe-01
+   :ARG0 (h / he)
+   :ARG1 (m / mission)
+   :ARG2 (f / fail-01))
+
+# ::id 18
+# ::snt a band of marauders
+(b / band
+  :consist-of (p / person
+                :ARG0-of (m / maraud-00)))
+
+# ::id 19
+# ::snt The boy can go.
+# ::snt It is possible that the boy goes.
+(p / possible-01
+   :ARG1 (g / go-02
+           :ARG0 (b / boy)))
+
+# ::id 20
+# ::snt The boy must go.
+# ::snt The boy is obligated to go.
+# ::snt It is obligatory that the boy go.
+(o / obligate-01
+   :ARG2 (g / go-02
+            :ARG0 (b / boy)))
+
+# ::id 21
+# ::snt The boy may go.
+# ::snt The boy is permitted to go.
+# ::snt It is permissible that the boy go.
+(o / permit-01
+   :ARG1 (g / go-02
+            :ARG0 (b / boy)))
+
+# ::id 22
+# ::snt It may rain.
+# ::snt It might rain.
+# ::snt Rain is possible.
+# ::snt It’s possible that it will rain.
+(p / possible-01
+   :ARG1 (r / rain-01))
+
+# ::id 23
+# ::snt The boy should go.
+# ::snt It is recommended that the boy go.
+(r / recommend-01
+   :ARG1 (g / go-02
+            :ARG0 (b / boy)))
+
+# ::id 24
+# ::snt The boy is likely to go.
+# ::snt It is likely that the boy will go.
+(l / likely-01
+   :ARG1 (g / go-02
+           :ARG0 (b / boy)))
+
+# ::id 25
+# ::snt The boy would rather go.
+# ::snt The boy prefers to go.
+(p / prefer-01
+   :ARG0 (b / boy)
+   :ARG1 (g / go-02
+            :ARG0 b))
+
+# ::id 26
+# ::snt I am used to working.
+(u / use-02
+   :ARG0 (i / i)
+   :ARG1 (w / work-01
+            :ARG0 i))
+
+# ::id 27
+# ::snt The boy doesn’t go.
+(g / go-02
+   :ARG0 (b / boy)
+   :polarity -)
+
+# ::id 28
+# ::snt The boy can’t go.
+# ::snt It’s not possible for the boy to go.
+(p / possible-01
+   :ARG1  (g / go-02
+            :ARG0 (b / boy))
+   :polarity -)
+
+# ::id 29
+# ::snt It is possible for the boy not to go.
+# ::snt It is possible for the boy to not go.
+(p / possible-01
+    :ARG1 (g / go-02
+            :ARG0 (b / boy)
+            :polarity -))
+
+# ::id 30
+# ::snt The boy doesn’t have to go.
+# ::snt It’s not necessary for the boy to go.
+(p / obligate-01
+   :ARG2 (g / go-02
+            :ARG0 (b / boy))
+   :polarity -)
+
+# ::id 31
+# ::snt The boy must not go.
+# ::snt It’s obligatory that the boy not go.
+(p / obligate-01
+   :ARG2 (g / go-02
+            :ARG0 (b / boy)
+            :polarity -))
+
+# ::id 32
+# ::snt The boy thinks his team won’t win.
+# ::snt The boy doesn’t think his team will win.  (colloquially, ambiguously)
+(t / think-01
+   :ARG0 (b / boy)
+   :ARG1 (w / win-01
+            :ARG0 (t2 / team
+                      :poss b)
+            :polarity -))
+
+# ::id 33
+# ::snt It’s not true that the boy thinks his team will win.
+# ::snt The boy doesn’t think his team will win.  (colloquially, ambiguously)
+(t / think-01
+   :ARG0 (b / boy)
+   :ARG1 (w / win-01
+            :ARG0 (t2 / team
+                      :poss b))
+   :polarity -)
+
+# ::id 34
+# ::snt I don’t have any money.
+# ::snt I have no money.
+(h / have-03   ; have-01 in original, but this is the auxiliary
+   :polarity -
+   :ARG0 (i / i)
+   :ARG1 (m / money))
+
+# ::id 35
+# ::snt the dress is inappropriate
+# ::snt the dress is not appropriate
+(a / appropriate-02
+  :polarity -
+  :ARG1 (d / dress))
+
+# ::id 36
+# ::snt the inappropriate dress
+# ::snt the dress that is inappropriate
+# ::snt the dress that is not appropriate
+(d / dress
+   :ARG1-of (a / appropriate-02
+              :polarity -))
+
+# ::id 37
+# ::snt What did the girl find?
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (a / amr-unknown))
+
+# ::id 38
+# ::snt Where did the girl find the boy?
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (b / boy)
+   :location (a / amr-unknown))
+
+# ::id 39
+# ::snt How did the girl find the boy?
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (b / boy)
+   :manner (a / amr-unknown))
+
+# ::id 40
+# ::snt Whose toy did the girl find?
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (t / toy
+            :poss (a / amr-unknown)))
+
+# ::id 41
+# ::snt How fast did the girl run?
+(r / run-01
+   :ARG0 (g / girl)
+   :manner (f / fast
+             :degree (a / amr-unknown)))
+
+# ::id 42
+# ::snt What purple thing did the girl see?
+(s / see-01
+   :ARG0 (g / girl)
+   :ARG1 (a / amr-unknown
+            :ARG1-of (p / purple-02)))
+
+# ::id 43
+# ::snt Which investigation did she lead?
+(l / lead-01
+   :ARG0 (s / she)
+   :ARG1 (a / amr-unknown
+            :domain (i / investigate-01)))
+
+# ::id 44
+# ::snt Did the girl find the boy?
+(f / find-01
+   :ARG0 (g / girl)
+   :ARG1 (b / boy)
+   :polarity (a / amr-unknown))
+
+
+# ::id 45
+# ::snt Was the boy found?
+(f / find-01
+   :ARG1 (b / boy)
+   :polarity (a / amr-unknown))
+
+
+# ::id 46
+# ::snt I know who you saw.
+# ::snt I know the person you saw.
+(k / know-02
+   :ARG0 (i / i)
+   :ARG1 (p / person
+            :ARG1-of (s / see-01
+                        :ARG0 (y / you))))
+
+# ::id 47
+# ::snt The boy doesn’t know whether the girl came.
+# ::snt The boy doesn’t know if the girl came.
+(k / know-01
+   :polarity -
+   :ARG0 (b / boy)
+   :ARG1 (t / truth-value
+            :polarity-of  (c / come-01
+                             :ARG1 (g / girl))))
+
+# ::id 48
+# ::snt The boy doesn’t know that the girl came.
+# ::snt The boy doesn’t know the girl came.
+(k / know-01
+   :polarity -
+   :ARG0 (b / boy)
+   :ARG1 (c / come-01
+            :ARG1 (g / girl)))
+
+# ::id 49
+# ::snt Do you want tea or coffee?
+(w / want-01
+      :ARG0 (y / you)
+      :ARG1 (a / amr-choice
+            :op1 (t / tea)
+            :op2 (c / coffee)))
+
+# ::id 50
+# ::snt Should I stay or should I go?
+(r / recommend-01
+      :ARG1 (a / amr-choice
+            :op1 (s / stay-01
+                  :ARG1 (i / i))
+            :op2 (g / go-02
+                  :ARG0 i)))
+
+# ::id 51
+# ::snt Go.
+# ::snt Go!
+(g / go-02
+   :mode imperative
+   :ARG0 (y / you))
+
+# ::id 52
+# ::snt Let’s go.
+# ::snt Let’s go!
+(g / go-02
+   :mode imperative
+   :ARG0 (w / we))
+
+# ::id 53
+# ::snt Yippee!
+(y/yippee :mode expressive)
+
+# ::id 54
+# ::snt Yes!!!
+(y/yes :mode expressive)
+
+# ::id 55
+# ::snt The boy went.
+# ::snt The boys went.
+# ::snt A boy went.
+# ::snt The boy goes.
+# ::snt The boy will go.
+(g / go-02
+   :ARG0 (b / boy))
+
+# ::id 56
+# ::snt that boy
+# ::snt those boys
+(b / boy
+   :mod (t / that))
+
+# ::id 57
+# ::snt this boy
+# ::snt these boys
+(b / boy
+   :mod (t / this))
+
+# ::id 58
+# ::snt that is a shame.
+(s / shame
+   :domain (t / that))
+
+# ::id 59
+# ::snt money-market account
+(a / account
+   :mod (m / market
+           :mod (m2 / money)))
+
+# ::id 60
+# ::snt vice-president
+# ::snt vice president
+(p / president
+   :mod (v / vice))
+
+# ::id 61
+# ::snt brother-in-law
+(b / brother-in-law)
+
+# ::id 62
+# ::snt He was charged with public intoxication and resisting arrest.
+(c / charge-05
+   :ARG1 (h / he)
+   :ARG2 (a / and
+            :op1 (i / intoxicate-01
+                    :ARG1 h
+                    :location (p / public))
+            :op2 (r / resist-01
+                    :ARG0 h
+                    :ARG1 (a2 / arrest-01
+                              :ARG1 h))))
+
+# ::id 63
+# ::snt the hopeful girl
+(h / hopeful-03
+   :ARG1 (g / girl))
+
+
+# ::id 64
+# ::snt The marble is small.
+(s / small
+   :domain (m / marble))
+
+# ::id 65
+# ::snt The man is a lawyer.
+(l / lawyer
+   :domain (m / man))
+
+# ::id 66
+# ::snt the man who is a lawyer
+(m / man
+   :mod (l / lawyer))
+
+# ::id 67
+# ::snt the boy
+# ::snt There is a boy.
+(b / boy)
+
+# ::id 68
+# ::snt four boys making pies
+# ::snt There are four boys making pies.
+(b / boy
+   :quant 4
+   :ARG0-of (m / make-01
+               :ARG1 (p / pie)))
+
+# ::id 69
+# ::snt The boy destroyed the room.
+# ::snt The boy’s destruction of the room
+# ::snt The destruction of the room by the boy
+(d / destroy-01
+   :ARG0 (b / boy)
+   :ARG1 (r / room))
+
+# ::id 70
+# ::snt the explosion
+(e / explode-01)
+
+# ::id 71
+# ::snt the proposal
+# ::snt the thing proposed
+# ::snt what got proposed
+(t / thing
+   :ARG1-of (p / propose-01))
+
+# ::id 72
+# ::snt the boy’s opinion
+# ::snt the opinion of the boy
+# ::snt that which was opined by the boy
+# ::snt what the boy opined
+(t / thing
+   :ARG1-of (o / opine-01
+               :ARG0 (b / boy)))
+
+# ::id 73
+# ::snt chip maker
+# ::snt maker of chips
+(o / organization
+   :ARG0-of (m / make-01
+               :ARG1 (c / chip)))
+
+# ::id 74
+# ::snt investor
+(p / person
+   :ARG0-of (i / invest-01))
+
+# ::id 75
+# ::snt bond investor
+(p / person
+   :ARG0-of (i / invest-01
+               :ARG2 (b / bond)))
+
+# ::id 76
+# ::snt small investor
+(p / person
+   :ARG0-of (i / invest-01
+               :mod (s / small)))
+
+# ::id 77
+# ::snt nerdy investor
+(p / person
+   :ARG0-of (i / invest-01)
+   :mod (n / nerd))
+
+# ::id 78
+# ::snt treasurer
+(t  / treasurer)
+
+
+# ::id 79
+# ::snt president
+(p / president)
+
+
+# ::id 80
+# ::snt the boy is a hard worker
+# ::snt the boy works hard
+(w / work-01
+   :ARG0 (b / boy)
+   :manner (h / hard-02))
+
+# ::id 81
+# ::snt the attractive man
+(m / man
+   :ARG0-of (a / attract-01))
+
+# ::id 82
+# ::snt the man is attractive
+# ::snt the man attracts
+(a / attract-01
+   :ARG0 (m / man))
+
+# ::id 83
+# ::snt the man is attractive to women
+# ::snt the man attracts women
+(a / attract-01
+   :ARG0 (m / man)
+   :ARG1 (w / woman))
+
+# ::id 84
+# ::snt The soldier was aware of the battle.
+# ::snt The soldier realized there was a battle.
+(a / realize-01
+   :ARG0 (s / soldier)
+   :ARG1 (b / battle))
+
+# ::id 85
+# ::snt The boy is responsible for the work.
+# ::snt The boy is responsible for doing the work.
+# ::snt The boy has the responsibility for the work.
+(r / responsible-03
+   :ARG0 (b / boy)
+   :ARG1 (w / work))
+
+# ::id 86
+# ::snt The girl is sad.
+(s / sad-02
+   :ARG1 (g / girl))
+
+# ::id 87
+# ::snt The girl was saddened by the disaster.
+# ::snt The disaster saddened the girl.
+(s / sadden-01
+   :ARG1 (g / girl)           
+   :ARG0 (d / disaster))      ; original :ARG2
+
+# ::id 88
+# ::snt the boy is acquainted with magic
+(a / acquaint-01
+   :ARG1 (b / boy)
+   :ARG2 (m / magic))
+
+# ::id 89
+# ::snt Boys want to please.
+(w / want-01
+   :ARG0 (b / boy)
+   :ARG1 (p / please-01
+            :ARG0 b))
+
+# ::id 90
+# ::snt Girls are easy to please.
+# ::snt It is easy to please girls.
+# ::snt Pleasing girls is easy.
+(e / easy-05
+   :ARG1 (p / please-01
+              :ARG1 (g / girl)))
+
+# ::id 91
+# ::snt an edible sandwich
+# ::snt a sandwich that can be eaten
+# ::snt a sandwich that it is possible to eat
+(s / sandwich
+   :ARG1-of (e / eat-01
+               :ARG1-of (p / possible-01)))
+
+# ::id 92
+# ::snt an inedible sandwich
+(s / sandwich
+   :ARG1-of (e / eat-01
+               :ARG1-of (p / possible-01
+                          :polarity -)))
+
+# ::id 93
+# ::snt a taxable fund
+(f / fund
+   :ARG3-of (t / tax-01))
+
+
+# ::id 94
+# ::snt I observed that the army moved quickly.
+# ::snt I observed the quick movement of the army
+# ::snt I observed the army moving quickly.
+(o / observe-01
+  :ARG0 (i / i)
+  :ARG1  (m / move-01
+                  :ARG0 (a / army)
+                  :manner (q / quick-02)))
+
+# ::id 95
+# ::snt I hardly know her.
+(k / know-01
+  :ARG0 (i / i)
+  :ARG1 (s / she)
+  :degree (h / hardly))
+
+# ::id 96
+# ::snt He drove west, from Houston to Austin.
+(d / drive-01
+   :ARG0 (h / he)
+   :direction (w / west)
+   :source (c / city :wiki "Houston" :name (n / name :op1 "Houston"))
+   :destination (c2 / city :wiki "Austin,_Texas" :name (n2 / name :op1 "Austin")))
+
+# ::id 97
+# ::snt I drove to Indianapolis on I-65.
+(d / drive-01
+   :ARG0 (i / i)
+   :destination (c / city :wiki "Indianapolis" :name (n / name :op1 "Indianapolis"))
+   :path (r / road :wiki "Interstate_65" :name (n2 / name :op1 "I-65")))
+
+# ::id 98
+# ::snt I drove through the tunnel.
+(d / drive-01
+   :ARG0 (i / i)
+   :path (t / tunnel))
+
+# ::id 99
+# ::snt The soldier hummed a tune for the girl as he walked with her to town.
+(s / hum-02
+   :ARG0 (s2 / soldier)
+   :ARG1 (t2 / tune)
+   :beneficiary (g / girl)
+   :time (w / walk-01
+            :ARG0 g
+            :accompanier s2
+            :destination (t / town)))
+
+# ::id 100
+# ::snt There is no information about the case.
+(i / information :polarity -
+   :topic (c / case))
+
+# ::id 101
+# ::snt USC Associate Professor for Mathematics Jay Bartroff
+(p / person :wiki -
+   :name (n / name :op1 "Jay" :op2 "Bartroff")
+   :ARG0-of (h / have-org-role-91
+               :ARG1 (u / university :wiki "University_of_Southern_California" :name (n2 / name :op1 "USC"))
+               :ARG2 (p2 / professor
+                         :mod (a / associate)
+                         :topic (m / mathematics))))
+
+# ::id 102
+# ::snt He worked for two hours.
+(w / work-01
+   :ARG0 (h / he)
+   :duration (t / temporal-quantity
+                :quant 2
+                :unit (h2 / hour)))
+
+# ::id 103
+# ::snt I ate pasta with a fork.
+(e / eat-01
+   :ARG0 (i / i)
+   :ARG1 (p / pasta)
+   :instrument (f / fork))
+
+# ::id 104
+# ::snt Iraq launched a missile attack.
+(a / attack-01
+   :ARG0 (c / country :wiki "Iraq" :name (n / name :op1 "Iraq"))
+   :instrument (m / missile))
+
+# ::id 105
+# ::snt She talked to him in French.
+(t / talk-01
+      :ARG0 (s / she)
+      :ARG2 (h / he)
+      :medium (l / language :wiki "French_language" :name (n / name :op1 "French")))
+
+# ::id 106
+# ::snt John announced the birth of his son on Twitter.
+(a / announce-01
+  :ARG0 (p / person :wiki - :name (n / name :op1 "John"))
+  :ARG1 (b / bear-02
+          :ARG1 (p2 / person
+                   :ARG0-of (h / have-rel-role-91
+                              :ARG1 p
+                              :ARG2 (s / son))))
+  :medium (p3 / product :wiki "Twitter" :name (n2 / name :op1 "Twitter")))
+
+# ::id 107
+# ::snt The boy sang very beautifully.
+(s / sing-01
+   :ARG0 (b / boy)
+   :manner (b2 / beautiful-02
+               :degree (v / very)))
+
+# ::id 108
+# ::snt He decorated the room in a creative way.
+(d / decorate-01
+   :ARG0 (h / he)
+   :ARG1 (r / room)
+   :manner (c / creative))
+
+# ::id 109
+# ::snt The mayor proposed to lower crime by hiring more police officers.
+(p / propose-01
+   :ARG0 (p3 / person
+             :ARG0-of (h2 / have-org-role-91
+                          :ARG2 (m / mayor)))
+   :ARG1 (l / lower-05
+            :ARG1 (c / crime)
+            :manner (h / hire-01
+                       :ARG2 (p4 / person
+                                 :ARG0-of (h3 / have-org-role-91
+                                              :ARG1 (p2 / police)
+                                              :ARG2 (o / officer))
+                                 :mod (m2 / more)))))
+
+# ::id 110
+# ::snt Nicole went to England by train.
+(g / go-02
+   :ARG0 (p / person :wiki - :name (n / name :op1 "Nicole"))
+   :ARG4 (c / country :wiki "England" :name (n2 / name :op1 "England"))
+   :manner (t / train))
+
+# ::id 111
+# ::snt He went to the store to buy wood for a new fence.
+(g / go-02
+   :ARG0 (h / he)
+   :ARG4 (s / store)
+   :purpose (b / buy-01
+               :ARG0 h
+               :ARG1 (w / wood
+                        :purpose (f / fence
+                                    :mod (n / new)))))
+
+# ::id 112
+# ::snt The boy murmured softly to soothe the girl, because he worried about her.
+(m / murmur-01
+  :ARG0 (b / boy)
+  :manner (s / soft-02)
+  :purpose (s2 / soothe-01
+               :ARG1 (g / girl))
+  :cause (w / worry-01
+            :ARG0 b
+            :topic g))
+
+# ::id 113
+# ::snt The game continued although it rained.
+# ::snt The game continued despite the rain.
+(c / continue-01
+    :ARG1 (g / game)
+    :concession (r / rain-01))
+
+# ::id 114
+# ::snt The game will continue even if it rains.
+(c / continue-01
+   :ARG1 (g / game)
+   :concession (e / even-if
+                  :op1 (r / rain-01)))
+
+# ::id 115
+# ::snt They feared him even when he was behind bars.
+(f / fear-01
+   :ARG0 (t / they)
+   :ARG1 (h / he)
+   :concession (e / even-when
+                  :op1 (i / imprison-01
+                          :ARG1 h)))
+
+# ::id 116
+# ::snt The boy will sing if he is given money.
+# ::snt If the boy is given money, he will sing.
+# ::snt The boy will sing in case of a money donation.
+(s / sing-01
+   :ARG0 (b / boy)
+   :condition (g / give-01
+                 :ARG1 (m / money)
+                 :ARG2 b))
+
+# ::id 117
+# ::snt The boy will sing unless he is given money.
+# ::snt Unless the boy is given money, he will sing.
+(s / sing-01
+   :ARG0 (b / boy)
+   :polarity -
+   :condition (g / give-01
+                 :ARG1 (m / money)
+                 :ARG2 b))
+
+# ::id 118
+# ::snt The torpedo struck, causing the ship to be damaged.
+# ::snt The torpedo struck, causing damage to the ship.
+# ::snt The torpedo struck, damaging the ship.
+(s / strike-01
+   :ARG0 (t / torpedo)
+   :cause-of (d / damage-01
+                :ARG1 (s2 / ship)))
+
+# ::id 119
+# ::snt The boy provided chocolate to the girl.
+# ::snt The boy provided the girl with chocolate.
+(p / provide-01
+   :ARG0 (b / boy)
+   :ARG1 (c / chocolate)
+   :ARG2 (g / girl))
+
+# ::id 120
+# ::snt They built the bridge in Maryland in December.
+# ::snt The bridge was built by them in Maryland in December.
+(b / build-01
+  :ARG0 (t / they)
+  :ARG1 (b2 / bridge)
+  :location (s / state
+              :wiki "Maryland"
+              :name (n / name :op1 "Maryland"))
+  :time (d / date-entity :month 12))
+
+# ::id 121
+# ::snt the engine of the car
+# ::snt the car’s engine
+(e / engine
+   :part-of (c / car))
+
+# ::id 122
+# ::snt a unit of the company
+# ::snt the company’s unit
+(u / unit
+   :part-of (c / company))
+
+# ::id 123
+# ::snt the south of France
+# ::snt southern France
+(s / south
+   :part-of (c / country :wiki "France" :name (n / name :op1 "France")))
+
+# ::id 124
+# ::snt The boy won the race in the Olympics.
+(w / win-01
+   :ARG0 (b / boy)
+   :ARG1 (r / race-01
+            :subevent-of (g / game :wiki "Olympic_Games" :name (n / name :op1 "Olympics"))))
+
+# ::id 125
+# ::snt a ring of gold
+(r / ring
+   :consist-of (g / gold))
+
+# ::id 126
+# ::snt a team of monkeys
+(t / team
+   :consist-of (m / monkey))
+
+# ::id 127
+# ::snt companies like IBM and Google
+(c / company
+   :example (a / and
+               :op1 (c2 / company :wiki "IBM" :name (n / name :op1 "IBM"))
+               :op2 (c3 / company :wiki "Google" :name (n2 / name :op1 "Google"))))
+
+# ::id 128
+# ::snt He drove west.
+(d / drive-01
+   :ARG0 (h / he)
+   :direction (w / west))
+
+# ::id 129
+# ::snt We met three times.
+(m / meet-03
+   :frequency 3
+   :ARG0 (w / we))
+
+# ::id 130
+# ::snt twice a year
+(r / rate-entity-91
+   :ARG1 2
+   :ARG2 (t / temporal-quantity
+            :quant 1
+            :unit (y / year)))
+
+# ::id 131
+# ::snt We play bridge every Wednesday afternoon.
+(p / play-01
+   :ARG0 (w / we)
+   :ARG1 (b / bridge)
+   :frequency (r / rate-entity-91
+                 :ARG4 (d / date-entity
+                          :weekday (w2 / wednesday)
+                          :dayperiod (a / afternoon))))
+
+# ::id 132
+# ::snt The road goes on forever.
+(g / go-on-15
+      :ARG1 (r / road)
+      :extent (f / forever))
+
+# ::id 133
+# ::snt The boy from the college sang.
+(s / sing-01
+   :ARG0 (b / boy
+            :source (c / college)))
+
+# ::id 134
+# ::snt The singing boy from the college
+# ::snt There is a boy from the college who sang.
+(b / boy
+   :ARG0-of (s / sing-01)
+   :source (c / college))
+
+# ::id 135
+# ::snt The college that the singing boy came from
+(c / college
+   :source-of (b / boy
+                 :ARG0-of (s / sing-01)))
+
+# ::id 136
+# ::snt The girl left because the boy arrived.
+(l / leave-11
+   :ARG0 (g / girl)
+   :cause (a / arrive-01
+             :ARG1 (b / boy)))
+
+
+# ::id 137
+# ::snt We know the knife that is in the drawer. (???)
+(k / know-01
+   :ARG0 (w / we)
+   :ARG1 (k2 / knife
+             :location (d / drawer)))
+
+# ::id 138
+# ::snt We know the drawer where the knife is.  (???)
+(k / know-01
+   :ARG0 (w / we)
+   :ARG1 (d / drawer
+            :location-of (k2 / knife)))
+
+# ::id 139
+# ::snt We know the knife is in the drawer.
+(k / know-01
+   :ARG0 (w / we)
+   :ARG1 (b / be-located-at-91
+            :ARG1 (k2 / knife)   ; like in dict: ARG0 original
+            :ARG2 (d / drawer))) ; original ARG1
+
+# ::id 140
+# ::snt We know the knife was not in the drawer yesterday.
+(k / know-01
+   :ARG0 (w / we)
+   :ARG1 (b / be-located-at-91
+            :ARG1 (k2 / knife)
+            :ARG2 (d / drawer)
+            :polarity -
+            :time (y / yesterday)))
+
+# ::id 141
+# ::snt The girl adjusted the machine.
+# ::snt The girl made an adjustment to the machine.
+(a / adjust-01
+   :ARG0 (g / girl)
+   :ARG1 (m / machine))
+
+# ::id 142
+# ::snt The boy bathed.
+# ::snt The boy took a bath.
+(t / bathe-01
+   :ARG0 (b / boy))
+
+# ::id 143
+# ::snt The boy looked up the answer.
+# ::snt The boy looked the answer up.
+(l / look-up-05
+   :ARG0 (b / boy)
+   :ARG1 (a / answer))
+
+# ::id 144
+# ::snt The nation defaulted in June.
+(s / default-01
+   :ARG1 (n / nation)
+   :time (d / date-entity
+            :month 6))
+
+# ::id 145
+# ::snt The man died in his house.
+(d / die-01
+   :ARG1 (m / man)
+   :location (h / house
+                :poss m))
+
+# ::id 146
+# ::snt The nation defaulted after the war.
+(s / default-01
+   :ARG1 (n / nation)
+   :time (b / after
+            :op1 (w / war-01)))
+
+# ::id 147
+# ::snt The man died near his house.
+(d / die-01
+   :ARG1 (m / man)
+   :location (n / near
+                :op1 (h / house
+                        :poss m)))
+
+# ::id 148
+# ::snt The man died between the house and the river.
+(d / die-01
+   :ARG1 (m / man)
+   :location (b / between
+                :op1 (h / house)
+                :op2 (r / river)))
+
+# ::id 149
+# ::snt He was sued in the case.
+(s / sue-02
+   :ARG1 (h / he)
+   :prep-in (c / case))
+
+# ::id 150
+# ::snt The brief was filed on behalf of the government.
+(f / file-01
+   :ARG1 (b / brief)
+   :prep-on-behalf-of (g / government))
+
+# ::id 151
+# ::snt According to government sources, the killing happened yesterday.
+# ::snt Government sources said that the killing happened yesterday.
+(s / say-01
+   :ARG0 (s2 / source
+             :mod (g / government))
+   :ARG1 (k / kill-01
+            :time (y / yesterday)))
+
+# ::id 152
+# ::snt The boy believes.
+(b / believe-01
+   :ARG0 (b2 / boy))
+
+# ::id 153
+# ::snt the boy who believes
+(b / boy
+   :ARG0-of (b2 / believe-01))
+
+# ::id 154
+# ::snt the black car
+(c / car
+   :ARG1-of (b / black-04))
+
+# ::id 155
+# ::snt the car that is not black
+(c / car
+   :ARG1-of (b / black-04
+              :polarity -))
+
+# ::id 156
+# ::snt the Shanghai legal system
+(s / system
+   :mod (l / law)
+   :mod (c / city
+           :wiki "Shanghai"
+           :name (n / name :op1 "Shanghai")))
+
+# ::id 157
+# ::snt She arrived earlier today.
+(a / arrive-01
+  :ARG1 (s / she)
+  :time (t / today)
+  :time (b / before
+          :op1 (n / now)))
+
+# ::id 158
+# ::snt the boy who wants to believe the girl
+(b / boy
+   :ARG0-of (w / want-01
+               :ARG1 (b2 / believe-01
+                        :ARG1 (g / girl))))
+
+# ::id 159
+# ::snt the boy and the girl
+(a / and
+   :op1 (b / boy)
+   :op2 (g / girl))
+
+# ::id 160
+# ::snt either the boy, the girl, or the dog
+(a / either
+   :op1 (b / boy)
+   :op2 (g / girl)
+   :op3 (d / dog))
+
+# ::id 161
+# ::snt the big, heavy ball
+# ::snt the big and heavy ball
+(b / ball
+   :mod (b2 / big)
+   :mod (h / heavy))
+
+# ::id 162
+# ::snt There was shouting, and the boy left.
+(a / and
+   :op1 (c / shout-01)
+   :op2 (l / leave-11
+           :ARG0 (b / boy)))
+
+# ::id 163
+# ::snt There was shouting, but the boy stayed.
+(c / contrast-01
+   :ARG1 (c2 / shout-01)
+   :ARG2 (l / stay-01
+            :ARG1 (b / boy)))
+
+# ::id 164
+# ::snt But the boy stayed.
+(c / contrast-01
+   :ARG2 (l / stay-01
+            :ARG1 (b / boy)))
+
+# ::id 165
+# ::snt The boy shouted and left.
+(a / and
+   :op1 (c / shout-01
+           :ARG0 (b / boy))
+   :op2 (l / leave-11
+           :ARG0 b))
+
+# ::id 166
+# ::snt The boy arrived and was promptly killed.
+(a / and
+   :op1 (a2 / arrive-01
+            :ARG1 (b / boy))
+   :op2 (l / kill-01
+           :ARG1 b
+           :manner (p / prompt)))
+
+# ::id 167
+# ::snt The boy arrived and left on Tuesday.
+# ::snt On Tuesday, the boy arrived and left.
+(a / and
+   :time (d / date-entity
+            :weekday (t / tuesday))
+   :op1 (a2 / arrive-01
+            :ARG1 (b / boy))
+   :op2 (l / leave-11
+          :ARG0 b))
+
+# ::id 168
+# ::snt The boys all left.
+# ::snt All the boys left.
+# ::snt Each of the boys left.
+(l / leave-11
+   :ARG0 (b / boy
+            :mod (a / all)))
+
+# ::id 169
+# ::snt No boy left.
+# ::snt None of the boys left.
+(l / leave-11
+   :ARG0 (b / boy
+            :mod (n / no)))
+
+# ::id 170
+# ::snt Not all of the boys left.
+(l / leave-11
+   :ARG0 (b / boy
+            :mod (a / all
+                    :polarity -)))
+
+# ::id 171
+# ::snt Not everyone left.
+(l / leave-11
+   :ARG0 (p / person
+           :mod (a / all
+                   :polarity -)))
+
+# ::id 172
+# ::snt The girl believes that the boy works hard.
+(b / believe-01
+   :ARG0 (g / girl)
+   :ARG1 (w / work-01
+            :ARG0 (b1 / boy)
+            :manner (h / hard-02)))
+
+# ::id 173
+# ::snt The girl believes that the boy works in a not-hard manner.
+# ::snt The girl believes that the boy doesn’t work hard.  (colloquially)
+# ::snt The girl doesn’t believe that the boy works hard.  (colloquially)
+(b / believe-01
+   :ARG0 (g / girl)
+   :ARG1 (w / work-01
+            :ARG0 (b2 / boy)
+            :manner (h / hard-02
+                       :polarity -)))
+
+# ::id 174
+# ::snt The girl believes that the boy refrains from work, in a hard manner.
+(b / believe-01
+   :ARG0 (g / girl)
+   :ARG1 (w / work-01
+            :polarity -
+            :ARG0 (b2 / boy)
+            :manner (h / hard-02)))
+
+# ::id 175
+# ::snt It’s not true that the girl believes the boy works hard.
+(b / believe-01
+   :polarity -
+   :ARG0 (g / girl)
+   :ARG1 (w / work-01
+            :ARG0 (b2 / boy)
+            :manner (h / hard-02)))
+
+# ::id 176
+# ::snt The non-girl believes that the non-boy works hard.
+(b / believe-01
+   :ARG0 (g / girl
+            :polarity -)
+  :ARG1 (w / work-01
+           :ARG0 (b2 / boy
+                     :polarity -)
+           :manner (h / hard-02)))
+
+# ::id 177
+# ::snt You are very beautiful.
+(b / beautiful-02
+   :ARG1 (y / you)
+   :degree (v / very))
+
+# ::id 178
+# ::snt The brighter boy.
+(b / boy
+   :ARG1-of (h / have-degree-91
+              :ARG2 (b2 / bright-03
+                       :ARG1 b)
+              :ARG3 (m / more)))
+
+# ::id 179
+# ::snt The brightest boy.
+(b / boy
+   :ARG1-of (h / have-degree-91
+              :ARG2 (b2 / bright-03
+                        :ARG1 b)
+              :ARG3 (m / most)))
+
+# ::id 180
+# ::snt a better plan
+(p / plan
+   :ARG1-of (h / have-degree-91
+              :ARG2 (g / good-02
+                     :ARG1 p)
+              :ARG3 (m / more)))
+
+# ::id 181
+# ::snt a worse plan
+(p / plan
+  :ARG1-of (h / have-degree-91
+             :ARG2 (b / bad-07
+                     :ARG1 p)
+             :ARG3 (m / more)))
+
+# ::id 182
+# ::snt a plan that is too extreme
+(p / plan
+   :ARG1-of (h / have-degree-91
+              :ARG2 (e / extreme)
+              :ARG3 (t / too)))
+
+# ::id 183
+# ::snt the girl is taller than the boy
+(h / have-degree-91
+   :ARG1 (g / girl)
+   :ARG2 (t / tall)
+   :ARG3 (m / more)
+   :ARG4 (b / boy))
+
+# ::id 184
+# ::snt she is the tallest girl on the team
+(h / have-degree-91
+   :ARG1 (s / she)
+   :ARG2 (t / tall)
+   :ARG3 (m / most)
+   :ARG5 (g / girl
+           :ARG0-of (h2 / have-org-role-91
+                       :ARG1 (t2 / team))))
+
+# ::id 185
+# ::snt It is too early to reach any conclusion.
+(h / have-degree-91
+  :ARG2 (e / early)
+  :ARG3 (t / too)
+  :ARG6 (c / conclude-01))
+
+# ::id 186
+# ::snt he is not tall enough to ride the rollercoaster.
+(h / have-degree-91 :polarity -
+   :ARG1 (h2 / he)
+   :ARG2 (t / tall)
+   :ARG3 (e / enough)
+   :ARG6 (r / ride-01
+           :ARG0 h2
+           :ARG1 (r2 / rollercoaster)))
+
+# ::id 187
+# ::snt The boy wants to go.
+(w / want-01
+   :ARG0 (b / boy)
+   :ARG1 (g / go-02
+            :ARG0 b))
+
+# ::id 188
+# ::snt The boy wants to believe himself.
+(w / want-01
+   :ARG0 (b / boy)
+   :ARG1 (b2 / believe-01
+             :ARG0 b
+             :ARG1 b))
+
+# ::id 189
+# ::snt He saw them.
+(s / see-01
+   :ARG0 (h / he)
+   :ARG1 (t / they))
+
+# ::id 190
+# ::snt his car
+# ::snt the car of his
+(c / car
+   :poss (h / he))
+
+# ::id 191
+# ::snt the nation’s titans
+(t / titan
+   :poss (n / nation))
+
+# ::id 192
+# ::snt microbial virus
+# ::snt microbe virus
+(v / virus
+   :mod (m / microbe))
+
+# ::id 193
+# ::snt atomic war
+(w / war
+   :mod (a / atom))
+
+# ::id 194
+# ::snt Behavioral problems.
+# ::snt Behavior problems.
+# ::snt Problems with behavior.
+# ::snt Problems behaving.
+(p / problem
+   :mod (b / behave-01))
+
+# ::id 195
+# ::snt the second planet
+# ::snt planet number 2
+(p / planet
+   :ord (o / ordinal-entity
+           :value 2))
+
+# ::id 196
+# ::snt our first visit in 10 years
+(v / visit-01
+   :ARG0 (w / we)
+   :ord (o / ordinal-entity
+           :value 1
+           :range (t / temporal-quantity
+                     :quant 10
+                     :unit (y / year))))
+
+# ::id 197
+# ::snt Nine of the twenty soldiers died.
+(d / die-01
+   :ARG1 (s / soldier
+            :quant 9
+            :subset-of (s3 / soldier
+                           :quant 20)))
+
+# ::id 198
+# ::snt Four of the five survivors had the disease, including three who were diagnosed.
+(h / have-03
+   :ARG0 (p4 / person
+             :quant 4
+             :subset-of (p2 / person
+                            :ARG0-of (s / survive-01)
+                            :quant 5)
+             :subset (p3 / person
+                         :quant 3
+                         :ARG1-of (d3 / diagnose-01)))
+   :ARG1 (d / disease))
+
+# ::id 199
+# ::snt Nine of the twenty soldiers died.
+(d / die-01
+   :ARG1 (s / soldier
+            :quant 9
+            :ARG1-of (i / include-91
+                        :ARG2 (s3 / soldier
+                                  :quant 20))))
+
+# ::id 200
+# ::snt Mollie Brown
+(p / person
+   :wiki "Margaret_Brown"
+   :name (n / name
+            :op1 "Mollie"
+            :op2 "Brown"))
+
+# ::id 201
+# ::snt the orc-slaying Mollie Brown
+# ::snt Mollie Brown, who slays orcs
+(p / person
+   :wiki "Margaret_Brown"
+   :name (n / name
+            :op1 "Mollie"
+            :op2 "Brown")
+   :ARG0-of (s / slay-01
+               :ARG1 (o / orc)))
+
+# ::id 202
+# ::snt Titanic
+# ::snt the Titanic
+# ::snt the ship named Titanic
+(s / ship
+   :wiki "RMS_Titanic"
+   :name (n / name
+            :op1 "Titanic"))
+
+# ::id 203
+# ::snt Marina del Rey
+# ::snt the city of Marina del Rey
+(c / city
+   :wiki "Marina_del_Rey,_California"
+   :name (n / name
+            :op1 "Marina"
+            :op2 "del"
+            :op3 "Rey"))
+
+# ::id 204
+# ::snt Calif.
+(s / state
+   :wiki "California"
+   :name (n / name
+            :op1 "Calif."))
+
+# ::id 205
+# ::snt advertising rates
+# ::snt ad rates
+(r / rate
+   :mod (a / advertise-01))
+
+# ::id 206
+# ::snt Pascale
+(p / person
+   :wiki -
+   :name (n / name
+            :op1 "Pascale"))
+
+# ::id 207
+# ::snt the chip maker
+(c / company
+   :ARG0-of (m / make-01
+               :ARG1 (c1 / chip)))
+
+# ::id 208
+# ::snt the Nobel Prize
+(a / award
+   :wiki "Nobel_Prize"
+   :name (n / name
+            :op1 "Nobel"
+            :op2 "Prize"))
+
+# ::id 209
+# ::snt the American NSA
+(g / government-organization
+   :wiki "National_Security_Agency"
+   :name (n / name
+           :op1 "NSA")
+   :mod (c / country
+           :wiki "United_States"
+       :name (n2 / name :op1 "America")))
+
+# ::id 210
+# ::snt the Lone Cypress
+(n / natural-object
+   :wiki "Lone_Cypress"
+   :name (n2 / name
+             :op2 "Lone"
+             :op3 "Cypress"))
+
+# ::id 211
+# ::snt the poet William Shakespeare
+# ::snt William Shakespeare, the poet
+(p / poet
+   :wiki "William_Shakespeare"
+   :name (n / name :op1 "William" :op2 "Shakespeare"))
+
+# ::id 212
+# ::snt the village of Odinaboi
+(v / village
+   :wiki -
+   :name (n / name
+            :op1 "Odinaboi"))
+
+# ::id 213
+# ::snt Doctor Wu
+(d / doctor
+   :wiki -
+   :name (n / name
+            :op1 "Wu"))
+
+# ::id 214
+# ::snt Sudan's Darfur region
+(c / country-region
+   :wiki "Darfur"
+   :name (n / name :op1 "Darfur")
+   :location (c2 / country :wiki "Sudan" :name (n2 / name :op1 "Sudan")))
+
+# ::id 215
+# ::snt Germany's conservative CDU party
+(p / political-party
+   :wiki "Christian_Democratic_Union_of_Germany"
+   :name (n / name :op1 "CDU")
+   :mod (c / conservative)
+   :mod (c2 / country :wiki "Germany" :name (n2 / name :op1 "Germany")))
+
+# ::id 216
+# ::snt the spaceship Shenzhou
+# ::snt the Shenzhou spacecraft
+(s / spaceship
+   :wiki "Shenzhou_(spacecraft)"
+   :name (n / name :op1 "Shenzhou"))
+
+# ::id 217
+# ::snt Mr. Wu
+# ::snt Mister Wu
+(p / person
+   :wiki -
+   :name (n / name
+            :op1 "Mr."
+            :op2 "Wu"))
+
+# ::id 218
+# ::snt Elsevier N.V. , the Dutch publishing group
+(g / group
+   :wiki "Reed_Elsevier#Elsevier_NV"
+   :name (e / name
+            :op1 "Elsevier"
+            :op2 "N.V.")
+   :mod (c / country
+           :wiki "Netherlands"
+           :name (h / name
+                    :op1 "Netherlands"))
+   :ARG0-of (p2 / publish-01))
+
+# ::id 219
+# ::snt the poet Dr. Seuss
+(d / doctor :wiki "Dr._Seuss"
+  :name (n / name :op1 "Seuss")
+  :mod (p / poet))
+
+# ::id 220
+# ::snt US President Obama
+(p / person
+   :wiki "Barack_Obama"
+   :name (n / name :op1 "Obama")
+   :ARG0-of (h / have-org-role-91
+               :ARG1 (c / country :wiki "United_States" :name (n2 / name :op1 "US"))
+               :ARG2 (p2 / president)))
+
+# ::id 221
+# ::snt He is my brother-in-law.
+(h / have-rel-role-91
+  :ARG0 (h2 / he)
+  :ARG1 (i / i)
+  :ARG2 (b / brother-in-law))
+
+# ::id 222
+# ::snt forty thousand boys
+# ::snt 40,000 boys
+(b / boy
+   :quant 40000)
+
+# ::id 223
+# ::snt one and half billion atoms
+# ::snt 1.5 billion atoms
+# ::snt a billion and half atoms
+# ::snt 1,500,000,000 atoms
+(a / atom
+   :quant 1500000000)
+
+# ::id 224
+# ::snt several hundred boys
+(b / boy
+   :quant (s / several
+             :op1 100))
+
+# ::id 225
+# ::snt more than four thousand boys
+# ::snt more than 4000 boys
+(b / boy
+   :quant (m / more-than
+             :op1 4000))
+
+# ::id 226
+# ::snt between 4000 and 5000 boys
+# ::snt between four and five thousand boys
+(b / boy
+   :quant (m / between
+             :op1 4000
+             :op2 5000))
+
+# ::id 227
+# ::snt ten miles
+# ::snt 10 miles
+# ::snt 10-mile
+(q / distance-quantity
+   :unit (m / mile)
+   :quant 10)
+
+# ::id 228
+# ::snt about 10 miles
+(a / about
+    :op1 (q / distance-quantity
+            :unit (m / mile)
+            :quant 10))
+
+# ::id 229
+# ::snt The woman bought two gallons of milk.
+(b / buy-01
+   :ARG0 (w / woman)
+   :ARG1 (m / milk
+            :quant (q / volume-quantity
+                      :unit (g / gallon)
+                      :quant 2)))
+
+# ::id 230
+# ::snt 30 years
+(t / temporal-quantity
+   :unit (y / year)
+   :quant 30)
+
+# ::id 231
+# ::snt during the past 30 years
+(b / before
+   :op1 (n / now)
+   :duration (t / temporal-quantity
+                :unit (y / year)
+                :quant 30))
+
+# ::id 232
+# ::snt 30 years ago
+(b / before
+   :op1 (n / now)
+   :quant (t / temporal-quantity
+             :unit (y / year)
+             :quant 30))
+
+# ::id 233
+# ::snt more than 30 years ago
+(b / before
+   :op1 (n / now)
+   :quant (m / more-than
+             :op1 (t / temporal-quantity
+                     :unit (y / year)
+                     :quant 30)))
+
+# ::id 234
+# ::snt three or four years
+(o / or
+   :op1 (t / temporal-quantity
+           :unit (y / year)
+           :quant 3)
+   :op2 (t2 / temporal-quantity
+            :unit (y2 / year)
+            :quant 4))
+
+# ::id 235
+# ::snt six months or a year
+(o / or
+   :op1 (t / temporal-quantity
+           :unit (m / month)
+           :quant 6)
+   :op2 (t2 / temporal-quantity
+            :unit (y / year)
+            :quant 1))
+
+# ::id 236
+# ::snt The plane crashed 50 miles east of Moscow.
+# ::snt The plane crash occurred 50 miles east of Moscow.
+(c / crash-01
+   :ARG1 (p / plane)
+   :location (r / relative-position
+                :op1 (g / city :wiki "Moscow" :name (n / name :op1 "Moscow"))
+                :quant (d / distance-quantity
+                          :unit (m / mile)
+                          :quant 50)
+                :direction (e / east)))
+
+# ::id 237
+# ::snt A large number of people gathered.
+(g / gather-01
+   :ARG0 (p / person
+            :quant (n / number
+                      :mod (l / large))))
+
+# ::id 238
+# ::snt The number of people increased.
+(i / increase-01
+   :ARG1 (n / number
+            :quant-of (p / person)))
+
+# ::id 239
+# ::snt C$20
+# ::snt 20 Canadian dollars
+(q / monetary-quantity
+   :quant 20
+   :unit (d / dollar
+            :mod (e / country
+                    :wiki "Canada"
+                    :name (n / name :op1 "Canada"))))
+
+# ::id 240
+# ::snt 7.9 on the Richter scale
+(q / seismic-quantity
+   :quant 7.9
+   :scale (r / richter))
+
+# ::id 241
+# ::snt He sold as many cars as his competitor.
+(s / sell-01
+      :ARG0 (h / he)
+      :ARG1 (c / car
+            :ARG1-of (h2 / have-quant-91
+                  :ARG3 (e2 / equal)
+                  :ARG4 (c3 / car
+                        :ARG1-of (s2 / sell-01
+                              :ARG0 (p / person
+                                    :ARG0-of (c2 / compete-02
+                                          :ARG1 h)))))))
+
+# ::id 242
+# ::snt He sold the most cars of his competitors.
+(s / sell-01
+      :ARG0 (h / he)
+      :ARG1 (c / car
+            :ARG1-of (h2 / have-quant-91
+                  :ARG3 (m / most)
+                  :ARG5 (c3 / car
+                        :ARG1-of (s2 / sell-01
+                              :ARG0 (p / person
+                                    :ARG0-of (c2 / compete-02
+                                          :ARG1 h)))))))
+
+# ::id 243
+# ::snt I had scarcely enough drinking water to last a week.
+(h / have-03
+      :ARG0 (i / i)
+      :ARG1 (w / water
+            :purpose (d2 / drink-01
+                  :ARG0 i)
+            :ARG1-of (h3 / have-quant-91
+                  :ARG3 (e / enough
+                        :mod (s / scarce))
+                  :ARG6 (l / last-03
+                        :ARG1 w
+                        :ARG2 (t / temporal-quantity :quant 1
+                              :unit (w2 / week))
+                        :ARG3 i))))
+
+# ::id 244
+# ::snt The aircraft's velocity reached three times the speed of sound.
+(r / reach-01
+   :ARG0 (v / velocity
+            :poss (a / aircraft))
+   :ARG1 (p / product-of
+            :op1 3
+            :op2 (s / speed
+                    :poss (s2 / sound))))
+
+# ::id 245
+# ::snt Patrick Makau finished the marathon in 2 hours, 3 minutes and 38 seconds.
+(f / finish-01
+   :ARG0 (p / person :wiki "Patrick_Makau_Musyoki" :name (n / name :op1 "Patrick" :op2 "Makau"))
+   :ARG1 (r / run-02
+            :ARG0 p
+            :ARG1 (m / marathon)
+            :duration (s2 / sum-of
+                          :op1 (t2 / temporal-quantity :quant 2
+                                   :unit (h / hour))
+                          :op2 (t3 / temporal-quantity :quant 3
+                                   :unit (m2 / minute))
+                          :op3 (t4 / temporal-quantity :quant 38
+                                   :unit (s3 / second)))))
+
+# ::id 246
+# ::snt February 29, 2012
+# ::snt 29 February 2012
+# ::snt 2/29/2012
+(d / date-entity
+    :year 2012
+    :month 2
+    :day 29)
+
+# ::id 247
+# ::snt 2012
+# ::snt the year 2012
+(d / date-entity
+   :year 2012)
+
+# ::id 248
+# ::snt April
+(d / date-entity
+   :month 4)
+
+# ::id 249
+# ::snt Friday
+(d / date-entity
+   :weekday (f / friday))
+
+# ::id 250
+# ::snt February, 2012
+(d / date-entity
+   :year 2012
+   :month 2)
+
+# ::id 251
+# ::snt Wednesday, February 29
+(d / date-entity
+   :month 2
+   :day 29
+   :weekday (w / wednesday))
+
+# ::id 252
+# ::snt the 29th
+(d / date-entity
+   :day 29)
+
+# ::id 253
+# ::snt Wednesday, February 29, 16:30 PST
+(d / date-entity
+   :month 2
+   :day 29
+   :weekday (w / wednesday)
+   :time 16:30
+   :timezone (z / PST))
+
+# ::id 254
+# ::snt 16:30
+# ::snt 4:30pm
+# ::snt 4:30 in the afternoon
+# ::snt half past four
+(d / date-entity
+   :time 16:30)
+
+# ::id 255
+# ::snt February 29, 24th year of Heisei era
+(d / date-entity
+   :era (h / heisei)
+   :year 24
+   :month 2
+   :day 29
+   :calendar (j / country :wiki "Japan" :name (n / name :op1 "Japan")))
+
+# ::id 256
+# ::snt 4th quarter, 2011
+# ::snt 2011Q4
+(d / date-entity
+    :year 2011
+    :quarter 4)
+
+# ::id 257
+# ::snt Summer 2011
+(d / date-entity
+   :year 2011
+   :season (s / summer))
+
+# ::id 258
+# ::snt Winter 2011-2012
+(d / date-entity
+   :year 2011
+   :year2 2012
+   :season (w / winter))
+
+# ::id 259
+# ::snt academic year 2011-2012
+(d / date-entity
+    :year 2011
+    :year2 2012
+    :calendar (y / year
+                 :mod (a / academia)))
+
+# ::id 260
+# ::snt United States government fiscal year 2012
+(d / date-entity
+    :year 2012
+    :calendar (y / year
+                 :mod (f / finance)
+                 :mod (g / government-organization
+                         :ARG0-of (g2 / govern-01
+                                      :ARG1 (c / country
+                                               :wiki "United_States"
+                                               :name (n / name
+                                                        :op1 "United"
+                                                        :op2 "States"))))))
+
+# ::id 261
+# ::snt March 8-9, 2012
+(d / date-interval
+   :op1 (d2 / date-entity :year 2012 :month 3 :day 8)
+   :op2 (d3 / date-entity :year 2012 :month 3 :day 9))
+
+# ::id 262
+# ::snt Sept. 1, 1939 - May 8, 1945
+(d / date-interval
+   :op1 (d2 / date-entity :year 1939 :month 9 :day 1)
+   :op2 (d3 / date-entity :year 1945 :month 5 :day 8))
+
+# ::id 263
+# ::snt 25%
+# ::snt twenty-five percent
+# ::snt 25 percent
+(p / percentage-entity :value 25)
+
+# ::id 264
+# ::snt 1-800-555-1212
+# ::snt 1 (800) 555-1212
+(p / phone-number-entity :value "1-800-555-1212")
+
+# ::id 265
+# ::snt president@whitehouse.gov
+(e / email-address-entity :value "president@whitehouse.gov")
+
+# ::id 266
+# ::snt www.whitehouse.gov
+(u / url-entity :value "www.whitehouse.gov")
+
+# ::id 267
+# ::snt The woman who lost her scarf.
+(w / woman
+  :ARG0-of (l / lose-02
+             :ARG1 (s / scarf
+                    :poss w)))
+
+# ::id 268
+# ::snt a procedure to ensure quality
+(p / procedure
+  :purpose (e / ensure-01
+             :ARG0 p
+             :ARG1 (q / quality)))
+

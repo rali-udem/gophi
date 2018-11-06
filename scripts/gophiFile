@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# script for calling gophi from the command line
+##     Flags
+#   long   short 
+# --regex   -r  regular expression for filtering AMR (in dotall mode)
+# --show        show intermediary structures
+# --help    -h  show help and stop
+#               name of file containing AMRs (the output file will be put in the same directory)
+
+## example of call
+# ./gophiFile --show amr-bank-PetitPrince-dev.txt 
+
+# SwiProlog for the MAC
+SWIPL=/Applications/SWI-Prolog.app/Contents/MacOS/swipl
+
+$SWIPL -f ../build/gophiFile.pl -g start -t halt -- $@
+

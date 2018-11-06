@@ -1,0 +1,12 @@
+.ace_variable {color:green}
+.ace_concept {color:blue}
+.ace_role {color:fuchsia}
+.ace-tm .ace_comment {color: darkgray;}
+.ace-tm .ace_string{color:limegreen;}
+.ace-tm .ace_number{color:purple;}
+#amr{
+    width:100%;
+    height:300px;
+    border: thin solid black;
+}
+input[name=submit]{margin:5px;}
