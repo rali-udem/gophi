@@ -67,14 +67,6 @@ nextInstanceName(Var,[Var0|_Vars],NewVar):-
 nextInstanceName(Var,[_|Vars],NewVar):-
     nextInstanceName(Var,Vars,NewVar).
 
-%% a testbench for the "separation" of var references
-testSeparate(AMRstring):-
-    amrParse(AMRstring,AMR),pprint(AMR),nl,
-    elimInv(AMR,AMRnoInv), pprint(AMRnoInv),nl,
-    getVarRefs(AMRnoInv,[],VarRefs),writeln('VarRefs':VarRefs),
-    separateRefInstances(AMRnoInv,[],AMRnoInvOut,VarsOut),
-    pprint(AMRnoInvOut),nl,writeln('VarsOut':VarsOut).
-
 %%%%%%%%
 
 pprint(T):-pprint(T,0).

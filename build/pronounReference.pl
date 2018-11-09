@@ -33,6 +33,14 @@ genRef(Var,Concept,POS,Ref):-
         gender(Concept,G),genRefAux(ConceptPath,VarPath,G,POS,Ref)
     ).
 
+%% a testbench for the "separation" of var references
+testSeparate(AMRstring):-
+    amrParse(AMRstring,AMR),pprint(AMR),nl,
+    elimInv(AMR,AMRnoInv), pprint(AMRnoInv),nl,
+    getVarRefs(AMRnoInv,[],VarRefs),writeln('VarRefs':VarRefs),
+    separateRefInstances(AMRnoInv,[],AMRnoInvOut,VarsOut),
+    pprint(AMRnoInvOut),nl,writeln('VarsOut':VarsOut).
+
 % Choice rules for the pronoun referencing a variable
 %  using the table
 % VerbC==VerbV
