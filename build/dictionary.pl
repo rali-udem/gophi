@@ -158,6 +158,8 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('noun','extreme').
 %% keep only the verb
 :-delete('noun','like').
+:-delete('noun','desire-01').
+:-delete('noun','desire').
 % redefined later
 :-delete('noun','score-entity').
 :-delete('noun','contrast-01').

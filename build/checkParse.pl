@@ -73,7 +73,7 @@ eol --> [C],{string_code(1,C,8233)}. % code for newLine when pasting to the Prol
 varName(Token):-re_match("^[a-z]+([0-9]+)?$",Token).
 conceptName(Token):-re_match("^[-\\w]+(\\d+)?",Token).
 roleName(Token):-re_match("^:[-\\w]+",Token).
-constant(Token):- re_match("^(\\+|-|(\\+|-)?(\\d+((\\.|:)\\d+)?))$",Token). % +,-, number or time with :
+constant(Token):- string(Token) ; re_match("^(\\+|-|(\\+|-)?(\\d+((\\.|:)\\d+)?))$",Token). % +,-, number or time with :
 
 %% check for an expected char or type
 %%  if it does not match, go further to try to recover by searching the next matching char/type
@@ -114,7 +114,7 @@ amrParseValidate(AMRstring,AMR,Errors):-
              Rest=[(_,L,C)|_],format('Line ~d:~d : parsing ended prematurely~n',[L,C]));
          format('Missing parenthesis at end of AMR'))).
 
-%%% some good and bad AMR for testing
+%%% some good and bad AMR for testing checkParse
 xAMR(0,'(s / small :domain (m / marble) :polarity -)').
 xAMR(1,'(s / + small :domain (m / marble) :polarity -)').
 xAMR(2,'(s  :domain (m / marble) :polarity -)').
@@ -123,6 +123,10 @@ xAMR(4,'(s /small  :domain
          (m / marble) 1.23 :polarity -)').
 xAMR(5,'(s/small :a "toto
             :b d)').
+xAMR(6,'(a / and ; comments are OK
+     :op1 (r / remain-01
+           :ARG1 (c / country :wiki "Bosnia_and_Herzegovina"))
+         )').
 
 xTestValidateAmrParse(N):-
     xAMR(N,S),format('---~d :~n~s~n',[N,S]),
@@ -130,3 +134,20 @@ xTestValidateAmrParse(N):-
     (Errors=""->pprint(AMR);format('Parsing errors found in AMR~n~w~n',Errors)).
 
 testAllValidateAmrParse:-xAMR(N,_),xTestValidateAmrParse(N),fail.
+
+%%% unit testing and comparison with original parse
+:-[utils].
+:-[baselineGen].
+:-[examples].
+:-[inverseRoles].
+:-[parse].
+
+testAmrParseValidate(N):-
+    ex(N,S,Sent),format('~s~s~s~s~n~s~n',['--- ',N,':',Sent,S]),
+    amrParseValidate(S,AMR,Errors),
+    (Errors=""->pprint(AMR);format('*Should never happen!* Parsing errors found in AMR~n~w~n',Errors)),
+    amrParse(S,AMR1), % parse without validation for comparing input
+    (AMR1=AMR->writeln("OK");writeln("different parses"),pprint(AMR1)),
+    baseGen(AMR,Out,[]),writeWords(Out),nl.
+
+testAllAmrParseValidate:-ex(N,_),testAmrParseValidate(N),nl,fail.

@@ -1,14 +1,14 @@
-# GOPHI : an AMR to ENGLISH VERBALIZER
+# GoPhi : an AMR to ENGLISH VERBALIZER
 
-GOPHI (*Generation Of Parenthesized Human Input*) is a system for generating a literal reading of Abstract Meaning Relationship (AMR) structures. The system, written in [SWI-Prolog](http://www.swi-prolog.org "SWI-Prolog"), uses a symbolic approach to transform the original rooted graph into a tree of constituents that is transformed into an English sentence by [jsRealB](https://github.com/rali-udem/JSrealB "GitHub - rali-udem/JSrealB: A JavaScript bilingual text realizer for web development"). 
+GOPHI (*Generation Of Parenthesized Human Input*) is a system for generating a literal reading of Abstract Meaning Representation (AMR) structures. The system, written in [SWI-Prolog](http://www.swi-prolog.org "SWI-Prolog"), uses a symbolic approach to transform the original rooted graph into a tree of constituents that is transformed into an English sentence by [jsRealB](https://github.com/rali-udem/JSrealB "GitHub - rali-udem/JSrealB: A JavaScript bilingual text realizer for web development"). 
 
-More information about the design and the rationale of the system [in this paper](documentation/GenAMR.pdf).
+More information about the design and the rationale of the system [in this paper](documentation/GoPhi.pdf).
 
-# Running GOPHI
+# Running GoPhi
 
 ## Using the web interface at RALI
 
-* browse `http://rali.iro.umontreal.ca/amr/current/build/amrVerbalizer.cgi` to edit an AMR that can be verbalized
+* browse [GoPhi](http://rali.iro.umontreal.ca/amr/current/build/amrVerbalizer.cgi) to edit an AMR that can be verbalized
 
 ## Using the web interface with the internal SWI-Prolog web server
 * Launch the SWI-Prolog console and type the commands at the `?-` prompt **not forgetting to end with a full stop**. Wait for the `true.` reply from the Prolog interpreter.
@@ -17,7 +17,7 @@ More information about the design and the rationale of the system [in this paper
 
         `cd('/path/to/the/build/directory').`  
         `[gophiWeb].`
-    * In a web browser, browse : `http://127.0.0.1:8000/AMR-Verbalizer` to edit an AMR that can be verbalized
+    * In a web browser, browse : [http://127.0.0.1:8000/amrVerbalizer](http://127.0.0.1:8000/amrVerbalizer) to edit an AMR that can be verbalized
 
 ## From the SWI-Prolog console
 
@@ -74,12 +74,12 @@ More information about the design and the rationale of the system [in this paper
         For example, to process AMRs with at least an inverse role:  
         `showAMRsFile('../../amr-examples/amr-examples.txt',':ARG.-of').`
         
-    * Show the input AMRs in a *file* that match a `Regex` (which can be '') and all the intermediary structure leading to their English realisation.
+    * Show the input AMRs in a *file* that match a `Regex` (which can be '') and all the intermediary structure leading to their English realization.
 
         `showAMRsFile(InFileName,Regex).`
         
         
-# File organization of GOPHI
+# File organization of GoPhi
 
 ## Prolog (.pl) files (`build` directory)
 
@@ -123,8 +123,9 @@ More information about the design and the rationale of the system [in this paper
 A CGI that creates a web page in which a user can edit an AMR, which is then transformed and realised by jsRealB in that same web page.
 
 * `inputPage.pl`     : creates a web page with an embedded editor that contains an AMR with checkboxes for selecting the intermediary structures to show.
+* `replyPage.pl` : creates a web page showing the original AMR, the selected representations and the English realization.
 * `amrVerbalizer.pl` : shows the input page with either an initial AMR or the current one
-* `amrGenerate.pl`   : parses the AMR (using `checkParse.pl`) if it detects errors it displays the input page with error messages; if there are no errors, then it realizes the AMR and displays the intermediary structures that the user has choosen when submitting the form.
+* `amrGenerate.pl`   : parses the AMR (using `checkParse.pl`) if it detects errors it displays the input page with error messages; if there are no errors, then it realizes the AMR and displays the intermediary structures that the user has chosen when submitting the form.
 * `gophi-web` directory
     * `addLexicon-dme.js` : local modifications to the jsRealB lexicon
     * `amr-verb.css` : CSS for the generated web pages
@@ -171,6 +172,6 @@ Text files containing AMRs for developing and testing in three directories:
 * `*.txt`                   : input AMRs
 * `*.out`                   : input AMRs augmented with output of gophi and baselinegen
 * `*.amr2engtrace`          : full trace of the output of the transformation of a .txt file
-* `*.xlsx`                  : Excel file (AMR, Basegen, reference sent, gophi output) for development or comparative evaluation, conventionaly we add information about the evaluator before `.xlsx`
+* `*.xlsx`                  : Excel file (AMR, Basegen, reference sent, gophi output) for development or comparative evaluation, conventionally we add information about the evaluator before `.xlsx`
 
 [Guy Lapalme](lapalme@iro.umontreal.ca)

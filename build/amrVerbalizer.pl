@@ -1,6 +1,6 @@
 #!/usr/bin/env swipl -f -q
 :- initialization amrVerbalizer.
-% can be executed as is on the command line
+% can be executed as a command line script (but it will call a cgi script afterward)
 % but to compile, remove the first two lines of the script 
 %    tail -n +3 amrVerbalizer.pl > amrVerbalizer2.pl
 %    swipl -o amrVerbalizer.cgi -g amrVerbalizer -t halt -c amrVerbalizer2.pl
@@ -13,17 +13,14 @@
 :- use_module(library(cgi)).
 :- [inputPage].
 
-initialAMR('(d / desire-01
-    :ARG0 (b/boy)
-    :ARG1 (g/girl
-           :ARG0-of (l/like-01
-                       :polarity - 
-                       :ARG1 b)))').
+%% get the value of a specific argument from a list returned by cgi_get_form, 
+%%       get_arg(Arguments,NameOfParameter,Value)
+get_arg(Args,N,V):-NV=..[N,V],selectchk(NV,Args,_).
 
 amrVerbalizer :-
     current_output(Stream),set_stream(Stream, encoding(utf8)),
     cgi_get_form(Arguments),
     (get_arg(Arguments,amr,AMRString);
      initialAMR(AMRString)),
-    inputPage(AMRString,[]),
+     inputPage('amrGenerate.cgi',AMRString,[]),
     halt(0).
