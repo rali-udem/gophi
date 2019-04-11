@@ -1,0 +1,225 @@
+## mots anglais genrés tirés de http://myenglishgrammar.com/list-20-gender.html
+## masculin	féminin
+actor	actress
+administrator	administratrix
+author	authoress
+bachelor	spinster
+boy	girl
+# Boy Scout    Girl Guide
+brave	squaw
+bridegroom	bride
+brother	sister
+conductor	conductress
+count	countess
+czar	czarina
+dad	mum
+daddy	mummy
+duke	duchess
+emperor	empress
+father	mother
+father-in-law	mother-in-law
+fiance	fiancee
+gentleman	lady
+giant	giantess
+god	goddess
+governor	matron
+grandfather	grandmother
+grandson	granddaughter
+headmaster	headmistress
+heir	heiress
+hero	heroine
+host	hostess
+hunter	huntress
+husband	wife
+king	queen
+lad	lass
+landlord	landlady
+lord	lady
+male	female
+man	woman
+manager	manageress
+manservant	maidservant
+masseur	masseuse
+master	mistress
+mayor	mayoress
+milkman	milkmaid
+millionaire	millionairess
+monitor	monitress
+monk	nun
+# Mr.    Mrs.
+murderer	murderess
+negro	negress
+nephew	niece
+papa	mama
+poet	poetess
+policeman	policewoman
+postman	postwoman
+postmaster	postmistress
+priest	prietess
+prince	princess
+prophet	prophetess
+proprietor	proprietress
+prosecutor	prosecutrix
+protector	protectress
+shepherd	shepherdess
+sir	madam
+son	daughter
+son-in-law	daughter-in-law
+step-father	step-mother
+step-son	step-daughter
+steward	stewardess
+sultan	sultana
+tailor	tailoress
+testator	testatrix
+uncle	aunt
+usher	usherette
+waiter	waitress
+washerman	washerwoman
+widower	widow
+wizard	witch
+## nom de personnes qu'on suppose par défaut au masculin
+addict
+adolescent
+adult
+adviser
+ancestor
+artisan
+artist
+artiste
+assistant
+athlete
+baby
+breadwinner
+bully
+buyer
+captain
+castaway
+chairperson
+child
+citizen
+clerk
+commoner
+companion
+comrade
+conjuror
+consultant
+cook
+cousin
+criminal
+customer
+cyclist
+dancer
+darling
+dear
+deceased
+dentist
+diner
+divorcee
+doctor
+driver
+enemy
+expert
+fan
+farmer
+fishmonger
+foreigner
+friend
+gardener
+graduate
+guard
+guardian
+guest
+guide
+gymnast
+hawker
+helper
+historian
+hostage
+human
+immigrant
+infant
+informer
+jogger
+journalist
+judge
+killer
+lawyer
+leader
+learner
+lecturer
+lender
+liar
+librarian
+magician
+magistrate
+manager
+member
+minister
+motorist
+murderer
+musician
+neighbour
+newsreader
+novelist
+officer
+orphan
+owner
+paramedic
+parent
+passenger
+passer-by
+pedestrian
+# pen pal
+pensioner
+performer
+person
+photographer
+pilot
+player
+principal
+prisoner
+professional
+professor
+pupil
+reader
+referee
+refugee
+relation
+relative
+retiree
+rumour-monger
+runner
+salesperson
+scientist
+secretary
+seller
+shopkeeper
+shopper
+singer
+smoker
+soldier
+speaker
+specialist
+spectator
+spouse
+spy
+stranger
+student
+surgeon
+sweeper
+teacher
+teenager
+thief
+tot
+tourist
+traveller
+tutor
+typist
+victim
+visitor
+volunteer
+well-wisher
+worker
+worshipper
+writer
+

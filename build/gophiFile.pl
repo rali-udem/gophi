@@ -101,8 +101,9 @@ gophiFile(InFile,OutFile,RegEx,Show):-
                 writeln('> English sentence'),
                 writeln(GenSent),
                 amr2BaseGen(AMRstring,BaseGen),
-                format(OutFile,'~s~n# ::gophi ~s~n# ::basegen ~s~n~s~n~n',
-                       [Header,GenSent,BaseGen,AMRstring]);
+                (current_stream([],write,OutFile)->true; % do not write this if OutFile is stdout
+                   format(OutFile,'~s~n# ::gophi ~s~n# ::basegen ~s~n~s~n~n',
+                         [Header,GenSent,BaseGen,AMRstring]));
             true
            )),
     (Eof->true; % end if at end of file
@@ -122,6 +123,6 @@ showRealisation(InFileName,Regex):-
     gophiFile(In,Out,Regex,false).
 
 testParseFile:-
-    open('/Users/lapalme/Dropbox/PourOrigene/AMR/amr-ISI/amr-examples.txt',read,In),
-    open('/Users/lapalme/Dropbox/PourOrigene/AMR/amr-ISI/amr-examples-test.out',write,Out),
+    open('../amr-examples/amr-examples.txt',read,In),
+    open('../amr-examples/amr-examples-test.out',write,Out),
     gophiFile(In,Out,'',true).

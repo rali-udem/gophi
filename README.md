@@ -67,14 +67,14 @@ More information about the design and the rationale of the system [in this paper
             > English sentence
             I say the hello to the world.
 
-    * Show the input AMRs in a *file* that match a `Regex` (which can be '') and their English realization.
+    * Show the input AMRs in a *file* that match a `Regex` (which can be '' to match all AMRs) and their English realization.
 
-        `showRealization(InFileName,Regex).`
+        `showRealisation(InFileName,Regex).`
         
         For example, to process AMRs with at least an inverse role:  
-        `showAMRsFile('../../amr-examples/amr-examples.txt',':ARG.-of').`
+        `showRealisation('../../amr-examples/amr-examples.txt',':ARG.-of').`
         
-    * Show the input AMRs in a *file* that match a `Regex` (which can be '') and all the intermediary structure leading to their English realization.
+    * Show the input AMRs in a *file* that match a `Regex` (which can be '' to match all AMRs) and display the intermediary structures leading to their English realization.
 
         `showAMRsFile(InFileName,Regex).`
         

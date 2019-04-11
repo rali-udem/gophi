@@ -13,8 +13,27 @@ specialConcept('date-entity',dateEntity).
 specialConcept('ordinal-entity',ordinalEntity).
 specialConcept(Name,quantity):-atom_concat(_,'-quantity',Name),!.
 specialConcept(NE,namedEntity(NE)):-
-    memberchk(NE,['continent','country','state','province','city','town',
-                  'company','organization','university','publication']).
+    memberchk(NE,
+    %% list of NE taken from https://www.isi.edu/~ulf/amr/lib/ne-types.html
+   ['person', 'family', 'animal', 'language', 'nationality', 'ethnic-group', 'regional-group', 'religious-group', 'political-movement',
+    'organization', 'company', 'government-organization', 'military', 'criminal-organization', 'political-party', 'market-sector',
+    'school', 'university', 'research-institute','team', 'league',
+    'location', 'city', 'city-district', 'county', 'state', 'province', 'territory', 'country', 'local-region', 'country-region', 'world-region', 'continent',
+    'ocean', 'sea', 'lake', 'river', 'gulf', 'bay', 'strait', 'canal',
+    'peninsula', 'mountain', 'volcano', 'valley', 'canyon', 'island', 'desert', 'forest',
+    'moon', 'planet', 'star', 'constellation',
+    'facility', 'airport', 'station', 'port', 'tunnel', 'bridge', 'road', 'railway-line', 'canal' ,
+    'building', 'theater', 'museum', 'palace', 'hotel', 'worship-place', 'sports-facility' ,
+    'market', 'park', 'zoo', 'amusement-park',
+    'event', 'incident', 'natural-disaster', 'earthquake', 'war', 'conference', 'game', 'festival',
+    'product', 'vehicle', 'ship', 'aircraft', 'aircraft-type', 'spaceship', 'car-make',
+    'work-of-art', 'picture', 'music', 'show', 'broadcast-program',
+    'publication', 'book', 'newspaper', 'magazine', 'journal',
+    'natural-object',
+    'award', 'law', 'court-decision', 'treaty', 'music-key', 'musical-note', 'food-dish', 'writing-script', 'variable', 'program',
+    'molecular-physical-entity', 'small-molecule', 'protein', 'protein-family', 'protein-segment', 'amino-acid', 'macro-molecular-complex', 'enzyme', 'nucleic-acid',
+    'pathway', 'gene', 'dna-sequence', 'cell', 'cell-line', 'species', 'taxon', 'disease', 'medical-condition'
+    ]).
 
 % hasRole(Roles,RoleCherché,StructDuRole,autresRoles)
 % hasRole([],R,'not found',[]):-write('hasRole:'),write(R),write(' not found'),nl.
@@ -48,21 +67,24 @@ person(Roles,OutDSyntR):-
     %% add unprocessed roles
     buildRoleEnvOption(Verbalization,'Noun',Roles1,[],[],Env,Options),
     processRest(DSyntR,Env,Options,OutDSyntR).
+%%%%% shortcut : https://www.isi.edu/~ulf/amr/lib/amr-dict.html#shortcuts
 %%% (p2 / person :ARG0-of (h / have-org-role-91 :ARG2 (m / mayor))) ==
 %%%      [person,\p2,[':*:ARG0',['have-org-role-91',h,[':ARG0',p2], [':ARG2',[mayor,m]]] ==>
 %%%  mayor !!!
 person(Roles,OutDSyntR):-
     hasRole(Roles,':*:ARG0',
             ['have-org-role-91',_, 
-                [':ARG0',_],[':ARG2',[Org_Role,_]]],Roles1), % should check the variable!!!
-    noun(Org_Role,DSyntR),
-    %% add unprocessed roles
-    buildRoleEnvOption(Org_Role,'Noun',Roles1,[],[],Env,Options),
-    processRest(DSyntR,Env,Options,OutDSyntR).
+                [':ARG0',_],[':ARG2',AMR]],Roles1), % should check the variable!!!
+    (AMR=[Org_Role,_],noun(Org_Role,DSyntR) -> 
+        buildRoleEnvOption(Org_Role,'Noun',Roles1,[],[],Env,Options);
+        amr2dsr(AMR,_Concept,_POS,DSyntR),Env=[],Options=[]),
+    processRest(DSyntR,Env,Options,OutDSyntR).%% add unprocessed roles
+%%%%% shortcut : https://www.isi.edu/~ulf/amr/lib/amr-dict.html#shortcuts
 %%% (p / person
 %%%          :ARG0-of (h / have-rel-role-91 :ARG1 (i / i):ARG2 (g / grandmother))) ==
 %%%  [person,\p,[':*:ARG0',['have-rel-role-91',h, 
-%%%                           [':ARG0',p], [':ARG1',[i,i]], [':ARG2',[grandmother,g]]]]]],  
+%%%                           [':ARG0',p], [':ARG1',[i,i]], [':ARG2',[grandmother,g]]]]]], ==>
+%%%   (his/her) grandmother !!!  
 person(Roles,OutDSyntR):-
     hasRole(Roles,':*:ARG0',
             ['have-rel-role-91',_, 
@@ -75,16 +97,6 @@ person(Roles,OutDSyntR):-
     processRest(DSyntR1,Env,Options,OutDSyntR).
 %%%% (p / person :name NAME  other roles)) replaced by  q(NAME) other roles
 person(Roles,OutDSyntR):-namedEntity('person',Roles,OutDSyntR).
-% person(Roles,OutDSyntR):-
-%     hasRole(Roles,':name',AMR,Roles1),
-%     amr2dsr(AMR,_Concept,_POS,DSyntR),
-%     %% add unprocessed roles
-%     buildRoleEnvOption('person','Special',Roles1,[],[],Env,Options),
-%     processRest(DSyntR,Env,Options,OutDSyntR).
-% % if no ":name" role, force person as a noun
-% person(Roles,OutDSyntR):-
-%     noun('person',ConceptDSyntR),
-%     processConcept('Noun',['person',_Ivar|Roles],ConceptDSyntR,_ConceptOut,_POSOut,OutDSyntR).
 
 %%%% (p / NamedEntity :name NAME  other roles)) replaced by  q(NAME) other roles
 namedEntity(Entity,Roles,OutDSyntR):-
