@@ -14,6 +14,22 @@ separator('\\').
 separator('(').
 separator(')').
 
+%% check roles
+% hasRole(Roles,RoleCherché,StructDuRole,autresRoles)
+% hasRole([],R,'not found',[]):-write('hasRole:'),write(R),write(' not found'),nl.
+hasRole([[R,AMR]|Rs],R,AMR,Rs):-!.
+hasRole([R1|Rs],R,A,[R1|RS0]):-hasRole(Rs,R,A,RS0).
+
+% check if one of the roles is :ARGi or :OPi
+hasArgOpRole([[R,_AMR]|_]):-isArgOp(R),!.
+hasArgOpRole([_|Rs]):-hasArgOpRole(Rs).
+
+% check id one of the roles is NOT :ARGi or :OPi 
+%% this is different from \+hasOrgOpRole
+hasNonArgOpRole([]):-fail.
+hasNonArgOpRole([[R,_AMR]|_]):- \+isArgOp(R),!.
+hasNonArgOpRole([_|Rs]):-hasNonArgOpRole(Rs).
+
 %%  check if atom is a legal variable name (atom composed of one or two lower case letters 
 %%       optionaly followed by a digit and terminated by 0 or more *
 isLegalVarName(Var):-

@@ -3,6 +3,7 @@
 %%   we more or less follow the Python code, which explain the "ugliness" of this code
 
 specialConcept('person',person).
+specialConcept('number',number).
 specialConcept('government-organization',governmentOrganization).
 specialConcept('have-degree-91',haveDegree91).
 specialConcept('have-polarity-91',havePolarity91).
@@ -34,15 +35,6 @@ specialConcept(NE,namedEntity(NE)):-
     'molecular-physical-entity', 'small-molecule', 'protein', 'protein-family', 'protein-segment', 'amino-acid', 'macro-molecular-complex', 'enzyme', 'nucleic-acid',
     'pathway', 'gene', 'dna-sequence', 'cell', 'cell-line', 'species', 'taxon', 'disease', 'medical-condition'
     ]).
-
-% hasRole(Roles,RoleCherché,StructDuRole,autresRoles)
-% hasRole([],R,'not found',[]):-write('hasRole:'),write(R),write(' not found'),nl.
-hasRole([[R,AMR]|Rs],R,AMR,Rs):-!.
-hasRole([R1|Rs],R,A,[R1|RS0]):-hasRole(Rs,R,A,RS0).
-
-% check if one of the roles is :ARGi or :OPi
-hasArgOpRole([[R,_AMR]|_]):-isArgOp(R),!.
-hasArgOpRole([_|Rs]):-hasArgOpRole(Rs).
 
 changeNPD(S*Option,NewDet,S1*Option):-changeNPD(S,NewDet,S1).
 changeNPD(NP,NewD,NP1):-
@@ -104,11 +96,26 @@ namedEntity(Entity,Roles,OutDSyntR):-
     amr2dsr(AMR,_Concept,_POS,DSyntR),
     %% add unprocessed roles
     buildRoleEnvOption(Entity,'Special',Roles1,[],[],Env,Options),
-    processRest(DSyntR,Env,Options,OutDSyntR).
+    processRest(DSyntR*en("\""),Env,Options,OutDSyntR).
 % if no ":name" role, force Entity as a noun
 namedEntity(Entity,Roles,OutDSyntR):-
-    noun(Entity,ConceptDSyntR),
+    (noun(Entity,ConceptDSyntR); % if noun get the DSyntR
+     atom_string(Entity,EntityS),ConceptDSyntR=('D':D)^('A':A)^np($D/d("the"),A,n(EntityS))), % else create a DSyntR
     processConcept('Noun',[Entity,_Ivar|Roles],ConceptDSyntR,_ConceptOut,_POSOut,OutDSyntR).
+
+%% deal with frequent pattern associated with a number
+%%%% (n / number :quant-of AMR) == [number,\n, [':*:quant',[AMR [':quant',n]] ==>
+%%%%  NP(D("the"),N("number"),PP(P("of"),{AMR}))
+number(Roles,np(d("the"),n("number"),pp(p("of"),OutDSyntR))):-
+    hasRole(Roles,':*:quant',[AMRconcept,AMRvar|AMRroles],Roles1),
+    hasRole(AMRroles,':quant',_,AMRroles1), %% remove :quant n,
+    amr2dsr([AMRconcept,AMRvar|AMRroles1],_Concept,_POS,OutDSyntR0),
+    %% add unprocessed roles
+    buildRoleEnvOption('number','Noun',Roles1,[],[],Env,Options),
+    processRest(OutDSyntR0,Env,[n("p")|Options],OutDSyntR).
+number(Roles,OutDSyntR):-
+    buildRoleEnvOption('number','Noun',Roles,[],[],Env,Options),
+    processRest(np(d("the"),n("number")),Env,[n("p")|Options],OutDSyntR).
 
 %% very special (and frequent) case of government-organization
 % ['government-organization',\g, [':*:ARG0',['govern-01',g2, [':ARG0',g], [':ARG1',Country]
@@ -161,7 +168,7 @@ quantity(Roles0,OutDSyntR):-
      isNP(Unit),changeNPD(Unit,no(Quant),QuantUnit).
  checkQuantUnit(Quant,Unit,ls(Quant,Unit)).
 
- quantityScale(Roles,Roles1,DSyntR,ls(DSyntR,pp(p("on"),d("the"),S,n("scale")))):-
+ quantityScale(Roles,Roles1,DSyntR,ls(DSyntR,pp(p("on"),S,n("scale")))):-
      hasRole(Roles,':scale',AMR,Roles1),!,amr2dsr(AMR,_,_,S).
  quantityScale(Roles,Roles,DSyntR,DSyntR).
 

@@ -67,6 +67,8 @@ op16(C,(':op1':O1)^(':op2':O2)^(':op3':O3)^(':op4':O4)^(':op5':O5)^(':op6':O6)
 :-op16("or",Conj),patch('conjunction','or',Conj).
 :-op16("either",Conj),patch('conjunction','either',Conj).
 conjunction('slash',Conj):-op16("/",Conj).
+conjunction('as-long-as',q("as long as")).
+
 % HACK here for arithmetical operators
 conjunction('sum-of',Arith)    :-op16("and",Arith).
 conjunction('product-of',Arith):-op16("times",Arith).
@@ -111,22 +113,26 @@ adverb('next-to',(':op1':O1)^advp(adv("next"),p("to"),O1)).
 %% in PropBank: hunger-01 :ARG0 corresponds to the person who is hungry (hunger is archaic in this acception)
 %% so we translate with a more colloquial "be hungry [for...]"
 :-patch('verb','hunger-01',(':ARG0':X0)^(':ARG1':X1)^s(X0,vp(v("be"),a("hungry")*t("pp"),X1/pp(p("for"),X1)))).
+%% ARG1 <=> ARG2 because of bad parsing of Propbank
+:-patch('verb','promise-01',(':ARG0':A)^(':ARG1':B)^(':ARG2':C)^s(A,vp(v("promise"),B/pp(p("to"),B)),C)).
+:-patch('verb','shout-01',(':ARG0':A)^(':ARG1':B)^(':ARG2':C)^s(A,vp(v("shout"),B,C/pp(p("at"),C)))).
+:-patch('verb','make-it-14',(':ARG0':A)^s(A,vp(v("make"),pro("me")*g("n")))).
 
 :-delete('verb','war-01').
 :-delete('verb','policy-01').
 :-delete('verb','slew').
 
 %% modality
-:-patch('verb','possible-01',(':ARG1':A)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("possible"),A))).
+:-patch('verb','possible-01',(':ARG0':A0)^(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("possible"),A0,A1))).
 :-patch('verb','obligate-01',(':ARG2':A)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("obligatory"),A))).
-:-patch('verb','permit-01',(':ARG1':A)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("allowed"),A))).
-:-patch('verb','recommend-01',(':ARG1':A)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("recommended")*t("pp"),A))).
-:-patch('verb','likely-01',(':ARG1':A)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("likely"),A))).
+:-patch('verb','permit-01',(':ARG0':A0)^(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("allowed"),A0,A1))).
+:-patch('verb','recommend-01',(':ARG0':A0)^(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("recommended")*t("pp"),A0,A1))).
+:-patch('verb','likely-01',(':ARG0':A0)^(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("likely"),A0,A1))).
 % reifications 
 verb('be-destined-for-91',(':ARG1':A1)^(':ARG2':A2)
                          ^s(A1,vp(v("be"),A2/pp(p("for"),A2)))).
@@ -146,6 +152,8 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 % ====== Adjectives
 :-delete('adjective','near'). % keep only the preposition
 :-delete('adjective','after'). % keep only prep
+:-delete('adjective','regardless').
+% adverb('regardless',adv("regardless")).
 
 % ====== Nouns
 % keep only the adjective
@@ -156,6 +164,9 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('noun','common').
 :-delete('noun','no').
 :-delete('noun','extreme').
+:-delete('noun','sharp').
+:-delete('noun','brief').
+
 %% keep only the verb
 :-delete('noun','like').
 :-delete('noun','desire-01').
@@ -167,7 +178,7 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-patch('noun','name',(':op1':O1)^(':op2':O2)^(':op3':O3)^(':op4':O4)^(':op5':O5)^(':op6':O6)^(':op7':O7)^
                         ls(O1+O2+O3+O4+O5+O6+O7)).
 % add words to the dictionary
-newNouns(['constrictor','media','tsunami']).
+newNouns(['constrictor','anion','media','tsunami']).
 :- forall((newNouns(Ns),member(W,Ns)),
           (atom_string(W,WS),patch('noun',W,('D':D)^('A':A)^np($D/d("the"),A,n(WS))))).
 :- forall(member(W,['sunday','monday','tuesday','wednesday','thursday','friday','saturday']),
@@ -226,11 +237,11 @@ noun('even-when',(':op1':O1)^ls(q("even"),q("when"),O1)).
 noun('fluid-ounce',Ounce):-noun('ounce',Ounce).
 noun('have-mod-91',(':ARG1':A1)^(':ARG2':A2)^(':degree':DEG)^ls(A1,v("be"),DEG,p("from"),A2)).
 noun('have-org-role-91',(':ARG0':A0)^(':ARG2':A2)^(':ARG1':A1)^(':ARG3':A3)^
-                         ls(A0/vp(A0,v("be")),A2,A1/pp(p("in"),A1),A3)).
+                         s(A0/vp(A0,v("be")),A2,A1/pp(p("in"),A1),A3)).
 noun('hyperlink-91',(':ARG3':A3)^A3).
 noun('include-91',(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)
                    ^ls(A2,vp(v("include"),A3/ls(A3,q("of")),A1))).
-noun('infer-01',(':ARG1':A1)^(':ARG2':A2)^s(A1,"so",A2)). % considered as noun 
+noun('infer-01',(':ARG1':A1)^(':ARG2':A2)^s(A2,"so",A1)). % considered as noun 
 noun('instead-of-91',(':ARG1':A1)^(':ARG2':A2)^ls(A1,adv("instead"),p("of"),A2)).
 noun('multi-sentence',(':snt1':S1)^(':snt2':S2)^(':snt3':S3)^(':snt4':S4)
                       ^(':snt5':S5)^(':snt6':S6)
@@ -239,10 +250,11 @@ noun('multi-sentence',(':snt1':S1)^(':snt2':S2)^(':snt3':S3)^(':snt4':S4)
 noun('more-than',(':op1':O1)^ls(q("more"),q("than"),O1)).
 noun('natural-object',Object):-noun('object',Object).
 noun('percentage-entity',(':value':V)^ls(V,q("percent"))).
-noun('phone-number-entity',(':value':V)^ls("tel:",V)).
+noun('phone-number-entity',(':value':V)^ls(q("tel:"),V)).
 noun('rate-entity-91',(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)^(':ARG4':A4)
                       ^ls(A1,A2/ls(p("per"),A2),A3/ls(q("every"),A3),A4)).
 noun('ratio-of',(':op1':O1)^(':op2':O2)^ls(q("a ratio of"),O1,O2/pp(p("to"),O2))).
+noun('regardless-91',(':ARG1':A1)^(':ARG2':A2)^ls(A1,A2/sp(c("regardless"),A2))).
 noun('relative-position',(':op1':O1)^(':direction':D)^(':quant':Q)^ls(Q,D/ls(p("to"),D),O1)).
 noun('request-confirmation-91',q("is that right ?")).
 noun('score-entity',(':op1':O1)^(':op2':O2)^ls(O1,q("to"),O2)).
@@ -253,7 +265,11 @@ noun('street-address-91',(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)^(':ARG4':A4)^(':
                          ^ls(A1,A2,A3,A4,A5,A6)). 
 noun('string-entity',(':value':V)^(':mod':M)^ls(q(V)*en("\""),M)).
 noun('this',d("this")).
-noun('truth-value',(':polarity-of':A)^ls(q("whether"),A)).
+noun('truth-value',(':polarity-of':A)^sp(c("whether"),A)).
 noun('url-entity',(':value':V)^(V*tag("a",{"href":("http://"+V)}))).
 noun('value-interval',(':op1':D1)^(':op2':D2)^ls(D1/pp(p("from"),D1),D2/pp(p("to"),D2))).
+
+% new verbalization
+verbalization('thing',':*:ARG1','export-01','export').
+verbalization('thing',':*:ARG1','import-01','import').
 

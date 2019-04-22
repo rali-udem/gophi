@@ -20,13 +20,14 @@ amr2dsr(X,"*unrecognized*",'UnrecognizedPOS',"*unrecognized*"):-  %% should neve
 
 processConcept('Special',[Concept,_Ivar|Roles],ConceptDSR,Concept,'Special',OutDSyntR):-
     call(ConceptDSR,Roles,OutDSyntR).
-processConcept('Verb',[Concept,Ivar|Roles],_ConceptDSyntR,ConceptV,POSV,OutDSyntR):-
+processConcept(_,[Concept,Ivar|Roles],_ConceptDSyntR,ConceptV,POSV,OutDSyntR):-
     hasVerbalization([Concept,Ivar|Roles],AMRverb),
     amr2dsr(AMRverb,ConceptV,POSV,OutDSyntR),!.
 processConcept('Verb',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Verb',OutDSyntR):-
-    buildRoleEnvOption(Concept,'Verb',Roles,[],[],Env,Options),
-    checkImperative(Roles,Env,EnvOut0,Options,Options1), % HACK for imperative
-    processRest(ConceptDSyntR,EnvOut0,Options1,OutDSyntR).
+    checkPassive(Roles,ConceptDSyntR,Options0),
+    buildRoleEnvOption(Concept,'Verb',Roles,[],Options0,Env,Options1),
+    checkImperative(Roles,Env,EnvOut0,Options1,Options2), % HACK for imperative
+    processRest(ConceptDSyntR,EnvOut0,Options2,OutDSyntR).
 processConcept('Adjective',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Adjective',OutDSyntR):-
     buildRoleEnvOption(Concept,'Adjective',Roles,[],[],Env,Options),
     checkAdjectiveArgs(Env,ConceptDSyntR,AdjStruct),% adjective with :ARG0 or :ARG1
@@ -57,9 +58,17 @@ findAdjStruct(Keys,DSyntR,(':ARG1':A1)^(':ARG2':A2)^s(A1,vp(v("be"),DSyntR,A2/pp
 %% HACK for imperative for which JSreal remove the subject
 %%      do this only when :ARG0 [you,_] you appears...
 checkImperative(Roles,EnvIn,EnvOut,Options,[t("ip")|Options]):-
-    hasRole(Roles,':mode','imperative',_),hasRole(Roles,':ARG0',['you',_],_),!,
-    select(':&':q("let"),EnvIn,EnvOut).% remove q("let") added in processRole(':mode',..)
+    hasRole(Roles,':mode','imperative',_),hasRole(Roles,':ARG0',['you',_],_),
+    select(':&':q("let"),EnvIn,EnvOut),!.% remove q("let") added in processRole(':mode',..)
 checkImperative(_,Env,Env,Options,Options). % keep as is
+
+%% HACK for passive : only for verbs
+%% check if conceptDSR has an :ARG0 and the actual roles does not have :ARG0 but has :ARG1
+%% in that case, generate a passive sentence otherwise do nothing
+checkPassive(Roles,(':ARG0':_)^_,[typ({"pas":'true'})]):-
+    \+hasRole(Roles,':ARG0',_,_),hasRole(Roles,':ARG1',_,_).
+checkPassive(_,_,[]).
+
 
 %%% verbalisation processing
 hasVerbalization([Concept,V],[NounVerb,V]):- % verbalisation simple (sans rôles)
@@ -81,9 +90,9 @@ hasVerbalization([Concept,V|Roles],[Verb,V|RolesOut]):-
      Verb=ConceptC).
 
 checkVerbArgs(Roles,Roles):-hasRole(Roles,':polarity',_,_),!,fail. % do not try to verbalize negative verbs
-checkVerbArgs(Roles,Roles):- \+hasArgOpRole(Roles),!. %% OK when no :ARGi or :OPi appear
-checkVerbArgs(Roles,RolesOut):-    %% OK if :ARG1 is a pronoun that refers to the same verb as the :ARG0 of the upper model
-    hasRole(Roles,':ARG1',Var,RolesOut),atom(Var),
+checkVerbArgs(Roles,Roles):- hasNonArgOpRole(Roles),!, fail. %% do not verbalize when a non :ARGi nor :OPi appear
+checkVerbArgs([[':ARG1',Var]|RolesOut],RolesOut):-    %% OK if :ARG1 is a pronoun that refers to the same verb as the :ARG0 of the upper model
+    atom(Var),
     % trace,
     getPaths(Var,VarPath,ConceptPath),
     ConceptPath=[_,':ARG0',Verb],
@@ -98,10 +107,12 @@ matchSubRole([_Verb,_VV|Roles],InvRole,V,RestRoles1):-
  sameVar(V,V).
  sameVar(\V,V).
  sameVar(V,\V).
+ addMod(_,[],[]).
  addMod(':ARG0',RestRoles,[[':poss',Val1]|RestRoles1]):-
      hasRole(RestRoles,':ARG1',Val1,RestRoles1).
  addMod(':ARG1',RestRoles,[[':poss',Val1]|RestRoles1]):-
      hasRole(RestRoles,':ARG0',Val1,RestRoles1).
+
 
 %%% Environment management
 applyEnv((Key:Var)^Expr0,Env0,Env2,Expr2):-

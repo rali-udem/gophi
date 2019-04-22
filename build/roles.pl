@@ -78,8 +78,9 @@ processRole(':beneficiary',_OuterConcept,_OuterPOS,AMR,
 processRole(':cause',_OuterConcept,_OuterPOS,['amr-unknown',_],
             Env,Options,Env,[typ({"int":"why"})|Options]).
 processRole(':cause',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':ls(q("because"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':ls(Conj,DSyntR)|Env],Options):-
+    amr2dsr(AMR,_Concept,POS,DSyntR),
+    (memberchk(POS,['Special','Noun'])->Conj=q("because of");Conj=q("because")).
 
 processRole(':compared-to',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':ls(q("compared to"),DSyntR)|Env],Options):-
@@ -113,8 +114,8 @@ processRole(':degree',_OuterConcept,OuterPOS,[DEG,_],
      memberchk(DEG,['too','so','very','all']),!,atom_string(DEG,DEGs).
  processDegree(DEG,'Adjective',Env,Options,[':&':adv(DEGs)|Env],Options):-
      adverb(DEG,_Adv),!,atom_string(DEG,DEGs).
- processDegree(DEG,'Adjective',Env,Options,[':&':adv(Advs)|Env],Options):-
-     adjective(DEG,_),!,adj2adv(DEG,Adv),atom_string(Adv,Advs).
+ processDegree(DEG,'Adjective',Env,Options,[':&':Adv|Env],Options):-
+     adjective(DEG,_),!,adj2adv(a(DEG),Adv).
  processDegree(DEG,_,Env,Options,[':&':q(DEGs)|Env],Options):-
      cleanConcept(DEG,DEGs).
 
@@ -183,16 +184,19 @@ processRole(':manner',_OuterConcept,_OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,Options
  processManner(DSyntR,_,Env,Options,[':*':ls("by",DSyntR)|Env],Options).
 
 processRole(':medium',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("via"),DSyntR)|Env],Options):-
+            Env,Options,[':*':pp(p("in"),DSyntR)|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
 
 processRole(':mod',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):-
     OuterPOS='Noun',processSimpleModNoun(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
     processSimpleModOther(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
-    (amr2dsr(AMR,_Concept,_POS,DSyntR),
-     relative(OuterConcept,DSyntR,Relative),
-         EnvOut=[':*':Relative|EnvIn],OptionsOut=OptionsIn).
+    (amr2dsr(AMR,_Concept,POS,DSyntR),
+     (memberchk(POS,['Noun','Special'])->
+         EnvOut=[':*':pp(p("of"),DSyntR)],OptionsOut=OptionsIn;
+         relative(OuterConcept,DSyntR,Relative),
+         EnvOut=[':*':Relative|EnvIn],OptionsOut=OptionsIn)
+    ).
  %% pour les cas "simples" on modifie l'environnement du OuterConcept
  processSimpleModNoun(['amr-unknown',_],Env,Options,['D':"what"|Env],[a("?")|Options]).
  processSimpleModNoun(['all',_],Env,Options,[':&':q("all")|Env],[n("p")|Options]).
@@ -227,7 +231,7 @@ processRole(':mod',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):
 processRole(':mode',_OuterConcept,_OuterPOS,'expressive',
             Env,Options,Env,[a("!")|Options]).
 processRole(':mode',_OuterConcept,_OuterPOS,'imperative',
-            Env,Options,[':&':q("let")|Env],[t("b")|Options]).
+            Env,Options,Env,[t("ip")|Options]).
 processRole(':mode',_OuterConcept,_OuterPOS,'interrogative',
             Env,Options,Env,[typ({"int":"yon"})|Options]).
 
@@ -292,6 +296,8 @@ processRole(':purpose',_OuterConcept,_OuterPOS,AMR,
 processRole(':quant',_OuterConcept,_OuterPOS,AMR,
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
     processSimpleQuant(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
+    processFuzzyQuant1(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
+    processFuzzyQuant2(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
     (amr2dsr(AMR,_Concept,_POS,DSyntR),
      processQuant(DSyntR,EnvIn,OptionsIn,EnvOut,OptionsOut)).
  processSimpleQuant(['most',_],Env,Options,[':&':q("most of")|Env],[n("p")|Options]).
@@ -306,6 +312,27 @@ processRole(':quant',_OuterConcept,_OuterPOS,AMR,
  processSimpleQuant(['one',_],Env,Options,[':&':q("one")|Env],Options).
  processSimpleQuant(['entire',_],Env,Options,[':&':q("entire")|Env],Options).
  processSimpleQuant(['lot',_],Env,Options,[':*':q("a lot")|Env],Options).
+ processSimpleQuant(['sack',_],Env,Options,[':&':q("a sack of")|Env],Options).
+ %% fuzzy operators from https://www.isi.edu/~ulf/amr/lib/popup/quantities.html#non-exact-quantities
+ %% role :op1
+ % about, above, almost, approximately, around, at-least, at-most, below, close-to, couple, few, less-than, lot, many, more-than, multiple, nearly, no-more-than, over, roughly, several, some, under, up-to
+ % number is dealt separately
+ fuzzyQuant1(FQ,DSyntR,ls(FQS,DSyntR)):-
+     memberchk(FQ,['about', 'above', 'almost', 'approximately', 'around', 'at-least', 'at-most', 'below', 'close-to', 
+                   'couple', 'few', 'less-than', 'lot', 'many', 'more-than', 'nearly', 'no-more-than', 
+                   'over', 'roughly', 'several', 'some', 'under', 'up-to']),
+     re_replace('-'/g,' ',FQ,FQS).
+ fuzzyQuant1('multiple',DSyntR,np(n("multiple"),DSyntR,q("of"))).
+ processFuzzyQuant1([FQ,_,[':op1',Op1Amr]],Env,Options,['D':DetPat|Env],[n("p")|Options]):-
+     fuzzyQuant1(FQ,DSyntR,DetPat),
+     amr2dsr(Op1Amr,_Concept,_POS,DSyntR).
+ %% roles :op1 and :op2
+ % between
+ fuzzyQuant2('between',DSyntR1,DSyntR2,ls(p("between"),DSyntR1,c("and"),DSyntR2)).
+ processFuzzyQuant2([FQ,_,[':op1',Op1Amr],[':op2',Op2Amr]],Env,Options,
+                    ['D':DetPat|Env],[n("p")|Options]):-
+     fuzzyQuant2(FQ,DSyntR1,DSyntR2,DetPat),
+     amr2dsr(Op1Amr,_Concept1,_POS1,DSyntR1),amr2dsr(Op2Amr,_Concept2,_POS2,DSyntR2).
  processQuant("*unknown*",Env,Options,[':&':q("much")|Env],[typ({"int":"how"})|Options]):-!.
  processQuant(q(NumA),Env,Options,['D':no(Num)|Env],Options):-
         atom_number(NumA,Num),!.
@@ -324,11 +351,13 @@ processRole(':time',_OuterConcept,_OuterPOS,['date-entity',V|Roles], % cas très
             amr2dsr(['date-entity',V|Roles],_Concept,_POS,DSyntR).
 processRole(':time',_OuterConcept,_OuterPOS,AMR,
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR),
-    processTime(DSyntR,EnvIn,OptionsIn,EnvOut,OptionsOut).
- processTime("*unknown*",Env,Options,Env,[typ({"int":"whn"})|Options]).
- processTime(a("former"),Env,Options,[':&':adv("formerly")|Env],Options).
- processTime(DSyntR,Env,Options,[':*':DSyntR|Env],Options).
+    amr2dsr(AMR,_Concept,POS,DSyntR),
+    processTime(DSyntR,POS,EnvIn,OptionsIn,EnvOut,OptionsOut).
+ processTime("*unknown*",_,Env,Options,Env,[typ({"int":"whn"})|Options]).
+ processTime(a("former"),_,Env,Options,[':&':adv("formerly")|Env],Options).
+ processTime(q("ex"),_,Env,Options,[':&':q("ex")|Env],Options).
+ processTime(DSyntR,'Verb',Env,Options,[':*':sp(c("when"),DSyntR)|Env],Options).
+ processTime(DSyntR,_,Env,Options,[':*':DSyntR|Env],Options).
 
 processRole(':topic',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':pp(p("about"),DSyntR)|Env],Options):-
@@ -339,6 +368,14 @@ processRole(':wiki',_OuterConcept,_OuterPOS,'-', %ignore when no value
 processRole(':wiki',_OuterConcept,_OuterPOS,AMR,
             Env,Options,Env,[tag("a",{"href":("https://en.wikipedia.org/wiki/"+Value)})|Options]):-
     amr2dsr(AMR,_Concept,_POS,Value).
+
+processRole(Role,_OuterConcept,_OuterPOS,AMR,Env,Options,[':*':sp(c(ConjC),DSyntR)|Env],Options):-
+    atom_concat(':conj-',Conj,Role),cleanConcept(Conj,ConjC),
+    amr2dsr(AMR,_,_,DSyntR).
+
+processRole(Role,_OuterConcept,_OuterPOS,AMR,Env,Options,[':*':pp(p(PrepC),DSyntR)|Env],Options):-
+    atom_concat(':prep-',Prep,Role),cleanConcept(Prep,PrepC),
+    amr2dsr(AMR,_,_,DSyntR).
 
 %%%%%%% unknown role : add it to the environment
 processRole(Role,_OuterConcept,_OuterPOS,AMR,Env,Options,[Role:DSyntR|Env],Options):-
