@@ -19,6 +19,15 @@ adj2adv(Ls,Ls1):- % deal with embedded adjective in a ls
     Ls=..[ls|Args],maplist(adj2adv,Args,Args1),Ls1=..[ls|Args1].
 adj2adv(Adj0,Adj0).
 
+%% search in morphVerb without distinguishing NounVerb from ActorVerb 
+getMorphVerb(Concept,Nominalization):-
+    (cleanConcept(Concept,ConceptS),atom_string(ConceptC,ConceptS)),
+    ((((morphVerb(ConceptC,Nominalization,_);
+      morphVerb(ConceptC,_,Nominalization)),Nominalization\=null),
+     % HACK; fail to prevent an infinite loop when the nominalization is exactly as the initial concept...
+     Nominalization\=ConceptC);
+     (noun(ConceptC,_),Nominalization=ConceptC)). 
+
 % remove dictionary entry
 delete(POS,Key):-
     Rem=..[POS,Key,_],

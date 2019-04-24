@@ -96,11 +96,11 @@ namedEntity(Entity,Roles,OutDSyntR):-
     amr2dsr(AMR,_Concept,_POS,DSyntR),
     %% add unprocessed roles
     buildRoleEnvOption(Entity,'Special',Roles1,[],[],Env,Options),
-    processRest(DSyntR*en("\""),Env,Options,OutDSyntR).
+    processRest(DSyntR,Env,Options,OutDSyntR).
 % if no ":name" role, force Entity as a noun
 namedEntity(Entity,Roles,OutDSyntR):-
     (noun(Entity,ConceptDSyntR); % if noun get the DSyntR
-     atom_string(Entity,EntityS),ConceptDSyntR=('D':D)^('A':A)^np($D/d("the"),A,n(EntityS))), % else create a DSyntR
+     atom_string(Entity,EntityS),ConceptDSyntR=('D':D)^('A':A)^np($D/d("a"),A,n(EntityS))), % else create a DSyntR
     processConcept('Noun',[Entity,_Ivar|Roles],ConceptDSyntR,_ConceptOut,_POSOut,OutDSyntR).
 
 %% deal with frequent pattern associated with a number

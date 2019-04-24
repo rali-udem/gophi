@@ -24,11 +24,11 @@ hasRole([R1|Rs],R,A,[R1|RS0]):-hasRole(Rs,R,A,RS0).
 hasArgOpRole([[R,_AMR]|_]):-isArgOp(R),!.
 hasArgOpRole([_|Rs]):-hasArgOpRole(Rs).
 
-% check id one of the roles is NOT :ARGi or :OPi 
-%% this is different from \+hasOrgOpRole
-hasNonArgOpRole([]):-fail.
-hasNonArgOpRole([[R,_AMR]|_]):- \+isArgOp(R),!.
-hasNonArgOpRole([_|Rs]):-hasNonArgOpRole(Rs).
+% % check id one of the roles is NOT :ARGi or :OPi
+% %% this is different from \+hasOrgOpRole
+% hasNonArgOpRole([]).
+% hasNonArgOpRole([[R,_AMR]|_]):- \+isArgOp(R),!.
+% hasNonArgOpRole([_|Rs]):-hasNonArgOpRole(Rs).
 
 %%  check if atom is a legal variable name (atom composed of one or two lower case letters 
 %%       optionaly followed by a digit and terminated by 0 or more *

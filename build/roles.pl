@@ -103,20 +103,20 @@ processRole(':consist-of',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':pp(p("of"),DSyntR)|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
-processRole(':degree',_OuterConcept,OuterPOS,[DEG,_],
+processRole(':degree',_OuterConcept,_OuterPOS,[DEG,_],
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
     % do not evaluate AMR...
-    processDegree(DEG,OuterPOS,EnvIn,OptionsIn,EnvOut,OptionsOut).
+    processDegree(DEG,EnvIn,OptionsIn,EnvOut,OptionsOut).
  processDegree('amr-unknown',_,Env,Options,[':&':adv("how")|Env],Options):-!.
- processDegree('more',_,Env,Options,Env,[f("co")|Options]):-!.
- processDegree('most',_,Env,Options,Env,[f("su")|Options]):-!.
- processDegree(DEG,_,Env,Options,[':&':adv(DEGs)|Env],Options):-
+ processDegree('more',Env,Options,Env,[f("co")|Options]):-!.
+ processDegree('most',Env,Options,Env,[f("su")|Options]):-!.
+ processDegree(DEG,Env,Options,[':&':adv(DEGs)|Env],Options):-
      memberchk(DEG,['too','so','very','all']),!,atom_string(DEG,DEGs).
- processDegree(DEG,'Adjective',Env,Options,[':&':adv(DEGs)|Env],Options):-
+ processDegree(DEG,Env,Options,[':*':adv(DEGs)|Env],Options):-
      adverb(DEG,_Adv),!,atom_string(DEG,DEGs).
- processDegree(DEG,'Adjective',Env,Options,[':&':Adv|Env],Options):-
+ processDegree(DEG,Env,Options,[':*':Adv|Env],Options):-
      adjective(DEG,_),!,adj2adv(a(DEG),Adv).
- processDegree(DEG,_,Env,Options,[':&':q(DEGs)|Env],Options):-
+ processDegree(DEG,Env,Options,[':*':q(DEGs)|Env],Options):-
      cleanConcept(DEG,DEGs).
 
 processRole(':destination',_OuterConcept,_OuterPOS,AMR,
@@ -238,7 +238,7 @@ processRole(':mode',_OuterConcept,_OuterPOS,'interrogative',
 processRole(':name',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):-
     processRole(':named',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut).
 processRole(':named',_OuterConcept,_OuterPOS,AMR,Env,Options,
-            [':*':DSyntR*en("\"")|Env],Options):-
+            [':*':DSyntR|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
 processRole(':ord',_OuterConcept,_OuterPOS,['ordinal-entity',_|Roles],Env,Options,[':*':DSyntR|Env],Options):-

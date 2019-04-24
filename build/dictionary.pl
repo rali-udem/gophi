@@ -123,16 +123,16 @@ adverb('next-to',(':op1':O1)^advp(adv("next"),p("to"),O1)).
 :-delete('verb','slew').
 
 %% modality
-:-patch('verb','possible-01',(':ARG0':A0)^(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("possible"),A0,A1))).
+:-patch('verb','possible-01',(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("possible"),A1))).
 :-patch('verb','obligate-01',(':ARG2':A)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("obligatory"),A))).
-:-patch('verb','permit-01',(':ARG0':A0)^(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("allowed"),A0,A1))).
-:-patch('verb','recommend-01',(':ARG0':A0)^(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("recommended")*t("pp"),A0,A1))).
-:-patch('verb','likely-01',(':ARG0':A0)^(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("likely"),A0,A1))).
+:-patch('verb','permit-01',(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("allowed"),A1))).
+:-patch('verb','recommend-01',(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("recommended")*t("pp"),A1))).
+:-patch('verb','likely-01',(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("likely"),A1))).
 % reifications 
 verb('be-destined-for-91',(':ARG1':A1)^(':ARG2':A2)
                          ^s(A1,vp(v("be"),A2/pp(p("for"),A2)))).
@@ -171,6 +171,12 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('noun','like').
 :-delete('noun','desire-01').
 :-delete('noun','desire').
+
+%% keep only the adverb
+:-delete('noun','yesterday').
+:-delete('noun','today').
+:-delete('noun','tomorrow').
+
 % redefined later
 :-delete('noun','score-entity').
 :-delete('noun','contrast-01').
@@ -237,7 +243,7 @@ noun('even-when',(':op1':O1)^ls(q("even"),q("when"),O1)).
 noun('fluid-ounce',Ounce):-noun('ounce',Ounce).
 noun('have-mod-91',(':ARG1':A1)^(':ARG2':A2)^(':degree':DEG)^ls(A1,v("be"),DEG,p("from"),A2)).
 noun('have-org-role-91',(':ARG0':A0)^(':ARG2':A2)^(':ARG1':A1)^(':ARG3':A3)^
-                         s(A0/vp(A0,v("be")),A2,A1/pp(p("in"),A1),A3)).
+                         s(A0,v("be"),A2,A1/pp(p("in"),A1),A3)).
 noun('hyperlink-91',(':ARG3':A3)^A3).
 noun('include-91',(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)
                    ^ls(A2,vp(v("include"),A3/ls(A3,q("of")),A1))).

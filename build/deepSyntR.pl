@@ -21,7 +21,7 @@ amr2dsr(X,"*unrecognized*",'UnrecognizedPOS',"*unrecognized*"):-  %% should neve
 processConcept('Special',[Concept,_Ivar|Roles],ConceptDSR,Concept,'Special',OutDSyntR):-
     call(ConceptDSR,Roles,OutDSyntR).
 processConcept(_,[Concept,Ivar|Roles],_ConceptDSyntR,ConceptV,POSV,OutDSyntR):-
-    hasVerbalization([Concept,Ivar|Roles],AMRverb),
+    getNominalization([Concept,Ivar|Roles],AMRverb),
     amr2dsr(AMRverb,ConceptV,POSV,OutDSyntR),!.
 processConcept('Verb',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Verb',OutDSyntR):-
     checkPassive(Roles,ConceptDSyntR,Options0),
@@ -69,34 +69,53 @@ checkPassive(Roles,(':ARG0':_)^_,[typ({"pas":'true'})]):-
     \+hasRole(Roles,':ARG0',_,_),hasRole(Roles,':ARG1',_,_).
 checkPassive(_,_,[]).
 
-
-%%% verbalisation processing
-hasVerbalization([Concept,V],[NounVerb,V]):- % verbalisation simple (sans rôles)
+%%% find nominalization if possible, fail otherwise
+getNominalization([Concept,V],[NounVerb,V]):- % simple nominalization  (wihtout roles)
     verbalization(Concept,NounVerb),!.
-hasVerbalization([Concept,V|Roles],AMR):- % verbalisation complexe
+getNominalization([Concept,V|Roles],AMR):- % complex verbalization
     verbalization(Concept,Role,Arg,NounVerb),
     hasRole(Roles,Role,[Arg|SubRole],RestRoles),
     matchSubRole([Arg|SubRole],Role,V,MatchedSubRoles),!,
     append([NounVerb,V|MatchedSubRoles],RestRoles,AMR).
-hasVerbalization([Concept,V|Roles],[Verb,V|RolesOut]):-
-    checkVerbArgs(Roles,RolesOut),
-    % \+hasArgOpRole(Roles), %% do not verbalize when :ARGi or :OPi appear
-    %% look into morphVerb... but without possible acception number
-    cleanConcept(Concept,ConceptS),atom_string(ConceptC,ConceptS),
-    (((morphVerb(ConceptC,Verb,_);
-       morphVerb(ConceptC,_,Verb)),Verb\=null);
-     noun(ConceptC,_), 
-     Concept\=ConceptC, % HACK to prevent an infinite loop when the nominalization is exactly as the verb...
-     Verb=ConceptC).
+getNominalization([Concept,V|Roles],[Nominalization,V|RolesOut]):-
+    verb(Concept,_),getMorphVerb(Concept,Nominalization), %% concept is a verb with a nominalization 
+    \+hasRole(Roles,':polarity',_,_),       %% fail if :polarity role is present
+    (hasRole(Roles,':ARG1',Var,RolesOut )-> %% if :ARG1 is present
+        \+hasArgOpRole(RolesOut),           %% fail if any :ARGi or :opi is present
+        %% OK if :ARG1 is a pronoun that refers to the :ARG0 of the verb of the upper level
+        atom(Var),getPaths(Var,VarPath,ConceptPath),
+        ConceptPath=[_,':ARG0',Verb],append([':ARG1'],Path,VarPath),append(_P,[Verb],Path);
+    \+hasArgOpRole(Roles), %% if no :ARG1 is present, fail if any :ARGi or :opi is present
+    RolesOut=Roles
+    ).
+    
+%%% verbalisation processing
+% hasVerbalization([Concept,V],[NounVerb,V]):- % verbalisation simple (sans rôles)
+%     verbalization(Concept,NounVerb),!.
+% hasVerbalization([Concept,V|Roles],AMR):- % verbalisation complexe
+%     verbalization(Concept,Role,Arg,NounVerb),
+%     hasRole(Roles,Role,[Arg|SubRole],RestRoles),
+%     matchSubRole([Arg|SubRole],Role,V,MatchedSubRoles),!,
+%     append([NounVerb,V|MatchedSubRoles],RestRoles,AMR).
+% hasVerbalization([Concept,V|Roles],[Verb,V|RolesOut]):-
+%     checkVerbArgs(Roles,RolesOut),
+%     %% look into morphVerb... but without possible acception number
+%     cleanConcept(Concept,ConceptS),atom_string(ConceptC,ConceptS),
+%     (((morphVerb(ConceptC,Verb,_);
+%        morphVerb(ConceptC,_,Verb)),Verb\=null);
+%      noun(ConceptC,_),
+%      Concept\=ConceptC, % HACK to prevent an infinite loop when the nominalization is exactly as the verb...
+%      Verb=ConceptC).
 
-checkVerbArgs(Roles,Roles):-hasRole(Roles,':polarity',_,_),!,fail. % do not try to verbalize negative verbs
-checkVerbArgs(Roles,Roles):- hasNonArgOpRole(Roles),!, fail. %% do not verbalize when a non :ARGi nor :OPi appear
-checkVerbArgs([[':ARG1',Var]|RolesOut],RolesOut):-    %% OK if :ARG1 is a pronoun that refers to the same verb as the :ARG0 of the upper model
-    atom(Var),
-    % trace,
-    getPaths(Var,VarPath,ConceptPath),
-    ConceptPath=[_,':ARG0',Verb],
-    append([':ARG1'],Path,VarPath),append(_P,[Verb],Path).
+% checkVerbArgs(Roles,Roles):-hasRole(Roles,':polarity',_,_),!,fail. % do not try to verbalize negative verbs
+% % checkVerbArgs(Roles,Roles):- hasNonArgOpRole(Roles),!, fail. %% do not verbalize when a non :ARGi nor :OPi appear
+% checkVerbArgs([[':ARG1',Var]|RolesOut],RolesOut):-    %% OK if :ARG1 is a pronoun that refers the :ARG0 of the verb of the upper level
+%     atom(Var),
+%     getPaths(Var,VarPath,ConceptPath),
+%     ConceptPath=[_,':ARG0',Verb],
+%     append([':ARG1'],Path,VarPath),append(_P,[Verb],Path),!.
+% checkVerbArgs(Roles,Roles):-hasArgOpRole(Roles),!,fail. %% do not verbalize when a :ARGi nor :OPi appear
+% checkVerbArgs(Roles,Roles).
 
 %%% complex verbalization ...
 matchSubRole([_Verb,_VV|Roles],InvRole,V,RestRoles1):-
