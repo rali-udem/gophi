@@ -84,17 +84,21 @@ adverb('there',adv("there")).
 adverb('et-cetera',q("etc")).
 adverb('at-least',ls(p("at"),adv("least"))).
 adverb('next-to',(':op1':O1)^advp(adv("next"),p("to"),O1)).
+adverb('kind-of',q('kind of')).
+
 :-delete('adverb','between').
 :-delete('adverb','near').
 :-delete('adverb','this').
 :-delete('adverb','that').
 :-delete('adverb','after'). % keep only prep
+:-patch('adverb','away',(':op1':X)^advp(adv("away"),p("from"),X)).
 
 % ====== Prepositions
 :-patch('preposition','after',(':op1':X)^pp(p("after"),X)).
 :-patch('preposition','near',(':op1':X)^pp(p("near"),X)).
 :-patch('preposition','up-to',(':op1':X)^pp(p("up"),p("to"),X)).
 :-patch('preposition','between',(':op1':X)^(':op2':Y)^pp(p("between"),X,c("and"),Y)).
+:-delete('preposition','away').
 
 % ====== Verbs
 :-delete('verb','contrast-01'). % add as noun
@@ -107,14 +111,28 @@ adverb('next-to',(':op1':O1)^advp(adv("next"),p("to"),O1)).
 :-patch('verb','give-01',(':ARG0':A)^(':ARG1':B)^(':ARG2':C)^
                          s(A,vp(v("give"),B,C/pp(p("to"),C)))).
 :-patch('verb','know-01',(':ARG0':X0)^(':ARG1':X1)^(':ARG2':X2)^s(X0,vp(v("know"),X1,X2))). % was v("idk")!
+
 %% in PropBank : bear-02 :ARG0 should be the "bearer" (e.g. the mother) and :ARG1 the "bearee" 
 %% but in AMR, :ARG1 is used as the person who is born... without :ARG0
 :-patch('verb','bear-02',(':ARG0':X0)^(':ARG1':X1)^s(X1,vp(v("be"),v("born")*t("pp"),X0/pp(p("to"),X0)))).
+
 %% in PropBank: hunger-01 :ARG0 corresponds to the person who is hungry (hunger is archaic in this acception)
 %% so we translate with a more colloquial "be hungry [for...]"
 :-patch('verb','hunger-01',(':ARG0':X0)^(':ARG1':X1)^s(X0,vp(v("be"),a("hungry")*t("pp"),X1/pp(p("for"),X1)))).
+
+%% correction of prepositions...
+%  ARG0:buyer / ARG1:thing bought / ARG2:seller / ARG3:price paid / ARG4:benefactive [buy.xml]
+:-patch('verb','buy-01',(':ARG0':X0)^(':ARG1':X1)^(':ARG2':X2)^(':ARG3':X3)^(':ARG4':X4)^
+                s(X0,vp(v("buy"),X1,X2/pp(p("from"),X2),X3/pp(p("at"),X3),X4/pp(p("for"),X4)))).
+%  ARG0:assessor of not failing / ARG1:thing failing / ARG2:task / ARG3:benefactive [fail.xml]
+verb('fail-01',(':ARG0':X0)^(':ARG1':X1)^(':ARG2':X2)^(':ARG3':X3)^s(X0,X1,vp(v("fail"),X2/pp(p("to"),X2),X3/pp(p("on"),X3)))).
+
 %% ARG1 <=> ARG2 because of bad parsing of Propbank
 :-patch('verb','promise-01',(':ARG0':A)^(':ARG1':B)^(':ARG2':C)^s(A,vp(v("promise"),B/pp(p("to"),B)),C)).
+%  ARG0:causer of sinking / ARG1:thing sinking / ARG2:EXT / ARG3:start point / ARG4:end point, destination / ARG5:instrument [sink.xml]
+:-patch('verb','sink-01',(':ARG0':X0)^(':ARG1':X1)^(':ARG2':X2)^(':ARG3':X3)^(':ARG4':X4)^(':ARG5':X5)^
+                 s(X0,X1,vp(v("sink"),X2,X3/pp(p("from"),X3),X4/pp(p("to"),X4),X5/pp(p("with"),X5)))).
+
 :-patch('verb','shout-01',(':ARG0':A)^(':ARG1':B)^(':ARG2':C)^s(A,vp(v("shout"),B,C/pp(p("at"),C)))).
 :-patch('verb','make-it-14',(':ARG0':A)^s(A,vp(v("make"),pro("me")*g("n")))).
 
@@ -122,15 +140,15 @@ adverb('next-to',(':op1':O1)^advp(adv("next"),p("to"),O1)).
 :-delete('verb','policy-01').
 :-delete('verb','slew').
 
-%% modality
+%% modality now dealt as special concept, but this keep in case the special concept does not apply
 :-patch('verb','possible-01',(':ARG1':A1)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("possible"),A1))).
 :-patch('verb','obligate-01',(':ARG2':A)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("obligatory"),A))).
 :-patch('verb','permit-01',(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("allowed"),A1))).
-:-patch('verb','recommend-01',(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),a("recommended")*t("pp"),A1))).
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),v("allow")*t("pp"),A1))).
+:-patch('verb','recommend-01',(':ARG0':A0)^(':ARG1':A1)^
+                s(pro("I")*pe(3)*g("n"),vp(v("be"),v("recommend")*t("pp"),A0/pp(p("by"),A0),A1))).
 :-patch('verb','likely-01',(':ARG1':A1)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("likely"),A1))).
 % reifications 
@@ -144,8 +162,9 @@ verb('be-temporally-at-91',(':ARG1':A1)^(':ARG2':A2)
                          ^s(A1,vp(v("be"),A2/pp(p("on"),A2)))).
 verb('be-located-at-91',(':ARG1':A1)^(':ARG2':A2)^(':time':T)
                          ^s(A1,vp(v("be"),A2/pp(p("in"),A2),T))).
-verb('have-concession-91',(':ARG1':A1)^(':ARG2':A2)
-                         ^s(A1,vp(v("be"),A2/pp(p("despite"),A2)))).
+% verb('have-concession-91',(':ARG1':A1)^(':ARG2':A2) %% seems always used without args...
+%                          ^s(A1,vp(v("be"),A2/pp(p("despite"),A2)))).
+verb('have-concession-91',q("in spite of that")).
 verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
                          ^s(A1,vp(v("be"),A2/cp(c("if"),A2)))).
 
@@ -153,6 +172,9 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('adjective','near'). % keep only the preposition
 :-delete('adjective','after'). % keep only prep
 :-delete('adjective','regardless').
+:-delete('adjective','soon').
+:-delete('adjective','kind-of').
+
 % adverb('regardless',adv("regardless")).
 
 % ====== Nouns
@@ -166,6 +188,7 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('noun','extreme').
 :-delete('noun','sharp').
 :-delete('noun','brief').
+:-delete('noun','alcoholic').
 
 %% keep only the verb
 :-delete('noun','like').
@@ -177,6 +200,7 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('noun','today').
 :-delete('noun','tomorrow').
 
+
 % redefined later
 :-delete('noun','score-entity').
 :-delete('noun','contrast-01').
@@ -184,7 +208,7 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-patch('noun','name',(':op1':O1)^(':op2':O2)^(':op3':O3)^(':op4':O4)^(':op5':O5)^(':op6':O6)^(':op7':O7)^
                         ls(O1+O2+O3+O4+O5+O6+O7)).
 % add words to the dictionary
-newNouns(['constrictor','anion','media','tsunami']).
+newNouns(['constrictor','anion','media','tsunami','fingernail']).
 :- forall((newNouns(Ns),member(W,Ns)),
           (atom_string(W,WS),patch('noun',W,('D':D)^('A':A)^np($D/d("the"),A,n(WS))))).
 :- forall(member(W,['sunday','monday','tuesday','wednesday','thursday','friday','saturday']),
@@ -215,13 +239,13 @@ newNouns(['constrictor','anion','media','tsunami']).
 :- delete('noun','many').
 
 % :- discontiguous noun/1,noun/2. % to remove spurious error messages during development
-noun('more',('D':A)^('A':B)^np($A/d("the"),B,n("more"))).
+% noun('more',('D':A)^('A':B)^np($A/d("the"),B,n("more"))).
 noun('amr-choice',X):-conjunction('or',X).
 noun('amr-unintelligible',(':value':V)^ls(V,q("(unintelligible)"))).
 noun('amr-unknown',"*unknown*").
 noun('amr-empty',q("*empty*")).
 noun('contrast-01',(':ARG1':A1)^(':ARG2':A2)^s(A1,"but",A2)).% considered as noun in order to avoid insertion of that in processRole
-noun('correlate-91',(':ARG1':A1)^(':ARG2':A2)^ls(A1,vp(v("correlate"),p("with"),A2))). % considered as noun 
+noun('correlate-91',(':ARG1':A1)^(':ARG2':A2)^cp(c(","),A1,A2)). % considered as noun 
 noun('date-interval',(':op1':D1)^(':op2':D2)^pp(p("from"),D1,p("to"),D2)).
 % distribution-range-91   typically used for normal distributions with mean and standard deviation
 % frame arguments
@@ -249,6 +273,7 @@ noun('include-91',(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)
                    ^ls(A2,vp(v("include"),A3/ls(A3,q("of")),A1))).
 noun('infer-01',(':ARG1':A1)^(':ARG2':A2)^s(A2,"so",A1)). % considered as noun 
 noun('instead-of-91',(':ARG1':A1)^(':ARG2':A2)^ls(A1,adv("instead"),p("of"),A2)).
+noun('kind-yy',q("kind of")). % very special case
 noun('multi-sentence',(':snt1':S1)^(':snt2':S2)^(':snt3':S3)^(':snt4':S4)
                       ^(':snt5':S5)^(':snt6':S6)
                      ^ls((S1/s(S1)),(S2/(s(S2)*b(";"))),(S3/(s(S3)*b(";"))),
@@ -258,7 +283,7 @@ noun('natural-object',Object):-noun('object',Object).
 noun('percentage-entity',(':value':V)^ls(V,q("percent"))).
 noun('phone-number-entity',(':value':V)^ls(q("tel:"),V)).
 noun('rate-entity-91',(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)^(':ARG4':A4)
-                      ^ls(A1,A2/ls(p("per"),A2),A3/ls(q("every"),A3),A4)).
+                      ^ls(A1,A2/ls(p("per"),A2),A3/ls(q("every"),A3),A4/ls(q("every"),A4))).
 noun('ratio-of',(':op1':O1)^(':op2':O2)^ls(q("a ratio of"),O1,O2/pp(p("to"),O2))).
 noun('regardless-91',(':ARG1':A1)^(':ARG2':A2)^ls(A1,A2/sp(c("regardless"),A2))).
 noun('relative-position',(':op1':O1)^(':direction':D)^(':quant':Q)^ls(Q,D/ls(p("to"),D),O1)).
@@ -275,7 +300,10 @@ noun('truth-value',(':polarity-of':A)^sp(c("whether"),A)).
 noun('url-entity',(':value':V)^(V*tag("a",{"href":("http://"+V)}))).
 noun('value-interval',(':op1':D1)^(':op2':D2)^ls(D1/pp(p("from"),D1),D2/pp(p("to"),D2))).
 
-% new verbalization
+% new verbalizations
 verbalization('thing',':*:ARG1','export-01','export').
 verbalization('thing',':*:ARG1','import-01','import').
+verbalization('thing',':*:ARG1','comment-01','comment').
+verbalization('thing',':*:ARG1','produce-01','product').
+verbalization('thing',':*:ARG2','paint-02','painting').
 

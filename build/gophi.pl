@@ -15,7 +15,7 @@ amr2SSyntR(AMRstring,SSyntR,ShowStructs,TraceTrans):-
     ignore((ShowStructs,AMR \= AMRout)->( % ne pas afficher si pas de role inverse ou de références répétées
         write('> Semantic Representation without Inverse Roles\n'),pprint(AMRout),nl)), 
     % save the current parsed AMR and its list of variables 
-    % used for pronoun generation by getRef/4 in amr2dsr.pl
+    % used for pronoun generation by getRef/4 in pronounReference.pl
     retractall(currentAMR(_,_)),assert(currentAMR(AMRout,VarsOut)), 
     ignore(TraceTrans->trace), % enable trace for the rest of amr2SSyntR
     amr2dsr(AMRout,_Concept,_POS,DSyntR),
@@ -67,14 +67,14 @@ jsRealB(SSyntR,Sent):-jsRealBserver(SSyntR,Sent).
 % jsRealB(SSyntR,Sent):-jsRealBfilter(SSyntR,Sent).
 
 %% full process calling the realisation
-gophi(AMRString,Trace):-
-    amr2SSyntR(AMRString,SSyntR,true,Trace),
+gophi(AMRString,Print,Trace):-
+    amr2SSyntR(AMRString,SSyntR,Print,Trace),
     jsRealB(SSyntR,GenSent),
     write('> English sentence\n'),
     writeln(GenSent),!.
 
-testAMRstring(AMRString):- gophi(AMRString,false).
-traceAMRstring(AMRString):-gophi(AMRString,true).
+testAMRstring(AMRString):- gophi(AMRString,true,false).
+traceAMRstring(AMRString):-gophi(AMRString,false,true).
 
 %%% simple test of examples
 testEx(Id):-

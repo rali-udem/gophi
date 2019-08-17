@@ -11,14 +11,17 @@ processRole(Role,_OuterConcept,OuterPOS,AMR,Env,OptionsIn,[Role:DSyntRout|Env],O
     processFrameOpRole(OuterPOS,POS,Role,DSyntRin,OptionsIn,DSyntRout,OptionsOut).
  processFrameOpRole('Verb',_POS,_Role,DSyntR,Options,DSyntR*t("b"),Options):-
      DSyntR=..[s,null|_]. % infinitive when the sentence is a verb without subject
+ processFrameOpRole('Verb',_,Role,"*unknown*",Options,null,[typ({"int":Type})|Options]):-
+     questionType(Role,Type).
+ processFrameOpRole('Verb',_,Role,s("*unknown*",DSyntR),Options,DSyntR,[typ({"int":Type})|Options]):-
+     questionType(Role,Type).
  processFrameOpRole('Verb',_POS,_Role,DSyntR,Options,sp(pro("that"),DSyntR),Options):-
-     isS(DSyntR). % insert "that" when the argument is a sentence 
+     isS(DSyntR). % insert "that" when the argument is a sentence
  processFrameOpRole(_,'Pronoun',Role,pro("I")*pe(PE)*g(G)*n(N),Options,
                                      pro("me")*pe(PE)*g(G)*n(N),Options):-
         \+memberchk(Role,[':ARG0',':ARG1']). % change pronoun I for me for ARGi i>1
-         % but sometimes :ARG1 should be changed if human "patient" if :ARG0 exists, but this info is not available here
- processFrameOpRole(_,'Noun',Role,"*unknown*",Options,null,[typ({"int":Type})|Options]):-
-     questionType(Role,Type).
+        % but sometimes :ARG1 should be changed if human "patient" if :ARG0 exists, 
+        % but this info is not available here (some simple cases are dealt with checkAccusativePronoun/2 )
  processFrameOpRole(_,_,_,DSyntR,Options,DSyntR,Options).
 
 % HACK: rough classification of question types based on the "usual" arguments...
@@ -62,8 +65,9 @@ processRole(StarRole,OuterConcept,_OuterPOS,AMR,Env,Options,EnvOut,OptionsOut):-
 
 % %% other special roles
 processRole(':accompanier',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("with"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("with",DSyntR,PPDSyntR).
 
 processRole(':age',_OuterConcept,_OuterPOS,['amr-unknown',_],
             Env,Options,[':&':q("how old")|Env],[a("?")|Options]).
@@ -72,24 +76,32 @@ processRole(':age',_OuterConcept,_OuterPOS,AMR,
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
 processRole(':beneficiary',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("for"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("for",DSyntR,PPDSyntR).
 
 processRole(':cause',_OuterConcept,_OuterPOS,['amr-unknown',_],
             Env,Options,Env,[typ({"int":"why"})|Options]).
 processRole(':cause',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':ls(Conj,DSyntR)|Env],Options):-
+            Env,Options,[':*':Conj|Env],Options):-
     amr2dsr(AMR,_Concept,POS,DSyntR),
-    (memberchk(POS,['Special','Noun'])->Conj=q("because of");Conj=q("because")).
+    (memberchk(POS,['Special','Noun'])->Conj=sp(c("because"),p("of"),DSyntR);
+               Conj=sp(c("because"),DSyntR)).
 
 processRole(':compared-to',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':ls(q("compared to"),DSyntR)|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
+
+processRole(':condition',_OuterConcept,_OuterPOS,['as-long-as',_,[':op1',OP1]],
+            Env,Options,[':*':ls(q("as long as"),DSyntR)|Env],Options):-
+    amr2dsr(OP1,_Concept,_POS,DSyntR).
+processRole(':condition',_OuterConcept,_OuterPOS,['otherwise',_,Cond],
+            Env,Options,[':*':sp(c("otherwise"),DSyntR)|Env],Options):-
+    amr2dsr(Cond,_Concept,_POS,DSyntR).
 processRole(':condition',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':ls(Word,DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR),!,
-    (DSyntR=q("otherwise")->Word=null;Word=q("if")).
+            Env,Options,[':*':sp(c("if"),DSyntR)|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR).
 
 processRole(':concession',_OuterConcept,_OuterPOS,AMR,
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
@@ -100,18 +112,20 @@ processRole(':concession',_OuterConcept,_OuterPOS,AMR,
  processConcession(DSyntR,Env,Options,[':*':ls(q("despite"),DSyntR)|Env],Options).
 
 processRole(':consist-of',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("of"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("of",DSyntR,PPDSyntR).
 
 processRole(':degree',_OuterConcept,_OuterPOS,[DEG,_],
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
     % do not evaluate AMR...
     processDegree(DEG,EnvIn,OptionsIn,EnvOut,OptionsOut).
- processDegree('amr-unknown',_,Env,Options,[':&':adv("how")|Env],Options):-!.
+ processDegree('amr-unknown',Env,Options,Env,[typ({int:"how"})|Options]):-!.
  processDegree('more',Env,Options,Env,[f("co")|Options]):-!.
  processDegree('most',Env,Options,Env,[f("su")|Options]):-!.
+ processDegree('part',Env,Options,[':&':adv("partially")|Env],Options):-!.
  processDegree(DEG,Env,Options,[':&':adv(DEGs)|Env],Options):-
-     memberchk(DEG,['too','so','very','all']),!,atom_string(DEG,DEGs).
+     memberchk(DEG,['too','so','very','all','quite']),!,atom_string(DEG,DEGs).
  processDegree(DEG,Env,Options,[':*':adv(DEGs)|Env],Options):-
      adverb(DEG,_Adv),!,atom_string(DEG,DEGs).
  processDegree(DEG,Env,Options,[':*':Adv|Env],Options):-
@@ -120,12 +134,14 @@ processRole(':degree',_OuterConcept,_OuterPOS,[DEG,_],
      cleanConcept(DEG,DEGs).
 
 processRole(':destination',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("to"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("to",DSyntR,PPDSyntR).
 
 processRole(':direction',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("to"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("to",DSyntR,PPDSyntR).
 
 processRole(':domain',_OuterConcept,_OuterPOS,AMR,
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
@@ -158,8 +174,9 @@ processRole(':frequency',_OuterConcept,_OuterPOS,AMR,
     amr2dsr(AMR,_Concept,_POS,DSyntR),Freq=DSyntR.
 
 processRole(':instrument',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("with"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("with",DSyntR,PPDSyntR).
 
 processRole(':li',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':&':Val|Env],Options):-
@@ -168,10 +185,12 @@ processRole(':li',_OuterConcept,_OuterPOS,AMR,
     amr2dsr(AMR,_Concept,_POS,DSyntR),Val=ls(DSyntR,":").
 
 processRole(':location',_OuterConcept,_OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR),
-    processLocation(DSyntR,EnvIn,OptionsIn,EnvOut,OptionsOut).
- processLocation("*unknown*",Env,Options,Env,[typ({"int":"whe"})|Options]).
- processLocation(DSyntR,Env,Options,[':*':pp(p("in"),DSyntR)|Env],Options).
+    amr2dsr(AMR,_Concept,POS,DSyntR),
+    processLocation(DSyntR,POS,EnvIn,OptionsIn,EnvOut,OptionsOut).
+ processLocation("*unknown*",_POS,Env,Options,Env,[typ({"int":"whe"})|Options]).
+ processLocation(DSyntR,'Preposition',Env,Options,[':*':DSyntR|Env],Options):-!.
+ processLocation(DSyntR,_POS,Env,Options,[':*':PPDSyntR|Env],Options):-
+     addPrep("in",DSyntR,PPDSyntR).
 
 processRole(':manner',_OuterConcept,_OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):-
     amr2dsr(AMR,_Concept,POS,DSyntR),
@@ -180,22 +199,26 @@ processRole(':manner',_OuterConcept,_OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,Options
  processManner(q(Manner),_,Env,Options,[':*':q(Manner)|Env],Options).
  processManner(DSyntR,'Adjective',Env,Options,[':*':Adv|Env],Options):-
      adj2adv(DSyntR,Adv).
- processManner(DSyntR,'Verb',Env,Options,[':*':ls("by",DSyntR*t("pr"))|Env],Options).
+ processManner(DSyntR,'Verb',Env,Options,[':*':ls("by",DSyntR*typ({"prog":true}))|Env],Options).
  processManner(DSyntR,_,Env,Options,[':*':ls("by",DSyntR)|Env],Options).
 
 processRole(':medium',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("in"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("in",DSyntR,PPDSyntR).
 
 
 processRole(':mod',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):-
-    OuterPOS='Noun',processSimpleModNoun(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
+    memberchk(OuterPOS,['Noun','Special']),
+    processSimpleModNoun(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
     processSimpleModOther(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
-    (amr2dsr(AMR,_Concept,POS,DSyntR),
+    (checkNegMod(AMR,AMR1,IsNeg),
+     amr2dsr(AMR1,_Concept,POS,DSyntR),
      (memberchk(POS,['Noun','Special'])->
-         EnvOut=[':*':pp(p("of"),DSyntR)],OptionsOut=OptionsIn;
+         EnvOut=[':*':pp(p("of"),DSyntR)|EnvIn],OptionsOut=OptionsIn;
          relative(OuterConcept,DSyntR,Relative),
-         EnvOut=[':*':Relative|EnvIn],OptionsOut=OptionsIn)
+         (IsNeg=true->Relative1=Relative*typ({neg:true});Relative1=Relative),
+         EnvOut=[':*':Relative1|EnvIn],OptionsOut=OptionsIn)
     ).
  %% pour les cas "simples" on modifie l'environnement du OuterConcept
  processSimpleModNoun(['amr-unknown',_],Env,Options,['D':"what"|Env],[a("?")|Options]).
@@ -210,23 +233,28 @@ processRole(':mod',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):
  processSimpleModNoun(['one',_],Env,Options,[':&':q("one")|Env],Options).
  processSimpleModNoun([Det,_],Env,Options,['D':DetS|Env],Options):-
      determiner(Det,DetS).
- processSimpleModNoun([Atom,_],_Env,Options,[':*',no(Number)],Options):-atom_number(Atom,Number).
+ processSimpleModNoun([Atom,_],_Env,Options,[':*',no(Number)],Options):-atom_number(Atom,Number).     
  %% suppose qu'on ne combine pas les :mod de noms ou d'adjectifs
  %%   préfixe les :mod pour les noms  
- processSimpleModNoun([Noun,_],EnvIn,Options,['A':NewA|EnvOut],Options):-
+ processSimpleModNoun([Noun,_],EnvIn,Options,['A':a(NewA)|EnvOut],Options):-
      noun(Noun,_),cleanConcept(Noun,NounC),
-     (select('A':A,EnvIn,EnvOut),atomics_to_string([NounC,A],' ',NewA);
+     (select('A':a(A),EnvIn,EnvOut),atomics_to_string([NounC,A],' ',NewA);
       atom_string(NounC,NewA),EnvOut=EnvIn).
  %% postfixe les :mod pour les adjectifs
- processSimpleModNoun([Adjective,_],EnvIn,Options,['A':NewA|EnvOut],Options):-
+ processSimpleModNoun([Adjective,_],EnvIn,Options,['A':a(NewA)|EnvOut],Options):-
      adjective(Adjective,_),cleanConcept(Adjective,AdjectiveC),
-     (select('A':A,EnvIn,EnvOut),atomics_to_string([A,AdjectiveC],' ',NewA);
+     (select('A':a(A),EnvIn,EnvOut),atomics_to_string([A,AdjectiveC],' ',NewA);
       atom_string(AdjectiveC,NewA),EnvOut=EnvIn).
  processSimpleModNoun([Verb,_],EnvIn,Options,[':*':v(VerbC)*t("pr")|EnvIn],Options):-
      verb(Verb,_),cleanConcept(Verb,VerbC).
  
  processSimpleModOther([MOD,_],Env,Options,[':&':q(MODs)|Env],Options):-
      cleanConcept(MOD,MODs).
+ %% négation d'un mod s'applique à la relative qui sera générée...
+ checkNegMod([Concept,V|Roles],[Concept,V|Roles1],true):-
+     select([':polarity',-],Roles,Roles1).
+ checkNegMod(AMR,AMR,false).
+     
  
 processRole(':mode',_OuterConcept,_OuterPOS,'expressive',
             Env,Options,Env,[a("!")|Options]).
@@ -241,7 +269,7 @@ processRole(':named',_OuterConcept,_OuterPOS,AMR,Env,Options,
             [':*':DSyntR|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
-processRole(':ord',_OuterConcept,_OuterPOS,['ordinal-entity',_|Roles],Env,Options,[':*':DSyntR|Env],Options):-
+processRole(':ord',_OuterConcept,_OuterPOS,['ordinal-entity',_|Roles],Env,Options,['A':DSyntR|Env],Options):-
     amr2dsr(['ordinal-entity',_|Roles],_Concept,_POS,DSyntR).
 processRole(':ord',_,_,AMR,Env,Options,Env,Options):-
     writeln('** :ord without ordinal-entity ':AMR).
@@ -250,10 +278,14 @@ processRole(':part-of',_OuterConcept,_OuterPOS,AMR,
             EnvIn,OptionsIn,EnvOut,OptionsOut):-
     amr2dsr(AMR,Concept,POS,DSyntR),
     processPartOf(DSyntR,Concept,POS,EnvIn,OptionsIn,EnvOut,OptionsOut).
- processPartOf(_DSyntR,Concept,'Pronoun',Env,Options,['D':Poss|Env],Options):-
-     possessive(Concept,Poss).
- processPartOf(DSyntR,_Concept,_POS,Env,Options,[':*':pp(p("of"),DSyntR)|Env],Options).
+ processPartOf(pro(_)*pe(PE)*g(G)*n(N),_Concept,'Pronoun',Env,Options,
+               ['D':d("my")*pe(PE)*g(G)*n(N)|Env],Options) :-!.
+ processPartOf(DSyntR,_Concept,_POS,Env,Options,[':*':PPDSyntR|Env],Options):-
+     addPrep("of",DSyntR,PPDSyntR).
 
+processRole(':path',_OuterConcept,_OuterPos,[past,p,[':op1',OP1]],
+            Env,Options,[':*':advp(adv("past"),DSyntR)|Env],Options):-
+    amr2dsr(OP1,_Concept,_POS,DSyntR).
 processRole(':path',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':Out|Env],Options):-
     amr2dsr(AMR,_Concept,POS,DSyntR),
@@ -286,9 +318,14 @@ processRole(':poss',_OuterConcept,_OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOu
  processPoss(DSyntR,_,'Determiner',Env,Options,['D':DSyntR|Env],Options).
  processPoss(_DSyntR,Concept,'Pronoun',Env,Options,['D':Poss|Env],Options):-
      possessive(Concept,Poss).
- processPoss(DSyntR,_Concept,_,Env,Options,[':*':pp(p("of"),DSyntR)|Env],Options).
+ processPoss(DSyntR,_Concept,_,Env,Options,[':*':PPDSyntR|Env],Options):-
+     addPrep("of",DSyntR,PPDSyntR).
  % processPoss(_,_,_,Env,Options,Env,Options).
 
+processRole(':purpose',_OuterConcept,_OuterPOS,[Concept,V,[':ARG0',_V]|Roles],
+            Env,Options,[':*':pp(p("for"),DSyntR*t("pr"))|Env],Options):- 
+    %% remove useless subject reference to a variable
+    amr2dsr([Concept,V|Roles],_Concept,_POS,DSyntR).
 processRole(':purpose',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':pp(p("for"),DSyntR*t("pr"))|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
@@ -298,8 +335,8 @@ processRole(':quant',_OuterConcept,_OuterPOS,AMR,
     processSimpleQuant(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
     processFuzzyQuant1(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
     processFuzzyQuant2(AMR,EnvIn,OptionsIn,EnvOut,OptionsOut);
-    (amr2dsr(AMR,_Concept,_POS,DSyntR),
-     processQuant(DSyntR,EnvIn,OptionsIn,EnvOut,OptionsOut)).
+    (amr2dsr(AMR,Concept,_POS,DSyntR),
+     processQuant(DSyntR,Concept,EnvIn,OptionsIn,EnvOut,OptionsOut)).
  processSimpleQuant(['most',_],Env,Options,[':&':q("most of")|Env],[n("p")|Options]).
  processSimpleQuant(['more',_],Env,Options,[':&':q("more")|Env],[n("p")|Options]).
  processSimpleQuant(['numerous',_],Env,Options,[':&':q("numerous")|Env],[n("p")|Options]).
@@ -333,18 +370,22 @@ processRole(':quant',_OuterConcept,_OuterPOS,AMR,
                     ['D':DetPat|Env],[n("p")|Options]):-
      fuzzyQuant2(FQ,DSyntR1,DSyntR2,DetPat),
      amr2dsr(Op1Amr,_Concept1,_POS1,DSyntR1),amr2dsr(Op2Amr,_Concept2,_POS2,DSyntR2).
- processQuant("*unknown*",Env,Options,[':&':q("much")|Env],[typ({"int":"how"})|Options]):-!.
- processQuant(q(NumA),Env,Options,['D':no(Num)|Env],Options):-
+ %% other roles
+ processQuant("*unknown*",_Concept,Env,Options,[':&':q("much")|Env],[typ({"int":"how"})|Options]):-!.
+ processQuant(q(NumA),_Concept,Env,Options,['D':no(Num)|Env],Options):-
         atom_number(NumA,Num),!.
- processQuant(DSyntR,Env,Options,[':&':DSyntR|Env],Options).
+ processQuant(DSyntR,'temporal-quantity',Env,Options,[':&':DSyntR|Env],Options):-!.
+ processQuant(DSyntR,_Concept,Env,Options,[':&':ls(DSyntR,p("of"))|Env],Options).
 
 processRole(':source',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("from"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("from",DSyntR,PPDSyntR).
 
 processRole(':subevent-of',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("of"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("during",DSyntR,PPDSyntR).
 
 processRole(':time',_OuterConcept,_OuterPOS,['date-entity',V|Roles], % cas très fréquent
             Env,Options,[':*':pp(p("on"),DSyntR)|Env],Options):-!,
@@ -357,11 +398,14 @@ processRole(':time',_OuterConcept,_OuterPOS,AMR,
  processTime(a("former"),_,Env,Options,[':&':adv("formerly")|Env],Options).
  processTime(q("ex"),_,Env,Options,[':&':q("ex")|Env],Options).
  processTime(DSyntR,'Verb',Env,Options,[':*':sp(c("when"),DSyntR)|Env],Options).
+ processTime(DSyntR,'Adjective',Env,Options,[':*':DSyntRAdv|Env],Options):-
+     adj2adv(DSyntR,DSyntRAdv).
  processTime(DSyntR,_,Env,Options,[':*':DSyntR|Env],Options).
 
 processRole(':topic',_OuterConcept,_OuterPOS,AMR,
-            Env,Options,[':*':pp(p("about"),DSyntR)|Env],Options):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR).
+            Env,Options,[':*':PPDSyntR|Env],Options):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    addPrep("about",DSyntR,PPDSyntR).
 
 processRole(':wiki',_OuterConcept,_OuterPOS,'-', %ignore when no value
             Env,Options,Env,Options).
@@ -381,3 +425,10 @@ processRole(Role,_OuterConcept,_OuterPOS,AMR,Env,Options,[':*':pp(p(PrepC),DSynt
 processRole(Role,_OuterConcept,_OuterPOS,AMR,Env,Options,[Role:DSyntR|Env],Options):-
     % writeln("** processRole: unknown role":Role),
     amr2dsr(AMR,_,_,DSyntR).
+
+
+%%%%%%%%%%%%% add Preposition but change pronoun to accusative
+addPrep(Prep,NomPronoun,pp(p(Prep),AccPronoun)):-nominative2accusativePronoun(NomPronoun,AccPronoun).
+addPrep(Prep,DSyntR,pp(p(Prep),DSyntR)).
+
+nominative2accusativePronoun(pro("I")*pe(PE)*g(G)*n(N),pro("me")*pe(PE)*g(G)*n(N)).

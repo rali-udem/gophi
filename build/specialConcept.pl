@@ -4,6 +4,7 @@
 
 specialConcept('person',person).
 specialConcept('number',number).
+specialConcept(Modality,modality(Modality)):-modalityFlag(Modality,_,_,_).
 specialConcept('government-organization',governmentOrganization).
 specialConcept('have-degree-91',haveDegree91).
 specialConcept('have-polarity-91',havePolarity91).
@@ -12,28 +13,25 @@ specialConcept('have-purpose-91',havePurpose91).
 specialConcept('have-rel-role-91',haveRelRole91).
 specialConcept('date-entity',dateEntity).
 specialConcept('ordinal-entity',ordinalEntity).
-specialConcept(Name,quantity):-atom_concat(_,'-quantity',Name),!.
+specialConcept(Name,quantity):-nonvar(Name),atom_concat(_,'-quantity',Name).
 specialConcept(NE,namedEntity(NE)):-
-    memberchk(NE,
+    member(NE,[
     %% list of NE taken from https://www.isi.edu/~ulf/amr/lib/ne-types.html
-   ['person', 'family', 'animal', 'language', 'nationality', 'ethnic-group', 'regional-group', 'religious-group', 'political-movement',
-    'organization', 'company', 'government-organization', 'military', 'criminal-organization', 'political-party', 'market-sector',
-    'school', 'university', 'research-institute','team', 'league',
-    'location', 'city', 'city-district', 'county', 'state', 'province', 'territory', 'country', 'local-region', 'country-region', 'world-region', 'continent',
-    'ocean', 'sea', 'lake', 'river', 'gulf', 'bay', 'strait', 'canal',
-    'peninsula', 'mountain', 'volcano', 'valley', 'canyon', 'island', 'desert', 'forest',
-    'moon', 'planet', 'star', 'constellation',
-    'facility', 'airport', 'station', 'port', 'tunnel', 'bridge', 'road', 'railway-line', 'canal' ,
-    'building', 'theater', 'museum', 'palace', 'hotel', 'worship-place', 'sports-facility' ,
-    'market', 'park', 'zoo', 'amusement-park',
-    'event', 'incident', 'natural-disaster', 'earthquake', 'war', 'conference', 'game', 'festival',
-    'product', 'vehicle', 'ship', 'aircraft', 'aircraft-type', 'spaceship', 'car-make',
-    'work-of-art', 'picture', 'music', 'show', 'broadcast-program',
-    'publication', 'book', 'newspaper', 'magazine', 'journal',
-    'natural-object',
-    'award', 'law', 'court-decision', 'treaty', 'music-key', 'musical-note', 'food-dish', 'writing-script', 'variable', 'program',
-    'molecular-physical-entity', 'small-molecule', 'protein', 'protein-family', 'protein-segment', 'amino-acid', 'macro-molecular-complex', 'enzyme', 'nucleic-acid',
-    'pathway', 'gene', 'dna-sequence', 'cell', 'cell-line', 'species', 'taxon', 'disease', 'medical-condition'
+'aircraft', 'aircraft-type', 'airport', 'amino-acid', 'amusement-park', 'animal', 'award', 'bay', 'book', 'bridge',
+'broadcast-program', 'building', 'canal' , 'canal', 'canyon', 'car-make', 'cell', 'cell-line', 'city',
+'city-district', 'company', 'conference', 'constellation', 'continent', 'country', 'country-region', 'county',
+'court-decision', 'criminal-organization', 'desert', 'disease', 'dna-sequence', 'earthquake', 'enzyme',
+'ethnic-group', 'event', 'facility', 'family', 'festival', 'food-dish', 'forest', 'game', 'gene',
+'government-organization', 'gulf', 'hotel', 'incident', 'island', 'journal', 'lake', 'language', 'law', 'league',
+'local-region', 'location', 'macro-molecular-complex', 'magazine', 'market', 'market-sector', 'medical-condition',
+'military', 'molecular-physical-entity', 'moon', 'mountain', 'museum', 'music', 'music-key', 'musical-note',
+'nationality', 'natural-disaster', 'natural-object', 'newspaper', 'nucleic-acid', 'ocean', 'organization', 'palace',
+'park', 'pathway', 'peninsula', 'person', 'picture', 'planet', 'political-movement', 'political-party', 'port',
+'product', 'program', 'protein', 'protein-family', 'protein-segment', 'province', 'publication', 'railway-line',
+'regional-group', 'religious-group', 'research-institute','team', 'river', 'road', 'school', 'sea', 'ship', 'show',
+'small-molecule', 'spaceship', 'species', 'sports-facility' , 'star', 'state', 'station', 'strait', 'taxon',
+'territory', 'theater', 'treaty', 'tunnel', 'university', 'valley', 'variable', 'vehicle', 'volcano', 'war',
+'work-of-art', 'world-region', 'worship-place', 'writing-script', 'zoo'
     ]).
 
 changeNPD(S*Option,NewDet,S1*Option):-changeNPD(S,NewDet,S1).
@@ -90,9 +88,9 @@ person(Roles,OutDSyntR):-
 %%%% (p / person :name NAME  other roles)) replaced by  q(NAME) other roles
 person(Roles,OutDSyntR):-namedEntity('person',Roles,OutDSyntR).
 
-%%%% (p / NamedEntity :name NAME  other roles)) replaced by  q(NAME) other roles
+%%%% (p / NamedEntity :name NAME  other roles)) replaced by evaluation of NAME followed by other roles
 namedEntity(Entity,Roles,OutDSyntR):-
-    hasRole(Roles,':name',AMR,Roles1),
+    (hasRole(Roles,':name',AMR,Roles1);hasRole(Roles,':named',AMR,Roles1)),
     amr2dsr(AMR,_Concept,_POS,DSyntR),
     %% add unprocessed roles
     buildRoleEnvOption(Entity,'Special',Roles1,[],[],Env,Options),
@@ -116,6 +114,21 @@ number(Roles,np(d("the"),n("number"),pp(p("of"),OutDSyntR))):-
 number(Roles,OutDSyntR):-
     buildRoleEnvOption('number','Noun',Roles,[],[],Env,Options),
     processRest(np(d("the"),n("number")),Env,[n("p")|Options],OutDSyntR).
+
+%%  deal with modality
+modality(Modality,Roles,OutDSyntR):-
+    \+hasRole(Roles,':ARG0',_,_), % do not use modality verb if there is an agent :ARG0
+    modalityFlag(Modality,ARGN,ModFlag,Tense),
+    hasRole(Roles,ARGN,AMR,Roles1),% Roles1\=[],Roles1\=[[':polarity',-]], % fail if no more args or only polarity
+    amr2dsr(AMR,_Concept,_POS,OutDSyntR0),
+    %% add unprocessed roles
+    buildRoleEnvOption(Modality,'Special',Roles1,[],[],Env,Options),
+    processRest(OutDSyntR0,Env,[typ({"mod":ModFlag}),t(Tense)|Options],OutDSyntR).
+ modalityFlag('possible-01',':ARG1',"poss","p").
+ modalityFlag('permit-01',':ARG1',"perm","p").
+ modalityFlag('recommend-01',':ARG1',"nece","ps").
+ modalityFlag('prefer-01',':ARG1',"will","p").
+ modalityFlag('obligate-01',':ARG2',"obli","p").    
 
 %% very special (and frequent) case of government-organization
 % ['government-organization',\g, [':*:ARG0',['govern-01',g2, [':ARG0',g], [':ARG1',Country]
@@ -260,9 +273,12 @@ haveDegree91arg3aux(['most',_],AttrIn,su,AttrIn*f("su")).
 haveDegree91arg3aux(['most',_,Roles],AttrIn,su,ls(AttrIn*f("su"),DSyntR)):-
     amr2dsr(['most',_,Roles],_Concept,_POS,DSyntR).
 haveDegree91arg3aux([Deg,_],AttrIn,CMP,advp(adv(DEGs),AttrIn)):-
-    memberchk(Deg,['too','so','less','enough']),atom_string(Deg,DEGs),(Deg='less'->CMP=co;CMP=null).
+    memberchk(Deg,['too','so','less']),atom_string(Deg,DEGs),(Deg='less'->CMP=co;CMP=null).
+haveDegree91arg3aux(['equal',_],AttrIn,null,adv("as")):-
+    isPro(AttrIn).
 haveDegree91arg3aux(['equal',_],AttrIn,null,advp(adv("as"),AttrIn,adv("as"))).
-haveDegree91arg3aux(['times',_],AttrIn,null,ls(AttrIn,adv(deg))).
+haveDegree91arg3aux(['times',_],AttrIn,null,ls(AttrIn,q("times"))).
+haveDegree91arg3aux(['enough',_],AttrIn,null,ls(AttrIn,adv("enough"))).
 haveDegree91arg3aux([Deg,_,[':quant',[Quant,_]]],AttrIn,null,ls(Quants,Degs,AttrIn)):-
     atom_string(Deg,Degs),atom_string(Quant,Quants).
 haveDegree91arg3aux(AMR,AttrIn,null,ls(AttrIn,DSyntr)):-amr2dsr(AMR,_Concept,_Pos,DSyntr).
@@ -331,8 +347,9 @@ haveRelRole91arg4(Roles,Roles,null).
 
 havePolarity91(Roles,OutDSyntR):-
     hasRole(Roles,':ARG2',"-",Roles1),
+    (hasRole(Roles1,':ARG1',_,Roles2);Roles2=Roles1), %% ignore :ARG1 also if it exists
     %% add unprocessed roles
-    buildRoleEnvOption('have-polarity-91','Special',Roles1,[],[],EnvOut,Options),
+    buildRoleEnvOption('have-polarity-91','Special',Roles2,[],[],EnvOut,Options),
     addRestRoles(q("otherwise"),EnvOut,DSyntR1),
     addOptions(Options,DSyntR1,OutDSyntR).    
 havePolarity91(Roles,q("otherwise")):-

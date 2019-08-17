@@ -1,7 +1,5 @@
 :- encoding(utf8).
 
-:-[amrtoeng].
-
 fullGen(AMRstring,GenSent):-
     amr2SSyntR(AMRstring,SSyntR,false,false),
     jsRealB(SSyntR,GenSent).
@@ -9,11 +7,11 @@ fullGen(AMRstring,GenSent):-
 %% useful for creating the expected generated sentence with the current version
 %%  which can be copied into this program...
 showExpected(Id,S) :-
-    fullGen(S,GenSent),writeln('expected('),
-    write("  "),writeq(Id),writeln(','),
-    write("  "),writeq(GenSent),writeln(','),
-    write("  '"),write(S),write("'"),
-    writeln(').').
+    fullGen(S,GenSent),
+    format('expected(
+    ~q,
+    ~q,
+    \'~s\').~n',[Id,GenSent,S]).
     
 showExpectedEx:- forall(ex(Id,S),showExpected(Id,S)).
 
@@ -30,13 +28,14 @@ test(Id,ExpectedGen,AMRstring):-
 testAll :- 
     aggregate_all(count,expected(_,_,_),Total),
     aggregate_all(count,(expected(Id,ExpectedGen,AMRString),test(Id,ExpectedGen,AMRString)),NB),
-    format("~d successes over ~d tests~n",[NB,Total]).
+    Rate is NB*100 div Total,
+    format("~d successes over ~d tests (~d %)~n",[NB,Total,Rate]).
         
 %%% expected pairs AMR=Generated sentence
 
 expected(
   '0',
-  "No small is the marble.",
+  "Small is not the marble.",
   '(s / small :domain (m / marble) :polarity -)').
 expected(
   '1a',
@@ -44,18 +43,18 @@ expected(
   '(e/moan-01 :ARG0 (x/child))').
 expected(
   '1c',
-  "The child does not moan.",
+  "The child doesn't moan.",
   '(e/moan-01 :ARG0 (x/child) :polarity -)').
 expected(
   '1b',
-  "The person \"Ms Ribble\" gives the envelope to the child.",
+  "Ms Ribble gives the envelope to the child.",
   '(e/give-01  ; a comment to ignore
              :ARG2 (y/child)
              :ARG0 (x/person :named "Ms Ribble")
              :ARG1 (z/envelope)); another comment at the end').
 expected(
   '1d',
-  "The person \"Ms Ribble\" does not give the envelope to the child.",
+  "Ms Ribble doesn't give the envelope to the child.",
   '(e/give-01 
              :ARG0 (x/person :named "Ms Ribble")
              :ARG1 (z/envelope)
@@ -79,7 +78,7 @@ expected(
   '(y/book :ARG1-of (e/read-01 :ARG0 (x/girl)))').
 expected(
   '2bN',
-  "the book that the girl does not read",
+  "the book that the girl doesn't read",
   '(y/book :ARG1-of (e/read-01 :ARG0 (x/girl) :polarity -))').
 expected(
   '3',
@@ -87,7 +86,7 @@ expected(
   '(e/shout-01 :ARG0 (x/teacher))').
 expected(
   '4a',
-  "The boy does not giggle.",
+  "The boy doesn't giggle.",
   '(e/giggle-01 :polarity - :ARG0 (x/boy))').
 expected(
   '4b',
@@ -99,25 +98,25 @@ expected(
   '(x/language :domain-of (a / appropriate))').
 expected(
   '5a',
-  "The person \"Mr Krupp\" dries himself.",
+  "Mr Krupp dries himself.",
   '(e/dry-02
              :ARG0 (x / person :named "Mr Krupp")
              :ARG1 x)').
 expected(
   '5b',
-  "The person \"George\" wants to play against him.",
+  "George wants to play against him.",
   '(w/want-01
              :ARG0 (g / person :named "George")
              :ARG1 (p/play-01 :ARG3 g))').
 expected(
   '9a',
-  "no boy who does not whistle",
+  "no boy who doesn't whistle",
   '(x / boy :polarity -
             :ARG0-of (e / whistle-01
                           :polarity -))').
 expected(
   'AMR-1',
-  "The boy wants the belief the girl.",
+  "The boy wants that the girl believes him.",
   '(w / want-01
          :ARG0 (b / boy)
          :ARG1 (b2 / believe-01
@@ -125,7 +124,7 @@ expected(
                :ARG1 b))').
 expected(
   'AMR-1N',
-  "The boy does not want the belief the girl.",
+  "The boy doesn't want that the girl believes him.",
   '(w / want-01
          :polarity -
          :ARG0 (b / boy)
@@ -134,7 +133,7 @@ expected(
                :ARG1 b))').
 expected(
   'AMR-1NN',
-  "The boy wants that the girl does not believe him.",
+  "The boy wants that the girl doesn't believe him.",
   '(w / want-01
          :ARG0 (b / boy)
          :ARG1 (b2 / believe-01
@@ -143,7 +142,7 @@ expected(
                :ARG1 b))').
 expected(
   'Guy',
-  "The boy desires the girl who does not like him.",
+  "The boy desires the girl who doesn't like him.",
   '(d / desire-01
         :ARG0 (b/boy)
         :ARG1 (g/girl
@@ -159,7 +158,7 @@ expected(
                 :ARG0 b))').
 expected(
   'AMR-3',
-  "The organization \"UN\" says that about 14000 the person flees his home the weekend after warns the tsunami in the local via its web site.",
+  "UN says that about 14000 persons flee his home the weekends after the tsunami is warned in the local in its [[web]] site.",
   '(s / say-01
      :ARG0 (g / organization
           :name (n / name
@@ -180,7 +179,7 @@ expected(
             :mod (w3 / web)))').
 expected(
   'SemEval-1',
-  "The soldier does not fear the death.",
+  "The soldier doesn't fear the death.",
   '(f / fear-01
      :polarity -
      :ARG0 ( s / soldier )
@@ -188,7 +187,7 @@ expected(
              :ARG1 s ))').
 expected(
   'SemEval-3',
-  "He claims that the singer 28 year old exposes himself to him that repeats.",
+  "He claims that the singer 28 year old exposes himself to him that is repeated.",
   '(c/claim-01
        :ARG0 (h/he)
        :ARG1 (e/expose-01
@@ -201,7 +200,7 @@ expected(
                 :ARG1-of (r/repeat-01)))').
 expected(
   'SemEval-5',
-  "<a href=\"https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina\">the country \"Bosnia\"</a> remains under to divide it about ethnic, the violence the football match that is major in here occasional and follows the war from 1992 to 1995",
+  "<a href=\"https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina\">Bosnia</a> remains under that it is divided about ethnic, the violence the [[football]] match that is major in here occasional and when follows the war from 1992 to 1995",
   '(a / and
      :op1 (r / remain-01
            :ARG1 (c / country :wiki "Bosnia_and_Herzegovina"
@@ -263,7 +262,7 @@ expected(
                      :ARG0-of (v / vote-01))))').
 expected(
   'Konstas-F2',
-  "The person who is the official in the country \"United States\" holds that the person who is expert whom groups under him meets on January 2002 in the city \"New York\".",
+  "The person who is the official in United States holds that the person who is expert whom groups under him meets on January 2002 in New York.",
   '(h / hold-04
        :ARG0 (p2 / person
                  :ARG0-of (h2 / have-org-role-91 
@@ -283,7 +282,7 @@ expected(
                               :op2 "York")))').
 expected(
   'Konstas-F3a',
-  "The treaty that controls about the arms limits that the weapon that is conventional that deploys to Ural Mountains to west that it is possible numbers.",
+  "The treaty that controls about the arms limits that the weapon that is conventional that is deployed to Ural Mountains to west that numbers.",
   '(l/limit-01
        :ARG0 (t / treaty 
                :ARG0-of (c / control-01 :ARG1 (a/arms)))
@@ -295,3 +294,26 @@ expected(
                                               :op1 "Ural Mountains" 
                                               :direction "west" )
                                     :ARG1-of (p / possible-01)))))').
+
+expected(
+    'isi_0002.376',
+    "I cannot work in the home because she shouts at me.",
+    '(p / possible-01
+     :polarity -
+     :ARG1 (w / work-01
+          :ARG0 (i / i)
+          :location (h / home))
+     :ARG1-of (c / cause-01
+          :ARG0 (s / shout-01
+               :ARG0 (s2 / she)
+               :ARG2 i)))').
+
+expected(
+    'isi_0002.101',
+    "They fear him even when he is imprisoned.",
+    '(f / fear-01
+     :ARG0 (t / they)
+     :ARG1 (h / he)
+     :concession (e / even-when
+          :op1 (i / imprison-01
+               :ARG1 h)))').

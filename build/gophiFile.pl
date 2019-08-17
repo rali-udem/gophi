@@ -94,7 +94,9 @@ gophiFile(InFile,OutFile,RegEx,Show):-
     atomic_list_concat(HeaderLines,'\n',Header),
     (isEmpty(AMRstring)->
             writeln(OutFile,Header),write(OutFile,'\n'); % only copy header if no AMR appears within the group
-           (re_match(RegEx,AMRstring)-> % process if it matches the RegEx
+            %% if Regex is a number (usually  between 0 and 1), process with this prob 
+            %% else write the target sentence and check if matches the regex
+            ignore(((number(RegEx)->maybe(RegEx);re_match(RegEx,AMRstring)),
                 format('~s~s~s~s~n~s~n',['--- ',Id,':',Sent,AMRstring]),
                 amr2SSyntR(AMRstring,SSyntR,Show,false),
                 jsRealB(SSyntR,GenSent),
@@ -103,9 +105,8 @@ gophiFile(InFile,OutFile,RegEx,Show):-
                 amr2BaseGen(AMRstring,BaseGen),
                 (current_stream([],write,OutFile)->true; % do not write this if OutFile is stdout
                    format(OutFile,'~s~n# ::gophi ~s~n# ::basegen ~s~n~s~n~n',
-                         [Header,GenSent,BaseGen,AMRstring]));
-            true
-           )),
+                         [Header,GenSent,BaseGen,AMRstring]))
+           ))),
     (Eof->true; % end if at end of file
         gophiFile(InFile,OutFile,RegEx,Show)).
         

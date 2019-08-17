@@ -6,7 +6,7 @@ createStructs(SemR,FOL,SemRout,DSyntR,SSyntR,SemRerrors):-
     elimInv(SemR,SemRnoInv),
     getVarRefs(SemRnoInv,[],Vars),processVars(SemRnoInv,Vars,SemRout,VarsOut),
     % save the current parsed SemR and its list of variables 
-    % used for pronoun generation by getRef/4 in deepSyntR.pl
+    % used for pronoun generation by getRef/4 in pronounReference.pl
     retractall(currentAMR(_,_)),assert(currentAMR(SemRout,VarsOut)), 
     with_output_to(string(SemRerrors),
         amr2dsr(SemRout,_Concept,_POS,DSyntR)),

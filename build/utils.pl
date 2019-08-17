@@ -30,6 +30,19 @@ hasArgOpRole([_|Rs]):-hasArgOpRole(Rs).
 % hasNonArgOpRole([[R,_AMR]|_]):- \+isArgOp(R),!.
 % hasNonArgOpRole([_|Rs]):-hasNonArgOpRole(Rs).
 
+%% check type of DSyntR ignoring options
+ignoreOptions(X*_Opt,Y):-!,ignoreOptions(X,Y).
+ignoreOptions(X,X).
+
+%% check type of DSyntR ignoring options
+isX(X,Y):-ignoreOptions(Y,Y1),(Y1=..[X|_];Y1=..[ls,X0|_],X0=..[X|_]).
+
+isS(X) :-isX(s,X).
+isNP(X):-isX(np,X).
+isA(X) :-isX(a,X).
+isSP(X):-isX(sp,X).
+isPro(X):-isX(pro,X).
+
 %%  check if atom is a legal variable name (atom composed of one or two lower case letters 
 %%       optionaly followed by a digit and terminated by 0 or more *
 isLegalVarName(Var):-

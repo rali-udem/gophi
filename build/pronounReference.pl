@@ -57,36 +57,36 @@ testSeparate(AMRstring):-
 % mettre la phrase à l'infinitif sans pronom si sujet est null
 
 %%% genRefAux(-ConceptPath,-VarPath,-Gender,+Pronoun)
-genRefAux(_,[':poss'|_],G,'Determiner',d("my")*pe("3")*g(G)):-!.
+genRefAux(_,[':poss'|_],G,'Determiner',d("my")*pe("3")*g(G)*n("s")):-!.
 % remove reference in the relative introduced by the inverse roles
 genRefAux(_,[':ARG0', _Verb, ':*:ARG0'|_], _,'Pronoun',null):-!. % même sujet
 genRefAux(_,[':ARG1', _Verb, ':*:ARG1'|_], _,'Pronoun',null):-!. % même COD
 % same verb
-genRefAux([_,':ARG0',Verb|_],[':ARG0',Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-!.
-genRefAux([_,':ARG1',Verb|_],[':ARG0',Verb|_],G,'Pronoun',pro("myself")*pe("3")*g(G)):-!.
-genRefAux([_,  ARGi ,Verb|_],[':ARG0',Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-
+genRefAux([_,':ARG0',Verb|_],[':ARG0',Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,':ARG1',Verb|_],[':ARG0',Verb|_],G,'Pronoun',pro("myself")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,  ARGi ,Verb|_],[':ARG0',Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-
     re_match('^:ARG\\d$',ARGi),!.
-genRefAux([_,':ARG0',Verb|_],[':ARG1',Verb|_],G,'Pronoun',pro("myself")*pe("3")*g(G)):-!.
-genRefAux([_,':ARG1',Verb|_],[':ARG1',Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-!.
-genRefAux([_,  ARGi ,Verb|_],[':ARG1',Verb|_],G,'Pronoun',pro("me")*pe("3")*g(G)):-re_match('^:ARG\\d$',ARGi),!.
-genRefAux([_,':ARG0',Verb|_],[  ARGj ,Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-re_match('^:ARG\\d$',ARGj),!.
-genRefAux([_,':ARG1',Verb|_],[  ARGj ,Verb|_],G,'Pronoun',pro("me")*pe("3")*g(G)):-
+genRefAux([_,':ARG0',Verb|_],[':ARG1',Verb|_],G,'Pronoun',pro("myself")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,':ARG1',Verb|_],[':ARG1',Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,  ARGi ,Verb|_],[':ARG1',Verb|_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-re_match('^:ARG\\d$',ARGi),!.
+genRefAux([_,':ARG0',Verb|_],[  ARGj ,Verb|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-re_match('^:ARG\\d$',ARGj),!.
+genRefAux([_,':ARG1',Verb|_],[  ARGj ,Verb|_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-
     re_match('^:ARG\\d$',ARGj),!.
-genRefAux([_,  ARGi ,Verb|_],[  ARGj ,Verb|_],G,'Pronoun',pro("me")*pe("3")*g(G)):-
+genRefAux([_,  ARGi ,Verb|_],[  ARGj ,Verb|_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-
     re_match('^:ARG\\d$',ARGi), re_match('^:ARG\\d$',ARGj),!.
 % different verb
-genRefAux([_,':ARG0'|_],[':ARG0'|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-!.
-genRefAux([_,':ARG1'|_],[':ARG0'|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-!.
-genRefAux([_,  ARGi |_],[':ARG0'|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-re_match('^:ARG\\d$',ARGi),!.
-genRefAux([_,':ARG0'|_],[':ARG1'|_],G,'Pronoun',pro("me")*pe("3")*g(G)):-!.
-genRefAux([_,':ARG1'|_],[':ARG1'|_],G,'Pronoun',pro("I")*pe("3")*g(G)):-!.
-genRefAux([_,  ARGi |_],[':ARG1'|_],G,'Pronoun',pro("me")*pe("3")*g(G)):-re_match('^:ARG\\d$',ARGi),!.
-genRefAux([_,':ARG0'|_],[  ARGj |_],G,'Pronoun',pro("me")*pe("3")*g(G)):-re_match('^:ARG\\d$',ARGj),!.
-genRefAux([_,':ARG1'|_],[  ARGj |_],G,'Pronoun',pro("me")*pe("3")*g(G)):-re_match('^:ARG\\d$',ARGj),!.
-genRefAux([_,  ARGi |_],[  ARGj |_],G,'Pronoun',pro("me")*pe("3")*g(G)):-
+genRefAux([_,':ARG0'|_],[':ARG0'|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,':ARG1'|_],[':ARG0'|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,  ARGi |_],[':ARG0'|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-re_match('^:ARG\\d$',ARGi),!.
+genRefAux([_,':ARG0'|_],[':ARG1'|_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,':ARG1'|_],[':ARG1'|_],G,'Pronoun',pro("I")*pe("3")*g(G)*n("s")):-!.
+genRefAux([_,  ARGi |_],[':ARG1'|_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-re_match('^:ARG\\d$',ARGi),!.
+genRefAux([_,':ARG0'|_],[  ARGj |_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-re_match('^:ARG\\d$',ARGj),!.
+genRefAux([_,':ARG1'|_],[  ARGj |_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-re_match('^:ARG\\d$',ARGj),!.
+genRefAux([_,  ARGi |_],[  ARGj |_],G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")):-
     re_match('^:ARG\\d$',ARGi), re_match('^:ARG\\d$',ARGj),!.
 % by default
-genRefAux(_,_,G,'Pronoun',pro("me")*pe("3")*g(G)).
+genRefAux(_,_,G,'Pronoun',pro("me")*pe("3")*g(G)*n("s")).
 
 % reference to an existing pronoun
 genRefPro(_,[':ARG1'|_],pro(_)*pe(P)*g(G)*n(N),pro("me")*pe(P)*g(G)*n(N)).
