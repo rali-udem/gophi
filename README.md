@@ -166,7 +166,6 @@ A CGI that creates a web page in which a user can edit an AMR, which is then tra
 
 * `addGender.py`: create `gender.pl` from `data/englishGenderWords.txt`
 * `amrConceptsVSPropBankNLexicon.py` : compute statistics of occurrences of concepts found (or not) in PropBank
-* `amrStats.py` : create Excel spreadsheet for *development* evaluation
 * `amrStats.py`            : parses `.out` files, computes BLEU scores and creates an Excel file for manual evaluation
 * `calculatebleu.py` : used by amrStats.py
 * `compareGoPhiOutputs.py` : compare the outputs (i.e. out files) of two runs on the same examples and output the differences between them

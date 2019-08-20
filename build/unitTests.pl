@@ -35,7 +35,7 @@ testAll :-
 
 expected(
   '0',
-  "Small is not the marble.",
+  "Not small is the marble.",
   '(s / small :domain (m / marble) :polarity -)').
 expected(
   '1a',
@@ -187,7 +187,7 @@ expected(
              :ARG1 s ))').
 expected(
   'SemEval-3',
-  "He claims that the singer 28 year old exposes himself to him that is repeated.",
+  "He claims that the singer 28 year old exposes to him himself that is repeated.",
   '(c/claim-01
        :ARG0 (h/he)
        :ARG1 (e/expose-01

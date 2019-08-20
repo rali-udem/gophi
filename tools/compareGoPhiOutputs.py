@@ -35,7 +35,7 @@ def getInGroup(label,group):
     for line in group:
         if line.startswith(label):
             return line[len(label):]
-    print("%s not found in %s"%(label,"\n".join(group)))
+    print("%s not found in\n%s"%(label,"\n".join(group)))
     sys.exit(1)
 
 def getAMR(group):

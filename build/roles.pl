@@ -35,8 +35,8 @@ questionType(Role,"wos"):-writeln('** unimplemented role for amr-unknown':Role).
 %% transformed inverse role
 processRole(StarRole,OuterConcept,_OuterPOS,AMR,Env,Options,EnvOut,OptionsOut):-
      atom_concat(':*',Role,StarRole),!,
-     (hasShortCutRole(AMR,Role,Role1,SCRole)-> 
-         (AMR = [_,_|Roles0],hasRole(Roles0,Role1,AMR0,_Roles1),
+     hasShortCutRole(AMR,Role,Role1,SCRole)-> 
+         ((AMR = [_,_|Roles0],hasRole(Roles0,Role1,AMR0,_Roles1),
           processRole(SCRole,OuterConcept,_,AMR0,Env,Options,EnvOut,OptionsOut));
          (findRelPronoun(Role,OuterConcept,Pronoun),
           amr2dsr(AMR,_Concept,POS,DSyntR1),
