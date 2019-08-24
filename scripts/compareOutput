@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python3 /Users/lapalme/Documents/GitHub/gophi/tools/compareGoPhiOutputs.py $1 $2

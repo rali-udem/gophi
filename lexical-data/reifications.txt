@@ -1,0 +1,67 @@
+# taken from https://github.com/amrisi/amr-guidelines/blob/master/amr.md#reification
+# Here are the AMR reifications. Reifications often correspond to OntoNotes predicates, 
+# in which case, we just use the :ARG relations in the natural way.
+# Read this chart as: x :Relation y = x :Domain-of (z / Reification :Range y)
+# For example: x :location y = x :ARG1-of (b / be-located-at-91 :ARG2 y)
+# columns  1 and 2 have been interchanged
+
+Reification	# Relation	Domain	Range	Example
+accompany-01	:accompanier	:ARG0	:ARG1	“she's with him”
+age-01	:age	:ARG1	:ARG2	“she's 41 years old”
+benefit-01	:beneficiary	:ARG0	:ARG1	“the 5k run is for kids”
+cause-01	:cause	:ARG1	:ARG0	“he came 'cause of her”
+have-concession-91	:concession	:ARG1	:ARG2	“he came despite of her”
+have-condition-91	:condition	:ARG1	:ARG2	“he comes if she comes”
+have-degree-92	:degree	:ARG1	:ARG2	“very tall” (intensifier or downtoner)
+be-destined-for-91	:destination	:ARG1	:ARG2	“i'm off to Atlanta”
+last-01	:duration	:ARG1	:ARG2	“it's 15 minutes long”
+exemplify-01	:example	:ARG0	:ARG1	“cities such as Atlanta”
+have-extent-91	:extent	:ARG1	:ARG2	“trip was 2500 miles”
+have-frequency-91	:frequency	:ARG1	:ARG2	“he came three times”
+have-instrument-91	:instrument	:ARG1	:ARG2	“forks are for eating”
+be-located-at-91	:location	:ARG1	:ARG2	“she's not here”
+have-manner-91	:manner	:ARG1	:ARG2	“it was done quickly”
+have-mod-91	:mod	:ARG1	:ARG2	“he is half Chinese"
+have-name-91	:name	:ARG1	:ARG2	“the city formerly named Constantinople”
+have-part-91	:part	:ARG1	:ARG2	“the roof of the house”
+have-polarity-91	:polarity	:ARG1	:ARG2	“I don't know.”
+own-01, have-03	:poss	:ARG0	:ARG1	“that dog's not mine”
+have-purpose-91	:purpose	:ARG1	:ARG2	“it's to eliminate bugs”
+have-quant-91	:quant	:ARG1	:ARG2	“there are 4 rabbits”
+be-from-91	:source	:ARG1	:ARG2	“she's from Ipanema”
+have-subevent-91	:subevent	:ARG1	:ARG2	“presentation at a conference”
+include-91	:subset	:ARG2	:ARG1	“10% of the workers”
+be-temporally-at-91	:time	:ARG1	:ARG2	“the party is on friday”
+concern-02	:topic	:ARG0	:ARG1	“the show's about me”
+have-value-91	:value	:ARG1	:ARG2	“The phone number is 1-800-555-1223.”
+
+reifications={
+    "accompany-01":{"rel":":accompanier","domain":":ARG0","range":":ARG1","ex":“she's with him”},
+    "age-01":{"rel":":age","domain":":ARG1","range":":ARG2","ex":“she's 41 years old”},
+    "benefit-01":{"rel":":beneficiary","domain":":ARG0","range":":ARG1","ex":“the 5k run is for kids”},
+    "cause-01":{"rel":":cause","domain":":ARG1","range":":ARG0","ex":“he came 'cause of her”},
+    "have-concession-91":{"rel":":concession","domain":":ARG1","range":":ARG2","ex":“he came despite of her”},
+    "have-condition-91":{"rel":":condition","domain":":ARG1","range":":ARG2","ex":“he comes if she comes”},
+    "have-degree-92":{"rel":":degree","domain":":ARG1","range":":ARG2","ex":“very tall (intensifier or downtoner)”},
+    "be-destined-for-91":{"rel":":destination","domain":":ARG1","range":":ARG2","ex":“i'm off to Atlanta”},
+    "last-01":{"rel":":duration","domain":":ARG1","range":":ARG2","ex":“it's 15 minutes long”},
+    "exemplify-01":{"rel":":example","domain":":ARG0","range":":ARG1","ex":“cities such as Atlanta”},
+    "have-extent-91":{"rel":":extent","domain":":ARG1","range":":ARG2","ex":“trip was 2500 miles”},
+    "have-frequency-91":{"rel":":frequency","domain":":ARG1","range":":ARG2","ex":“he came three times”},
+    "have-instrument-91":{"rel":":instrument","domain":":ARG1","range":":ARG2","ex":“forks are for eating”},
+    "be-located-at-91":{"rel":":location","domain":":ARG1","range":":ARG2","ex":“she's not here”},
+    "have-manner-91":{"rel":":manner","domain":":ARG1","range":":ARG2","ex":“it was done quickly”},
+    "have-mod-91":{"rel":":mod","domain":":ARG1","range":":ARG2","ex":“he is half Chinese"},
+    "have-name-91":{"rel":":name","domain":":ARG1","range":":ARG2","ex":“the city formerly named Constantinople”},
+    "have-part-91":{"rel":":part","domain":":ARG1","range":":ARG2","ex":“the roof of the house”},
+    "have-polarity-91":{"rel":":polarity","domain":":ARG1","range":":ARG2","ex":“I don't know.”},
+    "own-01, have-03":{"rel":":poss","domain":":ARG0","range":":ARG1","ex":“that dog's not mine”},
+    "have-purpose-91":{"rel":":purpose","domain":":ARG1","range":":ARG2","ex":“it's to eliminate bugs”},
+    "have-quant-91":{"rel":":quant","domain":":ARG1","range":":ARG2","ex":“there are 4 rabbits”},
+    "be-from-91":{"rel":":source","domain":":ARG1","range":":ARG2","ex":“she's from Ipanema”},
+    "have-subevent-91":{"rel":":subevent","domain":":ARG1","range":":ARG2","ex":“presentation at a conference”},
+    "include-91":{"rel":":subset","domain":":ARG2","range":":ARG1","ex":“10% of the workers”},
+    "be-temporally-at-91":{"rel":":time","domain":":ARG1","range":":ARG2","ex":“the party is on friday”},
+    "concern-02":{"rel":":topic","domain":":ARG0","range":":ARG1","ex":“the show's about me”},
+    "have-value-91":{"rel":":value","domain":":ARG1","range":":ARG2","ex":“The phone number is 1-800-555-1223.”}
+}

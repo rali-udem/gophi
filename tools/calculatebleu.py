@@ -114,7 +114,9 @@ def reduce(func, seq):
 def geometric_mean(precisions):
     return (reduce(operator.mul, precisions)) ** (1.0 / len(precisions))
 
-
+##  candidate : list of generated sentences
+##  references: list of list reference sentences (often the external list is of length one, i.e. only one reference)
+##  returns the BLEU score over all candidate sentences
 def BLEU(candidate, references):
     if len(candidate)==0: return 0
     precisions = []

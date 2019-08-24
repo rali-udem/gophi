@@ -19,13 +19,22 @@ adj2adv(Ls,Ls1):- % deal with embedded adjective in a ls
     Ls=..[ls|Args],maplist(adj2adv,Args,Args1),Ls1=..[ls|Args1].
 adj2adv(Adj0,Adj0).
 
+%% search in morphVerb without distinguishing NounVerb from ActorVerb 
+getMorphVerb(Concept,Nominalization):-
+    (cleanConcept(Concept,ConceptS),atom_string(ConceptC,ConceptS)),
+    ((((morphVerb(ConceptC,Nominalization,_);
+      morphVerb(ConceptC,_,Nominalization)),Nominalization\=null),
+     % HACK; fail to prevent an infinite loop when the nominalization is exactly as the initial concept...
+     Nominalization\=ConceptC);
+     (noun(ConceptC,_),Nominalization=ConceptC)). 
+
 % remove dictionary entry
 delete(POS,Key):-
     Rem=..[POS,Key,_],
-    retract(Rem).
+    retractall(Rem).
 % change dictionary entry
 patch(POS,Key,Val):-
-    (delete(POS,Key)->true;true), 
+    ignore(delete(POS,Key)), 
     Add=..[POS,Key,Val],
     assert(Add).
 
@@ -48,41 +57,39 @@ getConceptPos(Concept,'UnknownPOS',q(String)):-
 
 %%%% show info about words from the dictionary
 %%  the search string is an anchored regex 
+showSpecialConcept(W):-
+    atom_concat('^',W,W1),  % re_option anchored(true) having no effect,we add ^ in front 
+    ignore((bagof((SC,Def),(specialConcept(SC,Def),re_match(W1,SC)),SDs),
+            writeln("**Special Concept"),forall(member((S,D),SDs),writeln(S:D)))).
 
 showPOS(POS,W):-
     atom_concat('^',W,W1),  % re_option anchored(true) having no effect,we add ^ in front 
-    bagof((Z,X),(call(POS,Z,X),re_match(W1,Z)),Ys)   % get all matching words and their DSyntR
-    -> (write('**'),write(POS),nl,
-        forall(member((Z,X),Ys),
-               (write(Z),write(':'),numbervars(X),writeq(X),nl)));
-    true.
+    ignore((bagof((Z,X),(call(POS,Z,X),re_match(W1,Z)),Ys),   % get all matching words and their DSyntR
+            write('**'),write(POS),nl,
+            forall(member((Z,X),Ys),
+                   (write(Z),write(':'),numbervars(X),writeq(X),nl)))).
 
 showMorphVerb(W):-
     atom_concat('^',W,W1),
-    bagof((X,NV,AV),(morphVerb(X,NV,AV),re_match(W1,X)),Ys),!,
-    writeln('**MorphVerb '),
-    forall(member((X,NV,AV),Ys),
-           (write(X:""),
-            (NV\=null -> write(" Noun":NV);true),
-            (AV\=null -> write(" Actor":AV);true),nl)).
-showMorphVerb(_).
+    ignore((bagof((X,NV,AV),(morphVerb(X,NV,AV),re_match(W1,X)),Ys),
+            writeln('**MorphVerb '),
+            forall(member((X,NV,AV),Ys),
+                   (write(X:""),
+                    (NV\=null -> write(" Noun":NV);true),
+                    (AV\=null -> write(" Actor":AV);true),nl)))).
     
 showVerb(W):-
     atom_concat('^',W,W1),
-    (bagof((X,Verb),(verbalization(X,Verb),re_match(W1,X)),Ys)
-      -> writeln('**Verbalisations-simple'),
-         forall(member((X,Verb),Ys),(writeln(X:Verb)));
-      true),
-    (bagof((X,Role,Arg,Verb),
-      (verbalization(X,Role,Arg,Verb),re_match(W1,X)),Ys)
-      -> writeln('**Verbalisations-complex'),
-         forall(member((X,Role,Arg,Verb),Ys),(writeln(X:Role:Arg:Verb)));
-      true),!.
-showVerb(_).
-    
+    ignore((bagof((X,Verb),(verbalization(X,Verb),re_match(W1,X)),Ys),
+            writeln('**Verbalisations-simple'),
+            forall(member((X,Verb),Ys),(writeln(X:Verb))))),
+    ignore((bagof((X,Role,Arg,Verb),(verbalization(X,Role,Arg,Verb),re_match(W1,X)),Ys),
+            writeln('**Verbalisations-complex'),
+            forall(member((X,Role,Arg,Verb),Ys),(writeln(X:Role:Arg:Verb))))).    
     
 %% show POS in the same order as for getConceptPos(...) 
 info(W):-
+    showSpecialConcept(W),
     forall(member(POS,['verb','noun','adjective','conjunction',
                        'pronoun','adverb','preposition','determiner']),
            showPOS(POS,W)),

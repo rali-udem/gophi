@@ -6,11 +6,8 @@
 %%              that can be written with maplist(write,SSR)
 %%                    or concatenated with atomic_list_concat(SSR,Out)
 
-dsr2jsReal(DSR)-->{deleteNull(DSR,DSRnonull)},
-        ({DSRnonull=..[ls|Rest],SDSR=..[s|Rest]}->dsr2jsReal(SDSR,0); %add a top S in case of a top ls
-         {DSRnonull=DSRnonull0*Options,DSRnonull0=..[ls|Rest],SDSR=..[s|Rest]}
-                               -> dsr2jsReal(SDSR*Options,0);
-         dsr2jsReal(DSRnonull,0)).
+dsr2jsReal(DSR)-->{deleteNull(DSR,DSRnoNull0),replaceTopLsByS(DSRnoNull0,DSRnoNull)},
+         dsr2jsReal(DSRnoNull,0).
 
 dsr2jsReal(ls,_N)--> !,['Q("")']. % if deleteNull produced a lone ls
 % dsr2jsReal(c,_N) --> !,['Q("")']. % if deleteNull produced a lone c
@@ -73,6 +70,12 @@ deleteNull(X*Option,Out):-deleteNull(X,X1),(X1=ls->Out=X1;Out=X1*Option).
 deleteNull([X|Xs],Xs1):-isNull(X),!,deleteNull(Xs,Xs1).
 deleteNull([X|Xs],[X1|Xs1]):-deleteNull(X,X1),!,deleteNull(Xs,Xs1).
 deleteNull(X,X1) :- X=..[P|Args],deleteNull(Args,Args1),X1=..[P|Args1].
+
+% replace top ls by s taking care of options
+replaceTopLsByS(In,Out):-In=..[ls|Rest],Out=..[s|Rest],!.
+replaceTopLsByS(In*Options,Out*Options):-replaceTopLsByS(In,Out),!.
+replaceTopLsByS(In,In).
+
 
 %  Translation table for jsReal symbols
 %  http://rali.iro.umontreal.ca/JSrealB/documentation/user.html

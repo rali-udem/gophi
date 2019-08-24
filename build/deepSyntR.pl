@@ -20,31 +20,34 @@ amr2dsr(X,"*unrecognized*",'UnrecognizedPOS',"*unrecognized*"):-  %% should neve
 
 processConcept('Special',[Concept,_Ivar|Roles],ConceptDSR,Concept,'Special',OutDSyntR):-
     call(ConceptDSR,Roles,OutDSyntR).
-processConcept('Verb',[Concept,Ivar|Roles],_ConceptDSyntR,ConceptV,POSV,OutDSyntR):-
-    hasVerbalization([Concept,Ivar|Roles],AMRverb),
+processConcept(_,[Concept,Ivar|Roles],_ConceptDSyntR,ConceptV,POSV,OutDSyntR):-
+    getNominalization([Concept,Ivar|Roles],AMRverb),
     amr2dsr(AMRverb,ConceptV,POSV,OutDSyntR),!.
 processConcept('Verb',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Verb',OutDSyntR):-
-    buildRoleEnvOption(Concept,'Verb',Roles,[],[],Env,Options),
-    checkImperative(Roles,Env,EnvOut0,Options,Options1), % HACK for imperative
-    processRest(ConceptDSyntR,EnvOut0,Options1,OutDSyntR).
+    checkPassive(Concept,Roles,ConceptDSyntR,Options0),
+    buildRoleEnvOption(Concept,'Verb',Roles,[],Options0,Env,Options1),
+    checkSpecial(Roles,Env,EnvOut0,Options1,Options2), % HACK for imperative or yes-or-no question
+    checkAccusativePronoun(EnvOut0,EnvOut1), % HACK for possible accusative pronoun as :ARG1 with :ARG0
+    processRest(ConceptDSyntR,EnvOut1,Options2,OutDSyntR).
 processConcept('Adjective',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Adjective',OutDSyntR):-
     buildRoleEnvOption(Concept,'Adjective',Roles,[],[],Env,Options),
     checkAdjectiveArgs(Env,ConceptDSyntR,AdjStruct),% adjective with :ARG0 or :ARG1
     processRest(AdjStruct,Env,Options,OutDSyntR).
 processConcept(POS,[Concept,_Ivar|Roles],ConceptDSyntR,Concept,POS,OutDSyntR):-
+    POS\='Special',  % we must fail in this case in order to try another concept
     buildRoleEnvOption(Concept,POS,Roles,[],[],Env,Options),
     processRest(ConceptDSyntR,Env,Options,OutDSyntR).
-
-% apply the roles of the lambda and add rest of arguments and options
-processRest(DSyntR,Env,Options,OutDSyntR):-
-    applyEnv(DSyntR,Env,EnvOut,OutDSyntR0),
-    addRestRoles(OutDSyntR0,EnvOut,OutDSyntR1),
-    addOptions(Options,OutDSyntR1,OutDSyntR).
 
 buildRoleEnvOption(_,_,[],Env,Options,Env,Options).
 buildRoleEnvOption(OuterConcept,OuterPOS,[[Role,AMR]|RAMRs],EnvIn,OptionsIn,EnvOut,OptionsOut):-
     processRole(Role,OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut0,OptionsOut0),
     buildRoleEnvOption(OuterConcept,OuterPOS,RAMRs,EnvOut0,OptionsOut0,EnvOut,OptionsOut).
+
+% apply the roles of the lambda and add rest of arguments and options 
+processRest(DSyntR,Env,Options,OutDSyntR):-
+    applyEnv(DSyntR,Env,EnvOut,OutDSyntR0),
+    addRestRoles(OutDSyntR0,EnvOut,OutDSyntR1),
+    addOptions(Options,OutDSyntR1,OutDSyntR).
 
 checkAdjectiveArgs(Env,DSyntR,Struct):-
     getAllKeys(Env,Keys),findAdjStruct(Keys,DSyntR,Struct).
@@ -56,39 +59,49 @@ findAdjStruct(Keys,DSyntR,(':ARG1':A1)^(':ARG2':A2)^s(A1,vp(v("be"),DSyntR,A2/pp
 
 %% HACK for imperative for which JSreal remove the subject
 %%      do this only when :ARG0 [you,_] you appears...
-checkImperative(Roles,EnvIn,EnvOut,Options,[t("ip")|Options]):-
-    hasRole(Roles,':mode','imperative',_),hasRole(Roles,':ARG0',['you',_],_),!,
-    select(':&':q("let"),EnvIn,EnvOut).% remove q("let") added in processRole(':mode',..)
-checkImperative(_,Env,Env,Options,Options). % keep as is
+checkSpecial(Roles,EnvIn,EnvOut,Options,[t("ip")|Options]):-
+    hasRole(Roles,':mode','imperative',_),hasRole(Roles,':ARG0',['you',_],_),
+    select(':&':q("let"),EnvIn,EnvOut),!.% remove q("let") added in processRole(':mode',..)
+checkSpecial(Roles,Env,Env,Options,[typ({"int":"yon"})|Options]):- % special case of yes-or-no question
+    hasRole(Roles,':ARG1',['amr-choice'|_],_).
+checkSpecial(_,Env,Env,Options,Options). % keep as is
 
-%%% verbalisation processing
-hasVerbalization([Concept,V],[NounVerb,V]):- % verbalisation simple (sans rôles)
+%% HACK for passive : only for verbs
+%% check if conceptDSR has an :ARG0 and the actual roles does not have :ARG0 but has :ARG1
+%% in that case, generate a passive sentence otherwise do nothing
+checkPassive('bear-02',_,_,[]):-!. %% do not passivate the special case of bear-02 because it is already passive
+checkPassive(Modal,_,_,[]):-modalityFlag(Modal,_,_,_). %% do not passivate modals
+checkPassive(_,Roles,(':ARG0':_)^_,[typ({"pas":'true'})]):-
+    \+hasRole(Roles,':ARG0',_,_),hasRole(Roles,':ARG1',_,_).
+checkPassive(_,_,_,[]).
+
+%% HACK for changing nominative pronoun to accusative for :ARG1 when :ARG0 is also present
+checkAccusativePronoun(EnvIn,[':ARG1':AccPron|EnvOut]):-
+    memberchk(':ARG0':_,EnvIn),
+    select(':ARG1':NomPron,EnvIn,EnvOut),
+    nominative2accusativePronoun(NomPron,AccPron).
+checkAccusativePronoun(Env,Env).
+
+%%% find nominalization if possible, fail otherwise
+getNominalization([Concept,V],[NounVerb,V]):- % simple nominalization  (wihtout roles)
     verbalization(Concept,NounVerb),!.
-hasVerbalization([Concept,V|Roles],AMR):- % verbalisation complexe
+getNominalization([Concept,V|Roles],AMR):- % complex verbalization
     verbalization(Concept,Role,Arg,NounVerb),
     hasRole(Roles,Role,[Arg|SubRole],RestRoles),
     matchSubRole([Arg|SubRole],Role,V,MatchedSubRoles),!,
     append([NounVerb,V|MatchedSubRoles],RestRoles,AMR).
-hasVerbalization([Concept,V|Roles],[Verb,V|RolesOut]):-
-    checkVerbArgs(Roles,RolesOut),
-    % \+hasArgOpRole(Roles), %% do not verbalize when :ARGi or :OPi appear
-    %% look into morphVerb... but without possible acception number
-    cleanConcept(Concept,ConceptS),atom_string(ConceptC,ConceptS),
-    (((morphVerb(ConceptC,Verb,_);
-       morphVerb(ConceptC,_,Verb)),Verb\=null);
-     noun(ConceptC,_), 
-     Concept\=ConceptC, % HACK to prevent an infinite loop when the nominalization is exactly as the verb...
-     Verb=ConceptC).
-
-checkVerbArgs(Roles,Roles):-hasRole(Roles,':polarity',_,_),!,fail. % do not try to verbalize negative verbs
-checkVerbArgs(Roles,Roles):- \+hasArgOpRole(Roles),!. %% OK when no :ARGi or :OPi appear
-checkVerbArgs(Roles,RolesOut):-    %% OK if :ARG1 is a pronoun that refers to the same verb as the :ARG0 of the upper model
-    hasRole(Roles,':ARG1',Var,RolesOut),atom(Var),
-    % trace,
-    getPaths(Var,VarPath,ConceptPath),
-    ConceptPath=[_,':ARG0',Verb],
-    append([':ARG1'],Path,VarPath),append(_P,[Verb],Path).
-
+getNominalization([Concept,V|Roles],[Nominalization,V|RolesOut]):-
+    verb(Concept,_),getMorphVerb(Concept,Nominalization), %% concept is a verb with a nominalization 
+    \+hasRole(Roles,':polarity',_,_),       %% fail if :polarity role is present
+    (hasRole(Roles,':ARG1',Var,RolesOut )-> %% if :ARG1 is present
+        \+hasArgOpRole(RolesOut),           %% fail if any :ARGi or :opi is present
+        %% OK if :ARG1 is a pronoun that refers to the :ARG0 of the verb of the upper level
+        atom(Var),getPaths(Var,VarPath,ConceptPath),
+        ConceptPath=[_,':ARG0',Verb],append([':ARG1'],Path,VarPath),append(_P,[Verb],Path);
+    \+hasArgOpRole(Roles), %% if no :ARG1 is present, fail if any :ARGi or :opi is present
+    RolesOut=Roles
+    ).
+    
 %%% complex verbalization ...
 matchSubRole([_Verb,_VV|Roles],InvRole,V,RestRoles1):-
     re_replace('^:\\*(.*)$'/a,'\\1',InvRole,Role),
@@ -98,10 +111,12 @@ matchSubRole([_Verb,_VV|Roles],InvRole,V,RestRoles1):-
  sameVar(V,V).
  sameVar(\V,V).
  sameVar(V,\V).
+ addMod(_,[],[]).
  addMod(':ARG0',RestRoles,[[':poss',Val1]|RestRoles1]):-
      hasRole(RestRoles,':ARG1',Val1,RestRoles1).
  addMod(':ARG1',RestRoles,[[':poss',Val1]|RestRoles1]):-
      hasRole(RestRoles,':ARG0',Val1,RestRoles1).
+
 
 %%% Environment management
 applyEnv((Key:Var)^Expr0,Env0,Env2,Expr2):-
@@ -138,9 +153,10 @@ addRestRoles(S,Env,S1):-
      getPostfixVals(Env1,[],PostfixVals,Env2),
      getAllKeys(Env2,Keys),showKeys(Keys),
      getAllVals(Env2,RestVals),
-    (S=..[q|Xs] ->merge(PrefixVals,q,Xs,PostfixVals,RestVals,L),S1=..[ls|L];
-     S=..[c|Ps]    ->merge(PrefixVals,c,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
-     S=..[a|Ps]    ->merge(PrefixVals,a,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
+    (S=..[q|Xs]      ->merge(PrefixVals,q,Xs,PostfixVals,RestVals,L),S1=..[ls|L];
+     S=..[c|Ps]      ->merge(PrefixVals,c,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
+     S=..[a|Ps]      ->merge(PrefixVals,a,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
+     S=..[adv|Ps]    ->merge(PrefixVals,adv,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
      S=..[pro|Ps]    ->merge(PrefixVals,pro,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
      S=..[np,D,A,[n|Ps]]->merge(PrefixVals,n,Ps,PostfixVals,RestVals,L),S1=..[np,D,A|L];
      (S=..[P|Xs], merge(PrefixVals,null,Xs,PostfixVals,RestVals,L),S1=..[P|L])).
@@ -174,13 +190,3 @@ relative(Concept,InDSyntR,OutDSyntR):-
     (G=="n"->Pronoun=pro("that");Pronoun=pro("who")),
     (isS(InDSyntR)->OutDSyntR=sp(Pronoun,InDSyntR);
                     predicate(Pronoun,InDSyntR,OutDSyntR)).
-
-%% check type of DSyntR ignoring options
-isX(X,Y*_Option):-!,isX(X,Y).
-isX(X,Y) :-Y=..[X|_].
-
-isS(X) :-isX(s,X).
-isNP(X):-isX(np,X).
-isA(X) :-isX(a,X).
-isSP(X):-isX(sp,X).
-

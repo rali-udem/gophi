@@ -67,14 +67,27 @@ More information about the design and the rationale of the system [in this paper
             > English sentence
             I say the hello to the world.
 
-    * Show the input AMRs in a *file* that match a `Regex` (which can be '') and their English realization.
+    * Verbalize a single AMR in a string, controlling output of structure and enabling the tracing of the transformation into DSyntR
+    
+      `amr2SSyntR(AMRstring,SSyntR,ShowStructs,TraceTrans)`
+      
+      where `ShowStructs` and `TraceTrans` are boolean, for example:
+      
+      `amr2SSyntR('(s / say-01 :ARG0 (i/I) :ARG1 (h/hello) :ARG2 (w/world))',SSyntR,true,false).`
+      
+      These calls can be simplified with
+      
+      * `testAMRstring(AMRstring)` : shows all intermediary structures
+      * `traceAMRstring(AMRstring)`: enables tracing of AMR to DSyntR
+      
+    * Show the input AMRs in a *file* that match a `Regex` (which can be '' to match all AMRs) and their English realization. `Regex` can also be a number (usually between 0 and 1) that indicates the probability that the current AMR is processed. This is not equivalent to a  *random sampling*, but it is enough for our testing purpose.
 
-        `showRealization(InFileName,Regex).`
+        `showRealisation(InFileName,Regex).`
         
         For example, to process AMRs with at least an inverse role:  
-        `showAMRsFile('../../amr-examples/amr-examples.txt',':ARG.-of').`
+        `showRealisation('../amr-examples/amr-examples.txt',':ARG.-of').`
         
-    * Show the input AMRs in a *file* that match a `Regex` (which can be '') and all the intermediary structure leading to their English realization.
+    * Show the input AMRs in a *file* that match a `Regex` (which can be '' to match all AMRs) and display the intermediary structures leading to their English realization.
 
         `showAMRsFile(InFileName,Regex).`
         
@@ -123,7 +136,7 @@ More information about the design and the rationale of the system [in this paper
 A CGI that creates a web page in which a user can edit an AMR, which is then transformed and realised by jsRealB in that same web page.
 
 * `inputPage.pl`     : creates a web page with an embedded editor that contains an AMR with checkboxes for selecting the intermediary structures to show.
-* `replyPage.pl` : creates a web page showing the original AMR, the selected representations and the English realization.
+* `replyPage.pl` : creates a web page showing the original AMR, the selected representations and the English realization. The generated web page loads `gophi-web/jsRealB-dme.min.js` and `gophi-web/addLexicon-dme.js` which realizes the English sentence.
 * `amrVerbalizer.pl` : shows the input page with either an initial AMR or the current one
 * `amrGenerate.pl`   : parses the AMR (using `checkParse.pl`) if it detects errors it displays the input page with error messages; if there are no errors, then it realizes the AMR and displays the intermediary structures that the user has chosen when submitting the form.
 * `gophi-web` directory
@@ -136,7 +149,8 @@ A CGI that creates a web page in which a user can edit an AMR, which is then tra
 
 ### Testing 
 * `examples.pl` : a few examples as Prolog terms taken from articles and useful for testing without parsing a file
-* `unitTests.pl` : a small set-up for testing, but not yet fully operational
+* `unitTests.pl` : a small set-up for testing with a few examples:
+     * `:- testAll.` : test all examples and compare with the expected string (i.e. produced by a previous version)
 
 ## Informations (`documentation` directory)
 * `GenAMR.pdf` : paper describing the rationale and design of `gophi`
@@ -145,15 +159,16 @@ A CGI that creates a web page in which a user can edit an AMR, which is then tra
 ## Shell scripts (`scripts` directory)
 * `gophiFile`  : calls `gophiFile.pl` with appropriate arguments
 * `gophiDir`: calls `gophiFile` on all `amr*.txt` files in a given directory and keeps a copy of stdout in `*.amrtoengtrace` files
+* `compareOutput` : calls `compareGoPhiOutputs.py`on *oldfile* and *newFile* given as parameters
 
 ## Python files (`tools` directory)
 **Caution**: some of these programs use files that are not available in this distribution because they are not in public domain (e.g. AMRs 2.0 from LDC) or that should be downloaded from the [AMR homepage](https://amr.isi.edu "Abstract Meaning Representation (AMR)").
 
 * `addGender.py`: create `gender.pl` from `data/englishGenderWords.txt`
 * `amrConceptsVSPropBankNLexicon.py` : compute statistics of occurrences of concepts found (or not) in PropBank
-* `amrStats.py` : create Excel spreadsheet for *development* evaluation
 * `amrStats.py`            : parses `.out` files, computes BLEU scores and creates an Excel file for manual evaluation
 * `calculatebleu.py` : used by amrStats.py
+* `compareGoPhiOutputs.py` : compare the outputs (i.e. out files) of two runs on the same examples and output the differences between them
 * `createEvalFiles.py` : from a file containing many AMRs, generate a sample AMR file of appropriate format for `gophi`, `isiMT` and `jamr` [more info](documentation/ComparativeEvaluation.md)
 * `createEvalSpreadsheet.py` : creates a comparative evaluation spreadsheet from the output of `gophi`, `isiMT` and `jamr` [more info](documentation/ComparativeEvaluation.md)
 * `createPrologDico.py`    : parses PropBank frames and jsRealB lexicon to create `dictionaryGenerated.pl`

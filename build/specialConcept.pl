@@ -3,6 +3,8 @@
 %%   we more or less follow the Python code, which explain the "ugliness" of this code
 
 specialConcept('person',person).
+specialConcept('number',number).
+specialConcept(Modality,modality(Modality)):-modalityFlag(Modality,_,_,_).
 specialConcept('government-organization',governmentOrganization).
 specialConcept('have-degree-91',haveDegree91).
 specialConcept('have-polarity-91',havePolarity91).
@@ -11,19 +13,26 @@ specialConcept('have-purpose-91',havePurpose91).
 specialConcept('have-rel-role-91',haveRelRole91).
 specialConcept('date-entity',dateEntity).
 specialConcept('ordinal-entity',ordinalEntity).
-specialConcept(Name,quantity):-atom_concat(_,'-quantity',Name),!.
+specialConcept(Name,quantity):-nonvar(Name),atom_concat(_,'-quantity',Name).
 specialConcept(NE,namedEntity(NE)):-
-    memberchk(NE,['continent','country','state','province','city','town',
-                  'company','organization','university','publication']).
-
-% hasRole(Roles,RoleCherché,StructDuRole,autresRoles)
-% hasRole([],R,'not found',[]):-write('hasRole:'),write(R),write(' not found'),nl.
-hasRole([[R,AMR]|Rs],R,AMR,Rs):-!.
-hasRole([R1|Rs],R,A,[R1|RS0]):-hasRole(Rs,R,A,RS0).
-
-% check if one of the roles is :ARGi or :OPi
-hasArgOpRole([[R,_AMR]|_]):-isArgOp(R),!.
-hasArgOpRole([_|Rs]):-hasArgOpRole(Rs).
+    member(NE,[
+    %% list of NE taken from https://www.isi.edu/~ulf/amr/lib/ne-types.html
+'aircraft', 'aircraft-type', 'airport', 'amino-acid', 'amusement-park', 'animal', 'award', 'bay', 'book', 'bridge',
+'broadcast-program', 'building', 'canal' , 'canal', 'canyon', 'car-make', 'cell', 'cell-line', 'city',
+'city-district', 'company', 'conference', 'constellation', 'continent', 'country', 'country-region', 'county',
+'court-decision', 'criminal-organization', 'desert', 'disease', 'dna-sequence', 'earthquake', 'enzyme',
+'ethnic-group', 'event', 'facility', 'family', 'festival', 'food-dish', 'forest', 'game', 'gene',
+'government-organization', 'gulf', 'hotel', 'incident', 'island', 'journal', 'lake', 'language', 'law', 'league',
+'local-region', 'location', 'macro-molecular-complex', 'magazine', 'market', 'market-sector', 'medical-condition',
+'military', 'molecular-physical-entity', 'moon', 'mountain', 'museum', 'music', 'music-key', 'musical-note',
+'nationality', 'natural-disaster', 'natural-object', 'newspaper', 'nucleic-acid', 'ocean', 'organization', 'palace',
+'park', 'pathway', 'peninsula', 'person', 'picture', 'planet', 'political-movement', 'political-party', 'port',
+'product', 'program', 'protein', 'protein-family', 'protein-segment', 'province', 'publication', 'railway-line',
+'regional-group', 'religious-group', 'research-institute','team', 'river', 'road', 'school', 'sea', 'ship', 'show',
+'small-molecule', 'spaceship', 'species', 'sports-facility' , 'star', 'state', 'station', 'strait', 'taxon',
+'territory', 'theater', 'treaty', 'tunnel', 'university', 'valley', 'variable', 'vehicle', 'volcano', 'war',
+'work-of-art', 'world-region', 'worship-place', 'writing-script', 'zoo'
+    ]).
 
 changeNPD(S*Option,NewDet,S1*Option):-changeNPD(S,NewDet,S1).
 changeNPD(NP,NewD,NP1):-
@@ -48,21 +57,24 @@ person(Roles,OutDSyntR):-
     %% add unprocessed roles
     buildRoleEnvOption(Verbalization,'Noun',Roles1,[],[],Env,Options),
     processRest(DSyntR,Env,Options,OutDSyntR).
+%%%%% shortcut : https://www.isi.edu/~ulf/amr/lib/amr-dict.html#shortcuts
 %%% (p2 / person :ARG0-of (h / have-org-role-91 :ARG2 (m / mayor))) ==
 %%%      [person,\p2,[':*:ARG0',['have-org-role-91',h,[':ARG0',p2], [':ARG2',[mayor,m]]] ==>
 %%%  mayor !!!
 person(Roles,OutDSyntR):-
     hasRole(Roles,':*:ARG0',
             ['have-org-role-91',_, 
-                [':ARG0',_],[':ARG2',[Org_Role,_]]],Roles1), % should check the variable!!!
-    noun(Org_Role,DSyntR),
-    %% add unprocessed roles
-    buildRoleEnvOption(Org_Role,'Noun',Roles1,[],[],Env,Options),
-    processRest(DSyntR,Env,Options,OutDSyntR).
+                [':ARG0',_],[':ARG2',AMR]],Roles1), % should check the variable!!!
+    (AMR=[Org_Role,_],noun(Org_Role,DSyntR) -> 
+        buildRoleEnvOption(Org_Role,'Noun',Roles1,[],[],Env,Options);
+        amr2dsr(AMR,_Concept,_POS,DSyntR),Env=[],Options=[]),
+    processRest(DSyntR,Env,Options,OutDSyntR).%% add unprocessed roles
+%%%%% shortcut : https://www.isi.edu/~ulf/amr/lib/amr-dict.html#shortcuts
 %%% (p / person
 %%%          :ARG0-of (h / have-rel-role-91 :ARG1 (i / i):ARG2 (g / grandmother))) ==
 %%%  [person,\p,[':*:ARG0',['have-rel-role-91',h, 
-%%%                           [':ARG0',p], [':ARG1',[i,i]], [':ARG2',[grandmother,g]]]]]],  
+%%%                           [':ARG0',p], [':ARG1',[i,i]], [':ARG2',[grandmother,g]]]]]], ==>
+%%%   (his/her) grandmother !!!  
 person(Roles,OutDSyntR):-
     hasRole(Roles,':*:ARG0',
             ['have-rel-role-91',_, 
@@ -75,28 +87,48 @@ person(Roles,OutDSyntR):-
     processRest(DSyntR1,Env,Options,OutDSyntR).
 %%%% (p / person :name NAME  other roles)) replaced by  q(NAME) other roles
 person(Roles,OutDSyntR):-namedEntity('person',Roles,OutDSyntR).
-% person(Roles,OutDSyntR):-
-%     hasRole(Roles,':name',AMR,Roles1),
-%     amr2dsr(AMR,_Concept,_POS,DSyntR),
-%     %% add unprocessed roles
-%     buildRoleEnvOption('person','Special',Roles1,[],[],Env,Options),
-%     processRest(DSyntR,Env,Options,OutDSyntR).
-% % if no ":name" role, force person as a noun
-% person(Roles,OutDSyntR):-
-%     noun('person',ConceptDSyntR),
-%     processConcept('Noun',['person',_Ivar|Roles],ConceptDSyntR,_ConceptOut,_POSOut,OutDSyntR).
 
-%%%% (p / NamedEntity :name NAME  other roles)) replaced by  q(NAME) other roles
+%%%% (p / NamedEntity :name NAME  other roles)) replaced by evaluation of NAME followed by other roles
 namedEntity(Entity,Roles,OutDSyntR):-
-    hasRole(Roles,':name',AMR,Roles1),
+    (hasRole(Roles,':name',AMR,Roles1);hasRole(Roles,':named',AMR,Roles1)),
     amr2dsr(AMR,_Concept,_POS,DSyntR),
     %% add unprocessed roles
     buildRoleEnvOption(Entity,'Special',Roles1,[],[],Env,Options),
     processRest(DSyntR,Env,Options,OutDSyntR).
 % if no ":name" role, force Entity as a noun
 namedEntity(Entity,Roles,OutDSyntR):-
-    noun(Entity,ConceptDSyntR),
+    (noun(Entity,ConceptDSyntR); % if noun get the DSyntR
+     atom_string(Entity,EntityS),ConceptDSyntR=('D':D)^('A':A)^np($D/d("a"),A,n(EntityS))), % else create a DSyntR
     processConcept('Noun',[Entity,_Ivar|Roles],ConceptDSyntR,_ConceptOut,_POSOut,OutDSyntR).
+
+%% deal with frequent pattern associated with a number
+%%%% (n / number :quant-of AMR) == [number,\n, [':*:quant',[AMR [':quant',n]] ==>
+%%%%  NP(D("the"),N("number"),PP(P("of"),{AMR}))
+number(Roles,np(d("the"),n("number"),pp(p("of"),OutDSyntR))):-
+    hasRole(Roles,':*:quant',[AMRconcept,AMRvar|AMRroles],Roles1),
+    hasRole(AMRroles,':quant',_,AMRroles1), %% remove :quant n,
+    amr2dsr([AMRconcept,AMRvar|AMRroles1],_Concept,_POS,OutDSyntR0),
+    %% add unprocessed roles
+    buildRoleEnvOption('number','Noun',Roles1,[],[],Env,Options),
+    processRest(OutDSyntR0,Env,[n("p")|Options],OutDSyntR).
+number(Roles,OutDSyntR):-
+    buildRoleEnvOption('number','Noun',Roles,[],[],Env,Options),
+    processRest(np(d("the"),n("number")),Env,[n("p")|Options],OutDSyntR).
+
+%%  deal with modality
+modality(Modality,Roles,OutDSyntR):-
+    \+hasRole(Roles,':ARG0',_,_), % do not use modality verb if there is an agent :ARG0
+    modalityFlag(Modality,ARGN,ModFlag,Tense),
+    hasRole(Roles,ARGN,AMR,Roles1),% Roles1\=[],Roles1\=[[':polarity',-]], % fail if no more args or only polarity
+    amr2dsr(AMR,_Concept,_POS,OutDSyntR0),OutDSyntR0\=null,
+    %% add unprocessed roles
+    buildRoleEnvOption(Modality,'Special',Roles1,[],[],Env,Options),
+    processRest(OutDSyntR0,Env,[typ({"mod":ModFlag}),t(Tense)|Options],OutDSyntR).
+ modalityFlag('possible-01',':ARG1',"poss","p").
+ modalityFlag('permit-01',':ARG1',"perm","p").
+ modalityFlag('recommend-01',':ARG1',"nece","ps").
+ modalityFlag('prefer-01',':ARG1',"will","p").
+ modalityFlag('obligate-01',':ARG2',"obli","p").    
 
 %% very special (and frequent) case of government-organization
 % ['government-organization',\g, [':*:ARG0',['govern-01',g2, [':ARG0',g], [':ARG1',Country]
@@ -149,7 +181,7 @@ quantity(Roles0,OutDSyntR):-
      isNP(Unit),changeNPD(Unit,no(Quant),QuantUnit).
  checkQuantUnit(Quant,Unit,ls(Quant,Unit)).
 
- quantityScale(Roles,Roles1,DSyntR,ls(DSyntR,pp(p("on"),d("the"),S,n("scale")))):-
+ quantityScale(Roles,Roles1,DSyntR,ls(DSyntR,pp(p("on"),S,n("scale")))):-
      hasRole(Roles,':scale',AMR,Roles1),!,amr2dsr(AMR,_,_,S).
  quantityScale(Roles,Roles,DSyntR,DSyntR).
 
@@ -241,9 +273,12 @@ haveDegree91arg3aux(['most',_],AttrIn,su,AttrIn*f("su")).
 haveDegree91arg3aux(['most',_,Roles],AttrIn,su,ls(AttrIn*f("su"),DSyntR)):-
     amr2dsr(['most',_,Roles],_Concept,_POS,DSyntR).
 haveDegree91arg3aux([Deg,_],AttrIn,CMP,advp(adv(DEGs),AttrIn)):-
-    memberchk(Deg,['too','so','less','enough']),atom_string(Deg,DEGs),(Deg='less'->CMP=co;CMP=null).
+    memberchk(Deg,['too','so','less']),atom_string(Deg,DEGs),(Deg='less'->CMP=co;CMP=null).
+haveDegree91arg3aux(['equal',_],AttrIn,null,adv("as")):-
+    isPro(AttrIn).
 haveDegree91arg3aux(['equal',_],AttrIn,null,advp(adv("as"),AttrIn,adv("as"))).
-haveDegree91arg3aux(['times',_],AttrIn,null,ls(AttrIn,adv(deg))).
+haveDegree91arg3aux(['times',_],AttrIn,null,ls(AttrIn,q("times"))).
+haveDegree91arg3aux(['enough',_],AttrIn,null,ls(AttrIn,adv("enough"))).
 haveDegree91arg3aux([Deg,_,[':quant',[Quant,_]]],AttrIn,null,ls(Quants,Degs,AttrIn)):-
     atom_string(Deg,Degs),atom_string(Quant,Quants).
 haveDegree91arg3aux(AMR,AttrIn,null,ls(AttrIn,DSyntr)):-amr2dsr(AMR,_Concept,_Pos,DSyntr).
@@ -312,8 +347,9 @@ haveRelRole91arg4(Roles,Roles,null).
 
 havePolarity91(Roles,OutDSyntR):-
     hasRole(Roles,':ARG2',"-",Roles1),
+    (hasRole(Roles1,':ARG1',_,Roles2);Roles2=Roles1), %% ignore :ARG1 also if it exists
     %% add unprocessed roles
-    buildRoleEnvOption('have-polarity-91','Special',Roles1,[],[],EnvOut,Options),
+    buildRoleEnvOption('have-polarity-91','Special',Roles2,[],[],EnvOut,Options),
     addRestRoles(q("otherwise"),EnvOut,DSyntR1),
     addOptions(Options,DSyntR1,OutDSyntR).    
 havePolarity91(Roles,q("otherwise")):-
