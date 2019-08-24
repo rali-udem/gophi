@@ -282,7 +282,7 @@ expected(
                               :op2 "York")))').
 expected(
   'Konstas-F3a',
-  "The treaty that controls about the arms limits that the weapon that is conventional that is deployed to Ural Mountains to west that numbers.",
+  "The treaty that controls about the arms limits that the weapon that is conventional that is deployed to Ural Mountains to west that it is possible numbers.",
   '(l/limit-01
        :ARG0 (t / treaty 
                :ARG0-of (c / control-01 :ARG1 (a/arms)))
@@ -317,3 +317,17 @@ expected(
      :concession (e / even-when
           :op1 (i / imprison-01
                :ARG1 h)))').
+
+expected(
+    'isi_0002.324',
+    "Up to 853 passengers are seated in <a href=\"https://en.wikipedia.org/wiki/Airbus_A380\">Airbus A380</a>.",
+    '(s / seat-01
+     :ARG1 (p / passenger
+          :quant (u / up-to
+               :op1 853))
+     :location (a / aircraft-type
+          :wiki "Airbus_A380"
+          :name (n / name
+               :op1 "Airbus"
+               :op2 "A380")))'
+).
