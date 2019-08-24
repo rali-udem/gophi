@@ -35,13 +35,13 @@ questionType(Role,"wos"):-writeln('** unimplemented role for amr-unknown':Role).
 %% transformed inverse role
 processRole(StarRole,OuterConcept,_OuterPOS,AMR,Env,Options,EnvOut,OptionsOut):-
      atom_concat(':*',Role,StarRole),!,
-     hasShortCutRole(AMR,Role,Role1,SCRole)-> 
-         ((AMR = [_,_|Roles0],hasRole(Roles0,Role1,AMR0,_Roles1),
-          processRole(SCRole,OuterConcept,_,AMR0,Env,Options,EnvOut,OptionsOut));
-         (findRelPronoun(Role,OuterConcept,Pronoun),
-          amr2dsr(AMR,_Concept,POS,DSyntR1),
-          processStarRole(POS,Pronoun,DSyntR1,OutDSyntR0),
-          EnvOut=[':*':OutDSyntR0|Env],OptionsOut=Options)).
+     ((hasShortCutRole(AMR,Role,Role1,SCRole), 
+       AMR = [_,_|Roles0],hasRole(Roles0,Role1,AMR0,_Roles1),
+       processRole(SCRole,OuterConcept,_,AMR0,Env,Options,EnvOut,OptionsOut));
+      (findRelPronoun(Role,OuterConcept,Pronoun),
+       amr2dsr(AMR,_Concept,POS,DSyntR1),
+       processStarRole(POS,Pronoun,DSyntR1,OutDSyntR0),
+       EnvOut=[':*':OutDSyntR0|Env],OptionsOut=Options)).
  processStarRole('Noun',Pronoun,DSyntR1,DSyntR2):-
      isS(DSyntR1)->addFirstChildS(DSyntR1,Pronoun,DSyntR2);
           predicate(Pronoun,DSyntR1,DSyntR2).

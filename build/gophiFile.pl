@@ -46,8 +46,9 @@ start :- getParams(Args,FileName),
      atomic_list_concat(['python3 ../tools/amrStats.py',OutFileName],' ',Command),
      shell(Command,Exit),
      (Exit = 0 -> 
-         writeln('Excel file created':OutFileName);
-         writeln('exit code':Exit:' Problem in creating excel file':OutFileName))
+         re_replace('.out$','.xlsx',OutFileName,XslFileName),
+         (writeln('Excel file created':XslFileName);
+          writeln('exit code':Exit:' Problem in creating excel file':XslFileName)))
     ).
 
 %% Process a file of many AMRs
@@ -92,23 +93,26 @@ gophiFile(InFile,OutFile,RegEx,Show):-
     makeAMR(Group,(Id,AMRLines,Sent,HeaderLines)),
     atomic_list_concat(AMRLines,'\n',AMRstring),
     atomic_list_concat(HeaderLines,'\n',Header),
-    (isEmpty(AMRstring)->
-            writeln(OutFile,Header),write(OutFile,'\n'); % only copy header if no AMR appears within the group
-            %% if Regex is a number (usually  between 0 and 1), process with this prob 
-            %% else write the target sentence and check if matches the regex
-            ignore(((number(RegEx)->maybe(RegEx);re_match(RegEx,AMRstring)),
-                format('~s~s~s~s~n~s~n',['--- ',Id,':',Sent,AMRstring]),
-                amr2SSyntR(AMRstring,SSyntR,Show,false),
-                jsRealB(SSyntR,GenSent),
-                writeln('> English sentence'),
-                writeln(GenSent),
-                amr2BaseGen(AMRstring,BaseGen),
-                (current_stream([],write,OutFile)->true; % do not write this if OutFile is stdout
-                   format(OutFile,'~s~n# ::gophi ~s~n# ::basegen ~s~n~s~n~n',
-                         [Header,GenSent,BaseGen,AMRstring]))
-           ))),
-    (Eof->true; % end if at end of file
-        gophiFile(InFile,OutFile,RegEx,Show)).
+    (isEmpty(AMRstring)->% only copy header if no AMR appears within the group and recurse
+        writeln(OutFile,Header),write(OutFile,'\n'),gophiFile(InFile,OutFile,RegEx,Show); 
+        %% else if Regex is a number (usually  between 0 and 1), process with this prob 
+        %% else write the target sentence and check if matches the regex
+       (number(RegEx)->maybe(RegEx);re_match(RegEx,AMRstring)),
+        format('~s~s~s~s~n~s~n',['--- ',Id,':',Sent,AMRstring]),
+        (amr2SSyntR(AMRstring,SSyntR,Show,false),
+         jsRealB(SSyntR,GenSent),
+         writeln('> English sentence'),
+         writeln(GenSent),
+         amr2BaseGen(AMRstring,BaseGen),
+         (current_stream([],write,OutFile)->true; % do not write this if OutFile is stdout
+            format(OutFile,'~s~n# ::gophi ~s~n# ::basegen ~s~n~s~n~n',
+                  [Header,GenSent,BaseGen,AMRstring])),
+        (Eof->true; % stop if at end of file
+            % else recurse to continue with the next AMR
+            gophiFile(InFile,OutFile,RegEx,Show)))
+        ;
+        format('***:error in processing this AMR')
+    ).
         
 %%% useful shorcuts for testing in the Swipl console
 %  show all steps of transformation

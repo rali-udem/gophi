@@ -156,6 +156,7 @@ addRestRoles(S,Env,S1):-
     (S=..[q|Xs]      ->merge(PrefixVals,q,Xs,PostfixVals,RestVals,L),S1=..[ls|L];
      S=..[c|Ps]      ->merge(PrefixVals,c,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
      S=..[a|Ps]      ->merge(PrefixVals,a,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
+     S=..[adv|Ps]    ->merge(PrefixVals,adv,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
      S=..[pro|Ps]    ->merge(PrefixVals,pro,Ps,PostfixVals,RestVals,L),S1=..[ls|L];
      S=..[np,D,A,[n|Ps]]->merge(PrefixVals,n,Ps,PostfixVals,RestVals,L),S1=..[np,D,A|L];
      (S=..[P|Xs], merge(PrefixVals,null,Xs,PostfixVals,RestVals,L),S1=..[P|L])).

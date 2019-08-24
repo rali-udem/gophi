@@ -120,7 +120,7 @@ modality(Modality,Roles,OutDSyntR):-
     \+hasRole(Roles,':ARG0',_,_), % do not use modality verb if there is an agent :ARG0
     modalityFlag(Modality,ARGN,ModFlag,Tense),
     hasRole(Roles,ARGN,AMR,Roles1),% Roles1\=[],Roles1\=[[':polarity',-]], % fail if no more args or only polarity
-    amr2dsr(AMR,_Concept,_POS,OutDSyntR0),
+    amr2dsr(AMR,_Concept,_POS,OutDSyntR0),OutDSyntR0\=null,
     %% add unprocessed roles
     buildRoleEnvOption(Modality,'Special',Roles1,[],[],Env,Options),
     processRest(OutDSyntR0,Env,[typ({"mod":ModFlag}),t(Tense)|Options],OutDSyntR).

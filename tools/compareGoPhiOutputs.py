@@ -53,6 +53,11 @@ def compare(oldFileName,newFileName):
 
     if len(oldGroups)!=len(newGroups):
         print("bad group length:%d::%d"%(len(oldGroups),len(newGroups)))
+        oldIds=set([getInGroup("# ::id ",g) for g in oldGroups])
+        newIds=set([getInGroup("# ::id ",g) for g in newGroups])
+        print("Missing element ids")
+        for id in oldIds ^ newIds:
+            print(id)
         sys.exit(1)
 
     nbDiff=0

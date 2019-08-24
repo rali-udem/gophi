@@ -233,10 +233,12 @@ newNouns(['constrictor','anion','media','tsunami','fingernail']).
 :- patch('noun','byline-91',(':ARG0':A0)^(':ARG1':A1)^(':ARG2':A2)^(':ARG3':A3)^(':ARG4':A4)^
                  ls(A0/ls(A0,":"),A1/ls(A1,","),A2/ls(A2,","),A3/ls(q("Trans:",A3)),
                     A4/ls(q("by"),A4))).
-:- forall(member(W,['more','most','much','too','many']),
-          (atom_string(W,WS),
-          patch('adverb',W,('A':X)^(':op1':Y)^ls(X/advp(adv(WS),X),Y/advp(adv(WS),Y))))).
+:- forall(member(W,['less','more','most','much','too','many']),
+          (atom_string(W,WS),          
+%         patch('adverb',W,('A':X)^(':op1':Y)^ls(X/advp(adv(WS),X),Y/advp(adv(WS),Y))))).
+          patch('adverb',W,adv(WS)))).
 :- delete('noun','many').
+:- delete('noun','less').
 
 % :- discontiguous noun/1,noun/2. % to remove spurious error messages during development
 % noun('more',('D':A)^('A':B)^np($A/d("the"),B,n("more"))).
@@ -245,7 +247,7 @@ noun('amr-unintelligible',(':value':V)^ls(V,q("(unintelligible)"))).
 noun('amr-unknown',"*unknown*").
 noun('amr-empty',q("*empty*")).
 noun('contrast-01',(':ARG1':A1)^(':ARG2':A2)^s(A1,"but",A2)).% considered as noun in order to avoid insertion of that in processRole
-noun('correlate-91',(':ARG1':A1)^(':ARG2':A2)^cp(c(","),A1,A2)). % considered as noun 
+noun('correlate-91',(':ARG1':A1)^(':ARG2':A2)^s(A1,q(","),A2)). % considered as noun 
 noun('date-interval',(':op1':D1)^(':op2':D2)^pp(p("from"),D1,p("to"),D2)).
 % distribution-range-91   typically used for normal distributions with mean and standard deviation
 % frame arguments
