@@ -27,9 +27,9 @@
 :-['inputPage'].
 :-['replyPage'].
 
-%% get the value of a specific argument from a list returned by cgi_get_form, 
-%%       get_arg(Arguments,NameOfParameter,Value)
-get_arg(Args,N,V):-NV=..[N,V],selectchk(NV,Args,_).
+% %% get the value of a specific argument from a list returned by cgi_get_form,
+% %%       get_arg(Arguments,NameOfParameter,Value)
+% get_arg(Args,N,V):-NV=..[N,V],memberchk(NV,Args,_).
 
 amrGenerate:-
     current_output(Stream),set_stream(Stream, encoding(utf8)),
@@ -39,5 +39,5 @@ amrGenerate:-
     (Errors=""-> createStructs(SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors),
                  createHTML('amrVerbalizer.cgi',Arguments,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors);
       split_string(Errors,'\n','\n',ErrorList),
-      inputPage('amrGenerate.cgi',AMRstring,ErrorList)),
+      inputPage('amrGenerate.cgi',Arguments,ErrorList)),
     halt(0).

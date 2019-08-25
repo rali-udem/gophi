@@ -21,7 +21,8 @@ assertSem([C,X|Roles],Phi,exists(X, [C,X] & SemRoles & PhiX)) :-   % 7.4
     reduce(Phi,X,PhiX).
 
 assertSemRole(X,[Rn,An],Sem):-
-    assertSem(An,Y^[Rn,X,Y],Sem0),
+    (isInvRole(R0,Rn)-> assertSem(An,Y^[R0,Y,X],Sem0); % inverse arg of an inverse role
+                        assertSem(An,Y^[Rn,X,Y],Sem0)),
     elimTrue(Sem0,Sem).
 
 assertSemRoles(X,[RnAn],Sem) :-!,assertSemRole(X,RnAn,Sem).

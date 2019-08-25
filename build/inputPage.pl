@@ -1,5 +1,10 @@
 :- encoding(utf8).
 
+%% get the value of a specific argument from a list returned by cgi_get_form, 
+%%       get_arg(Arguments,NameOfParameter,Value)
+get_arg(Args,N,V):-NV=..[N,V],memberchk(NV,Args).
+
+
 %% AMR shown at the start of the application
 initialAMR('(d / desire-01
     :ARG0 (b/boy)
@@ -8,14 +13,19 @@ initialAMR('(d / desire-01
                        :polarity - 
                        :ARG1 b)))').
 
-% %% get the value of a specific argument from a list returned by cgi_get_form,
-% %%       get_arg(Arguments,NameOfParameter,Value)
-% get_arg(Args,N,V):-NV=..[N,V],selectchk(NV,Args,_).
-
 errors([])-->[].
 errors([E|Es]) -->[E],html(br('')),errors(Es).
 
-inputPage(Action,AMRstring,ErrorList):-
+cbAttributes(Arguments,Name,[type=checkbox,name=Name,id=Name,checked]):-
+    get_arg(Arguments,Name,on),!.
+cbAttributes(_Arguments,Name,[type=checkbox,name=Name,id=Name]).
+
+inputPage(Action,Arguments,ErrorList):-
+   (get_arg(Arguments,amr,AMRstring);initialAMR(AMRstring)), %% get the AMR
+   cbAttributes(Arguments,fol,FolAttrs),
+   cbAttributes(Arguments,semR,SemRAttrs),
+   cbAttributes(Arguments,dsyntR,DsyntRAttrs),
+   cbAttributes(Arguments,ssyntR,SsyntRAttrs),
    reply_html_page(
        [title('GoPhi: an AMR Verbalizer'),
         script(src='http://code.jquery.com/jquery-latest.min.js',''),
@@ -39,10 +49,10 @@ inputPage(Action,AMRstring,ErrorList):-
          \gotoFirstError(ErrorList),
          fieldset(
             [legend('Show Representations'),
-             label([for=fol],'First-Order Logic'),input([type=checkbox,name=fol,id=fol],[]),&(nbsp),
-             label([for=semR],'Semantic'),input([type=checkbox,name=semR,id=semR],[]),&(nbsp),
-             label([for=dsyntR],'Deep Syntactic'),input([type=checkbox,name=dsyntR,id=dsyntR],[]),&(nbsp),
-             label([for=ssyntR],'Surface Syntactic'),input([type=checkbox,name=ssyntR,id=ssyntR],[])
+             label([for=fol],'First-Order Logic'),input(FolAttrs,[]),&(nbsp),
+             label([for=semR],'Semantic'),input(SemRAttrs,[]),&(nbsp),
+             label([for=dsyntR],'Deep Syntactic'),input(DsyntRAttrs,[]),&(nbsp),
+             label([for=ssyntR],'Surface Syntactic'),input(SsyntRAttrs,[])
             ]
         )
         ])
