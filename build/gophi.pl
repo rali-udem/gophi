@@ -52,19 +52,20 @@ jsRealBserver(SSyntR,Sent):-
 %     sending it multiple input after closing (I will keep trying)
 %     this seems much slower than the server version, and we do not have a trace of a JS error... 
 %     but it does not require launching the server process
-jsRealBfilter(SSyntR,Sent):-
-    process_create('/usr/local/bin/node',
-            ['/Users/lapalme/Documents/GitHub/jsRealB/build/filter-dme.js'],
+jsRealBfilter(NodePath,FilterPath,SSyntR,Sent):-
+    process_create(NodePath,
+            [FilterPath],
             [stdin(pipe(In)),stdout(pipe(Out))]),
     re_replace("\n"/ga,"",SSyntR,Input), % remove ends of line because the filter only reads a single line
     set_stream(In,encoding(utf8)),    
     write(In,Input),close(In),
     set_stream(Out,encoding(utf8)),
-    read_string(Out, _, Sent),close(Out).
+    read_string(Out, "\n", "\r", _, Sent),close(Out).
 
 %% select the type of interaction by (un)commenting the appropriate 
 jsRealB(SSyntR,Sent):-jsRealBserver(SSyntR,Sent).
-% jsRealB(SSyntR,Sent):-jsRealBfilter(SSyntR,Sent).
+% jsRealB(SSyntR,Sent):-
+%    jsRealBfilter('/usr/local/bin/node','/Users/lapalme/Documents/GitHub/jsRealB/build/filter-dme.js',SSyntR,Sent).
 
 %% full process calling the realisation
 gophi(AMRString,Print,Trace):-

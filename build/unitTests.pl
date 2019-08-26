@@ -1,8 +1,15 @@
 :- encoding(utf8).
+%%  some unit tests 
+%%  CAUTION: this relies on launching a node process at each test given by the two first args of jsRealBfilter
+%%     this path should be fixed in the call within fullGen/2
+%%   for making all tests
+%%     :- [gophiFile,unitTests].
+%%     :- testAll.
 
 fullGen(AMRstring,GenSent):-
     amr2SSyntR(AMRstring,SSyntR,false,false),
-    jsRealB(SSyntR,GenSent).
+    jsRealBfilter('/usr/local/bin/node','/Users/lapalme/Documents/GitHub/jsRealB/build/filter-dme.js',
+                  SSyntR,GenSent).
 
 %% useful for creating the expected generated sentence with the current version
 %%  which can be copied into this program...
@@ -17,8 +24,9 @@ showExpectedEx:- forall(ex(Id,S),showExpected(Id,S)).
 
 test(Id,ExpectedGen,AMRstring):-
     fullGen(AMRstring,GenSent),
-    (GenSent=ExpectedGen -> true;
-     writeln("@@ failed Test":Id),
+    (GenSent=ExpectedGen -> 
+        writeln(Id:"success");
+     writeln(Id:"failure"),
      writeln(AMRstring),
      writeln("Gen":GenSent),
      writeln("Exp":ExpectedGen),
@@ -33,6 +41,15 @@ testAll :-
         
 %%% expected pairs AMR=Generated sentence
 
+expected(
+  'Paper',
+  "The boy desires the girl who doesn't like him.",
+  '(d / desire-01
+        :ARG0 (b/boy)
+        :ARG1 (g/girl
+                 :ARG0-of (l/like-01
+                             :polarity - 
+                             :ARG1 b)))').
 expected(
   '0',
   "Not small is the marble.",
@@ -140,15 +157,6 @@ expected(
                :polarity -
                :ARG0 (g / girl)
                :ARG1 b))').
-expected(
-  'Guy',
-  "The boy desires the girl who doesn't like him.",
-  '(d / desire-01
-        :ARG0 (b/boy)
-        :ARG1 (g/girl
-                 :ARG0-of (l/like-01
-                             :polarity - 
-                             :ARG1 b)))').
 expected(
   'AMR-2',
   "The boy wants to go he.",

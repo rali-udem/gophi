@@ -37,6 +37,10 @@ createHTML(Action,Data,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors):-
                     document.write(sent); 
               |})),
               input([name=amr,type=hidden,value=AMRstring],[]), % send back the AMR for editing
+              \showCB(Data,fol), %% send back the structure flags
+              \showCB(Data,semR),
+              \showCB(Data,dsyntR),
+              \showCB(Data,ssyntR),
               input([name=submit, type=submit, value='Edit the AMR'], [])
              ])
             ]
@@ -68,3 +72,7 @@ showSemRerrors(Errors)-->
     {split_string(Errors,'\n','\n',ErrorList)},
     html([h3('Errors found in creating the Semantic Representation'),
           p(\errors(ErrorList))]).
+
+showCB(Data,Name)-->{get_arg(Data,Name,on)},!,
+    html([input([name=Name,type=hidden,value=on],[])]).
+showCB(_,_)-->[].

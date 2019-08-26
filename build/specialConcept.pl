@@ -28,8 +28,8 @@ specialConcept(NE,namedEntity(NE)):-
 'nationality', 'natural-disaster', 'natural-object', 'newspaper', 'nucleic-acid', 'ocean', 'organization', 'palace',
 'park', 'pathway', 'peninsula', 'person', 'picture', 'planet', 'political-movement', 'political-party', 'port',
 'product', 'program', 'protein', 'protein-family', 'protein-segment', 'province', 'publication', 'railway-line',
-'regional-group', 'religious-group', 'research-institute','team', 'river', 'road', 'school', 'sea', 'ship', 'show',
-'small-molecule', 'spaceship', 'species', 'sports-facility' , 'star', 'state', 'station', 'strait', 'taxon',
+'regional-group', 'religious-group', 'research-institute', 'river', 'road', 'school', 'sea', 'ship', 'show',
+'small-molecule', 'spaceship', 'species', 'sports-facility' , 'star', 'state', 'station', 'strait', 'taxon', 'team',
 'territory', 'theater', 'treaty', 'tunnel', 'university', 'valley', 'variable', 'vehicle', 'volcano', 'war',
 'work-of-art', 'world-region', 'worship-place', 'writing-script', 'zoo'
     ]).

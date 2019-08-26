@@ -13,14 +13,8 @@
 :- use_module(library(cgi)).
 :- [inputPage].
 
-%% get the value of a specific argument from a list returned by cgi_get_form, 
-%%       get_arg(Arguments,NameOfParameter,Value)
-get_arg(Args,N,V):-NV=..[N,V],selectchk(NV,Args,_).
-
 amrVerbalizer :-
     current_output(Stream),set_stream(Stream, encoding(utf8)),
     cgi_get_form(Arguments),
-    (get_arg(Arguments,amr,AMRString);
-     initialAMR(AMRString)),
-     inputPage('amrGenerate.cgi',AMRString,[]),
+    inputPage('amrGenerate.cgi',Arguments,[]),
     halt(0).

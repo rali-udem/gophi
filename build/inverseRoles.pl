@@ -16,9 +16,7 @@ elimInv(Var,Var).
 
 % elimInvRoles(+Concept,+Var,+Roles,-VarOut,-Roles)
 elimInvRoles(ConceptA,VarA,[[RoleInv,AMR]|Roles],VarAP,[[StarRole,AMRout]|Roles1]):-
-    atom_concat(Role,'-of',RoleInv),
-    %% check for "ordinary" roles terminating by "-of"
-    \+memberchk(RoleInv,[':consist-of',':domain-of',':part-of',':polarity-of',':subevent-of']),!,
+    isInvRole(Role,RoleInv),!,
     atom_concat(':*',Role,StarRole),
     elimInv(AMR,AMR1),
     addInvRole(RoleInv,VarA,AMR1,AMRout),
@@ -44,3 +42,10 @@ projectVar(V,\V).
 % do not project an already projected variable
 unProjectVar(\V,V):-!. 
 unProjectVar(V,V).
+
+%% check if a role name is inverse
+isInvRole(Role,RoleInv):-
+    atom_concat(Role,'-of',RoleInv),
+    %% check for "ordinary" roles terminating by "-of"
+    \+memberchk(RoleInv,[':consist-of',':domain-of',':part-of',':polarity-of',':subevent-of']).
+    
