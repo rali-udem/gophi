@@ -30,7 +30,9 @@ processConcept('Verb',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Verb',OutDSyn
     checkAccusativePronoun(EnvOut0,EnvOut1), % HACK for possible accusative pronoun as :ARG1 with :ARG0
     processRest(ConceptDSyntR,EnvOut1,Options2,OutDSyntR).
 processConcept('Adjective',[Concept,_Ivar|Roles],ConceptDSyntR,Concept,'Adjective',OutDSyntR):-
-    buildRoleEnvOption(Concept,'Adjective',Roles,[],[],Env,Options),
+    (hasRole(Roles,':polarity',-,Roles1)->OptionsIn=[typ({"neg":true})];
+       Roles1=Roles;OptionsIn=[]),
+    buildRoleEnvOption(Concept,'Adjective',Roles1,[],OptionsIn,Env,Options),
     checkAdjectiveArgs(Env,ConceptDSyntR,AdjStruct),% adjective with :ARG0 or :ARG1
     processRest(AdjStruct,Env,Options,OutDSyntR).
 processConcept(POS,[Concept,_Ivar|Roles],ConceptDSyntR,Concept,POS,OutDSyntR):-

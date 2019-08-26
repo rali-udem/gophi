@@ -172,6 +172,8 @@ A CGI that creates a web page in which a user can edit an AMR, which is then tra
 * `createEvalFiles.py` : from a file containing many AMRs, generate a sample AMR file of appropriate format for `gophi`, `isiMT` and `jamr` [more info](documentation/ComparativeEvaluation.md)
 * `createEvalSpreadsheet.py` : creates a comparative evaluation spreadsheet from the output of `gophi`, `isiMT` and `jamr` [more info](documentation/ComparativeEvaluation.md)
 * `createPrologDico.py`    : parses PropBank frames and jsRealB lexicon to create `dictionaryGenerated.pl`
+* `dcg_regex.pl` : unfinished (and thus unused) attempt to replace regex with DCG 
+* `levenshtein.py`         : used by `compareGoPhiOutputs.py` to display the difference between two strings
 
 ## AMR files
 Text files containing AMRs for developing and testing in three directories:

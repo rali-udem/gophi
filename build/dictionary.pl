@@ -147,8 +147,8 @@ verb('fail-01',(':ARG0':X0)^(':ARG1':X1)^(':ARG2':X2)^(':ARG3':X3)^s(X0,X1,vp(v(
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("obligatory"),A))).
 :-patch('verb','permit-01',(':ARG1':A1)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),v("allow")*t("pp"),A1))).
-:-patch('verb','recommend-01',(':ARG0':A0)^(':ARG1':A1)^
-                s(pro("I")*pe(3)*g("n"),vp(v("be"),v("recommend")*t("pp"),A0/pp(p("by"),A0),A1))).
+% :-patch('verb','recommend-01',(':ARG0':A0)^(':ARG1':A1)^
+%                 s(pro("I")*pe(3)*g("n"),vp(v("be"),v("recommend")*t("pp"),A0/pp(p("by"),A0),A1))).
 :-patch('verb','likely-01',(':ARG1':A1)^
                 s(pro("I")*pe(3)*g("n"),vp(v("be"),a("likely"),A1))).
 % reifications 
