@@ -1,7 +1,8 @@
 ## compare output of two versions of gophi input
 ##  read old and new and output differences
 import sys
-
+import levenshtein
+ 
 ## check if an array of lines has at least a non comment line
 def hasAnAMR(lines):
     for line in lines:
@@ -70,14 +71,20 @@ def compare(oldFileName,newFileName):
         oldGophi=getInGroup("# ::gophi ",oldG)
         newGophi=getInGroup("# ::gophi ",newG)
         if oldGophi!=newGophi:
-            print("snt: %s\nold: %s\nnew: %s\n%s"%(getInGroup("# ::snt ",newG),oldGophi,newGophi,getAMR(newG)))
+            oldToks=oldGophi.split(" ")
+            newToks=newGophi.split(" ")
+            (editDist,edits)=levenshtein.getLevenshteinOps(oldToks,newToks,levenshtein.wordEquals)
+            # print("edit distance:"+str(editDist)+":"+str(edits))
+            diffs=levenshtein.applyEdits(edits, oldToks, newToks," ")
+            print("snt: %s\nold: %s\nnew: %s\ndif: %s\n%s"%
+                  (getInGroup("# ::snt ",newG),oldGophi,newGophi,diffs,getAMR(newG)))
             print("===")
             nbDiff+=1
     print("%d differences found"%nbDiff)
 
 if __name__ == '__main__':
-    oldFileName="/Users/lapalme/Dropbox/PourOrigene/AMR/amr-examples/amr-dict-examples-8.out"
-    newFileName="/Users/lapalme/Dropbox/PourOrigene/AMR/amr-examples/amr-dict-examples.out"
+    oldFileName="/Users/lapalme/Dropbox/PourOrigene/AMR/amr-examples/AMR-detected-errors-1.out"
+    newFileName="/Users/lapalme/Dropbox/PourOrigene/AMR/amr-examples/AMR-detected-errors.out"
     if len(sys.argv)==3:
         oldFileName=sys.argv[1]
         newFileName=sys.argv[2]
