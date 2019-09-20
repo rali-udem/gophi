@@ -10,9 +10,12 @@
 amr2SSyntR(AMRstring,SSyntR,ShowStructs,TraceTrans):-
     amrParse(AMRstring,AMR),
     ignore(ShowStructs->(write('> Semantic Representation\n'),pprint(AMR))),!,
-    elimInv(AMR,AMRnoInv),
+    dereify(AMR,AMR1),
+    ignore((ShowStructs,AMR \= AMR1)->( % ne pas afficher si la dereification ne change rien
+        write('> Semantic Representation dereified\n'),pprint(AMR1),nl)),     
+    elimInv(AMR1,AMRnoInv),
     getVarRefs(AMRnoInv,[],Vars),processVars(AMRnoInv,Vars,AMRout,VarsOut),
-    ignore((ShowStructs,AMR \= AMRout)->( % ne pas afficher si pas de role inverse ou de références répétées
+    ignore((ShowStructs,AMR1 \= AMRout)->( % ne pas afficher si pas de role inverse ou de références répétées
         write('> Semantic Representation without Inverse Roles\n'),pprint(AMRout),nl)), 
     % save the current parsed AMR and its list of variables 
     % used for pronoun generation by getRef/4 in pronounReference.pl

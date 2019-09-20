@@ -30,6 +30,7 @@ getParams(Args,FileName):-
 :-['dictionary'].
 :-['deepSyntR'].
 :-['surfSyntR'].
+:-['reification'].
 :-['gophi'].
 
 start :- getParams(Args,FileName),

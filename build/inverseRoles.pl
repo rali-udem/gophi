@@ -47,5 +47,6 @@ unProjectVar(V,V).
 isInvRole(Role,RoleInv):-
     atom_concat(Role,'-of',RoleInv),
     %% check for "ordinary" roles terminating by "-of"
-    \+memberchk(RoleInv,[':consist-of',':domain-of',':part-of',':polarity-of',':subevent-of']).
+    \+memberchk(RoleInv,[':consist-of',':domain-of',':part-of',':polarity-of',':subevent-of',
+                         ':prep-on-behalf-of',':prep-out-of']).
     

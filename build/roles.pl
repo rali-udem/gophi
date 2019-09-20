@@ -92,6 +92,14 @@ processRole(':compared-to',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':ls(q("compared to"),DSyntR)|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
 
+processRole(':concession',_OuterConcept,_OuterPOS,AMR,
+            EnvIn,OptionsIn,EnvOut,OptionsOut):-
+    amr2dsr(AMR,_Concept,_POS,DSyntR),
+    processConcession(DSyntR,EnvIn,OptionsIn,EnvOut,OptionsOut).
+ processConcession(DSyntR,Env,Options,[':*':DSyntR|Env],Options):-
+     (DSyntR=..[ls|_];DSyntR=..[q,"after all"|_]),!.
+ processConcession(DSyntR,Env,Options,[':*':ls(q("despite"),DSyntR)|Env],Options).
+
 
 processRole(':condition',_OuterConcept,_OuterPOS,['as-long-as',_,[':op1',OP1]],
             Env,Options,[':*':ls(q("as long as"),DSyntR)|Env],Options):-
@@ -102,14 +110,6 @@ processRole(':condition',_OuterConcept,_OuterPOS,['otherwise',_,Cond],
 processRole(':condition',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':sp(c("if"),DSyntR)|Env],Options):-
     amr2dsr(AMR,_Concept,_POS,DSyntR).
-
-processRole(':concession',_OuterConcept,_OuterPOS,AMR,
-            EnvIn,OptionsIn,EnvOut,OptionsOut):-
-    amr2dsr(AMR,_Concept,_POS,DSyntR),
-    processConcession(DSyntR,EnvIn,OptionsIn,EnvOut,OptionsOut).
- processConcession(DSyntR,Env,Options,[':*':DSyntR|Env],Options):-
-     (DSyntR=..[ls|_];DSyntR=..[q,"after all"|_]),!.
- processConcession(DSyntR,Env,Options,[':*':ls(q("despite"),DSyntR)|Env],Options).
 
 processRole(':consist-of',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':PPDSyntR|Env],Options):-
@@ -199,8 +199,8 @@ processRole(':manner',_OuterConcept,_OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,Options
  processManner(q(Manner),_,Env,Options,[':*':q(Manner)|Env],Options).
  processManner(DSyntR,'Adjective',Env,Options,[':*':Adv|Env],Options):-
      adj2adv(DSyntR,Adv).
- processManner(DSyntR,'Verb',Env,Options,[':*':ls("by",DSyntR*typ({"prog":true}))|Env],Options).
- processManner(DSyntR,_,Env,Options,[':*':ls("by",DSyntR)|Env],Options).
+ processManner(DSyntR,'Verb',Env,Options,[':*':pp(p("by"),DSyntR*typ({"prog":true}))|Env],Options).
+ processManner(DSyntR,_,Env,Options,[':*':pp(p("with"),DSyntR)|Env],Options).
 
 processRole(':medium',_OuterConcept,_OuterPOS,AMR,
             Env,Options,[':*':PPDSyntR|Env],Options):-

@@ -34,7 +34,7 @@ toks([W|Ws]) -->
 toks([W|Ws]) -->
     ['"'],!,inString(Cs),{string_chars(W,Cs)},
     toks(Ws).
-toks(Ws) --> [';'],!,comment,toks(Ws). % ignore what follows # on the current line
+toks(Ws) --> ([';'];['#']),!,comment,toks(Ws). % ignore what follows ; or # on the current line
 toks(Ws) --> [_],toks(Ws). % ignore other characters
 toks([]) --> [].
 
