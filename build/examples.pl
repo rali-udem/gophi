@@ -237,3 +237,29 @@ ex('Konstas-F3a',
                                               :direction "west" )
                                     :ARG1-of (p / possible-01)))))',
     "The arms control treaty limits the number of conventional weapons that can be deployed west of the Ural Mountains.").
+    
+%% taken from AMR Normalisation for Fairer Evaluation
+%%  other examples in reification.pl
+ex('Goodman-F5','
+(b/bite-01
+  :ARG0 (d/dog
+     :ARG0-of (c/chase-01
+         :ARG1 (b1/boy)))
+  :ARG1 b1)
+',"The dog chasing the boy bit him.").
+
+ex('Goodman-F6','
+(b/bite-01
+  :ARG0 d
+  :ARG1 (b1/boy
+     :ARG1-of (c/chase-01
+          :ARG0 (d/dog))))
+',"The boy chased by the dog was bit by it.").
+
+ex('Goodman-F6b','
+(b/bite-01
+  :ARG0 (d/dog)
+  :ARG1 (b1/boy
+     :ARG1-of (c/chase-01
+          :ARG0 d)))
+',"The boy chased by the dog was bit by it.").
