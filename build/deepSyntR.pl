@@ -138,7 +138,7 @@ getAllKeys(Env,Keys):-
     delete(Keys1,':&',Keys). % ignore the ':&' in the list of keys
 
 showKeys([]):-!.
-showKeys(X):-format('**unprocessed roles: ~w~n',X).
+showKeys(X):-format('**unprocessed roles or parts of speech: ~w~n',X).
 
 pprintEnv([]):-writeln("---").
 pprintEnv([Key:Val|KVs]):-

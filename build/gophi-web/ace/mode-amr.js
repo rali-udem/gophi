@@ -16,11 +16,11 @@ var AmrHighlightRules = function() {
     "start": [
         {
             token : "comment",
-            regex : ";.*$"
+            regex : "(;|#).*$"
         },
         {
             token: ["variable","space","slash","space","concept"],
-            regex: "([a-z][a-z0-9]?)(\\s*)(/)(\\s*)([-\\w\\d]+)"
+            regex: "([a-z][a-z0-9]*)(\\s*)(/)(\\s*)([-\\w\\d]+)"
         },
         {
             token: "role",
@@ -28,7 +28,7 @@ var AmrHighlightRules = function() {
         },
         {
             token: "variable",
-            regex: "[a-z][a-z0-9]?"
+            regex: "[a-z][a-z0-9]*"
         },
         {
             token : "number", // float

@@ -66,7 +66,9 @@ jsRealBfilter(NodePath,FilterPath,SSyntR,Sent):-
     read_string(Out, "\n", "\r", _, Sent),close(Out).
 
 %% select the type of interaction by (un)commenting the appropriate 
-jsRealB(SSyntR,Sent):-jsRealBserver(SSyntR,Sent).
+jsRealB(SSyntR,Sent):-
+    string_concat('**Error',_,SSyntR) -> Sent="∅";
+    jsRealBserver(SSyntR,Sent).
 % jsRealB(SSyntR,Sent):-
 %    jsRealBfilter('/usr/local/bin/node','/Users/lapalme/Documents/GitHub/jsRealB/build/filter-dme.js',SSyntR,Sent).
 

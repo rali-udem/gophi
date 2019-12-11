@@ -194,6 +194,8 @@ verb('have-condition-91',(':ARG1':A1)^(':ARG2':A2)
 :-delete('noun','like').
 :-delete('noun','desire-01').
 :-delete('noun','desire').
+:-delete('noun','want').
+:-delete('noun','go').
 
 %% keep only the adverb
 :-delete('noun','yesterday').
