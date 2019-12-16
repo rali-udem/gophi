@@ -40,6 +40,7 @@ dsr2jsReal(X+q(Y),N)-->{mergeQ(X+q(Y),Z)},!,dsr2jsReal(q(Z),N).
 dsr2jsReal(X+Y,N) --> % serialise Y even though this might create strange string
     {phrase(dsr2jsReal(Y,N),Ys0),atomics_to_string(Ys0,Ys),atomics_to_string([X,Ys],Z),quote(Z,QZ)},[QZ].
 dsr2jsReal({X},N)-->!,['{'],{N1 is N+1},dsr2jsReal(X,N1),['}'].
+dsr2jsReal((X,Y),N)-->!,dsr2jsReal(X,N),[','],dsr2jsReal(Y,N).
 dsr2jsReal(X:Y,N)-->!,dsr2jsReal(X,N),[':'],dsr2jsReal(Y,N).
 dsr2jsReal(_^X,N)-->!,dsr2jsReal(X,N). % should never happen, but...
 
