@@ -13,7 +13,7 @@ createStructs(SemR,FOL,SemRout,DSyntR,SSyntR,SemRerrors):-
     phrase(dsr2jsReal(DSyntR),Tokens),!,
     atomic_list_concat(Tokens,'',SSyntR).
 
-createHTML(Action,Data,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors):-
+createHTML(Action,Data,AMRstring,EditorHeight,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors):-
         reply_html_page(
             [title('AMR verbalized'),
              script([src='gophi-web/jsRealB.min.js'],''),
@@ -41,6 +41,7 @@ createHTML(Action,Data,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors):-
                     }
               |})),
               input([name=amr,type=hidden,value=AMRstring],[]), % send back the AMR for editing
+              input([name=editorHeight,type=hidden,value=EditorHeight]), %% and the editor height
               \showCB(Data,fol), %% send back the structure flags
               \showCB(Data,semR),
               \showCB(Data,dsyntR),
