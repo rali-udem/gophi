@@ -6,8 +6,20 @@
 %%              that can be written with maplist(write,SSR)
 %%                    or concatenated with atomic_list_concat(SSR,Out)
 
-dsr2jsReal(DSR)-->{deleteNull(DSR,DSRnoNull0),replaceTopLsByS(DSRnoNull0,DSRnoNull)},
-         dsr2jsReal(DSRnoNull,0).
+% dsr2jsReal(DSR)-->{deleteNull(DSR,DSRnoNull0),replaceTopLsByS(DSRnoNull0,DSRnoNull)},
+%          dsr2jsReal(DSRnoNull,0).
+dsr2jsReal(DSR,In,Out):-deleteNull(DSR,DSRnoNull0),replaceTopLsByS(DSRnoNull0,DSRnoNull),
+         catch(dsr2jsReal(DSRnoNull,0,In,Out),
+               Error,
+               formatError(Error,In,Out)).
+
+formatError(error(type_error(Expected,Found),context(Context,_)),Message,Out):-
+    term_string(Expected,ExpectedS),
+    term_string(Found,FoundS),
+    term_string(Context,ContextS),
+    Message=["**Error in creating Surface Syntactic Representation: expected ",ExpectedS," but found ",FoundS," in ",ContextS|Out].
+formatError(_,["**Error in creating Surface Syntactic Representation"|Out],Out).
+
 
 dsr2jsReal(ls,_N)--> !,['Q("")']. % if deleteNull produced a lone ls
 % dsr2jsReal(c,_N) --> !,['Q("")']. % if deleteNull produced a lone c
@@ -26,8 +38,7 @@ dsr2jsReal(q(X)+Y,_N)-->{atomic(Y),!,atomics_to_string([X,Y],Z),quote(Z,QZ)},[QZ
 dsr2jsReal(X+Y,_N)-->{atomic(X),atomic(Y),!,atomics_to_string([X,Y],Z),quote(Z,QZ)},!,[QZ].
 dsr2jsReal(X+q(Y),N)-->{mergeQ(X+q(Y),Z)},!,dsr2jsReal(q(Z),N).
 dsr2jsReal(X+Y,N) --> % serialise Y even though this might create strange string
-    {phrase(dsr2jsReal(Y,N),Ys0),
-     atomics_to_string(Ys0,Ys),atomics_to_string([X,Ys],Z),quote(Z,QZ)},[QZ].
+    {phrase(dsr2jsReal(Y,N),Ys0),atomics_to_string(Ys0,Ys),atomics_to_string([X,Ys],Z),quote(Z,QZ)},[QZ].
 dsr2jsReal({X},N)-->!,['{'],{N1 is N+1},dsr2jsReal(X,N1),['}'].
 dsr2jsReal(X:Y,N)-->!,dsr2jsReal(X,N),[':'],dsr2jsReal(Y,N).
 dsr2jsReal(_^X,N)-->!,dsr2jsReal(X,N). % should never happen, but...

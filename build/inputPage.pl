@@ -39,11 +39,19 @@ inputPage(Action,Arguments,ErrorList):-
          p(['AMR Color coding: ',
             span(class='ace_variable','variable'),', ',
             span(class='ace_concept','concept'),', ',
-            span(class='ace_role','role')
+            span(class='ace_role','role'),
+            span(class='help',
+                 [a([target='_blank',
+                     href='https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts'],'Editor help'),
+                  span(class='resize','Drag bottom border to resize editor')
+                 ])
          ]),
-         div(id='amr',''),
+         div([id='amr_wrapper',class='app_editor_wrapper'],
+             [div(id='amr',''),
+              div([id='amr_dragbar',class='app_editor_dragbar'],'')]),
          div(id='inputAMR',AMRstring),
          textarea([name=amr],''),
+         input([id=indent, type=button, value='Indent'], []),
          input([name=submit, type=submit, value='Verbalize'], []),
          p(\errors(ErrorList)),
          \gotoFirstError(ErrorList),

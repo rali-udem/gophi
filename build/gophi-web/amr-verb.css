@@ -7,6 +7,22 @@
 #amr{
     width:100%;
     height:300px;
-    border: thin solid black;
+    border-top: thin solid black;
 }
-input[name=submit]{margin:5px;}
+input{margin:10px;}
+input[name=submit]{font-weight: bold;}
+span.help {float:right;}
+span.resize{margin-left:10px;}
+
+.app_editor_wrapper {
+    background-color: #cccccc;
+    border-bottom: 1px solid #222222;
+}
+
+.app_editor_dragbar {
+    background-color: #222222;
+    width: 100%;
+    height: 3px;
+    cursor: row-resize;
+    opacity: 1;
+}

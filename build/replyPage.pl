@@ -16,7 +16,7 @@ createStructs(SemR,FOL,SemRout,DSyntR,SSyntR,SemRerrors):-
 createHTML(Action,Data,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors):-
         reply_html_page(
             [title('AMR verbalized'),
-             script([src='gophi-web/jsRealB-dme.min.js'],''),
+             script([src='gophi-web/jsRealB.min.js'],''),
              script([src='gophi-web/addLexicon-dme.js'],''),
              style('.sent {font-weight:bold} textarea {font-family:monospace;font-size:large}')],
             [h1(['AMR verbalized by ',a([href='https://github.com/rali-udem/gophi'],['Γω-Φ'])]),
@@ -31,10 +31,14 @@ createHTML(Action,Data,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors):-
               h2('English sentence'),
               p([class=sent],
                 \js_script({|javascript(SSyntR)||
-                    loadEn();
-                    sent=eval(SSyntR).toString();            // generate sentence
-                    sent=sent.replace(/\[\[(.*?)\]\]/g,'$1') // clean unknown word flags
-                    document.write(sent); 
+                    if (SSyntR.startsWith("**Error")){
+                        document.write(SSyntR)
+                    } else {
+                        loadEn();
+                        sent=eval(SSyntR).toString();            // generate sentence
+                        sent=sent.replace(/\[\[(.*?)\]\]/g,'$1') // clean unknown word flags
+                        document.write(sent); 
+                    }
               |})),
               input([name=amr,type=hidden,value=AMRstring],[]), % send back the AMR for editing
               \showCB(Data,fol), %% send back the structure flags
