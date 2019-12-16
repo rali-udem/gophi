@@ -175,10 +175,21 @@ getPostfixVals([KV|KVs],ValsIn,ValsOut,[KV|Env])        :-  getPostfixVals(KVs,V
 merge(Pre,null,Ps,Post,Rest,L2):-append(Pre,Ps,L0),append(L0,Post,L1),append(L1,Rest,L2).
 merge(Pre,S,Ps,Post,Rest,L2):-F=..[S|Ps],append(Pre,[F],L0),append(L0,Post,L1),append(L1,Rest,L2).
 
-%% add options
+%% add options, merging .typ() in a single one
 addOptions([],DSyntR,DSyntR).
-addOptions([Option|Options],DSyntRin,DSyntROut*Option):-
-    addOptions(Options,DSyntRin,DSyntROut).
+addOptions(Options,DSyntRin,DSyntROut*typ({MergedTyps})):-
+    partition(isTyp,Options,Typs,NonTyps),
+    mergeTyps(Typs,MergedTyps),
+    addOptionsAux(NonTyps,DSyntRin,DSyntROut).
+addOptions(Options,DSyntRin,DSyntROut):-addOptionsAux(Options,DSyntRin,DSyntROut).
+    addOptionsAux([],DSyntR,DSyntR).
+    addOptionsAux([Option|Options],DSyntRin,DSyntROut*Option):-
+        addOptionsAux(Options,DSyntRin,DSyntROut).
+
+isTyp(typ(_)).
+mergeTyps([typ({Typ})],Typ).
+mergeTyps([typ({Typ})|Typs],(Typ,RestTyp)):-mergeTyps(Typs,RestTyp).
+
 
 %% create a predicate sentence DSyntR
 predicate(Subject,s(null,VP)       ,s(Subject,VP)):-!.  % try to avoid adding embedded S

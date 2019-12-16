@@ -8,7 +8,7 @@
 
 fullGen(AMRstring,GenSent):-
     amr2SSyntR(AMRstring,SSyntR,false,false),
-    jsRealBfilter('/usr/local/bin/node','/Users/lapalme/Documents/GitHub/jsRealB/build/filter-dme.js',
+    jsRealBfilter('/usr/local/bin/node','./jsRealB-filter.js',
                   SSyntR,GenSent).
 
 %% useful for creating the expected generated sentence with the current version
@@ -43,7 +43,7 @@ testAll :-
 
 expected(
   'Paper',
-  "The boy desires the girl who doesn't like him.",
+  "The boy desires the girl who does not like him.",
   '(d / desire-01
         :ARG0 (b/boy)
         :ARG1 (g/girl
@@ -52,7 +52,7 @@ expected(
                              :ARG1 b)))').
 expected(
   '0',
-  "Not small is the marble.",
+  "Small is not the marble.",
   '(s / small :domain (m / marble) :polarity -)').
 expected(
   '1a',
@@ -60,7 +60,7 @@ expected(
   '(e/moan-01 :ARG0 (x/child))').
 expected(
   '1c',
-  "The child doesn't moan.",
+  "The child does not moan.",
   '(e/moan-01 :ARG0 (x/child) :polarity -)').
 expected(
   '1b',
@@ -71,7 +71,7 @@ expected(
              :ARG1 (z/envelope)); another comment at the end').
 expected(
   '1d',
-  "Ms Ribble doesn't give the envelope to the child.",
+  "Ms Ribble does not give the envelope to the child.",
   '(e/give-01 
              :ARG0 (x/person :named "Ms Ribble")
              :ARG1 (z/envelope)
@@ -95,7 +95,7 @@ expected(
   '(y/book :ARG1-of (e/read-01 :ARG0 (x/girl)))').
 expected(
   '2bN',
-  "the book that the girl doesn't read",
+  "the book that the girl does not read",
   '(y/book :ARG1-of (e/read-01 :ARG0 (x/girl) :polarity -))').
 expected(
   '3',
@@ -103,7 +103,7 @@ expected(
   '(e/shout-01 :ARG0 (x/teacher))').
 expected(
   '4a',
-  "The boy doesn't giggle.",
+  "The boy does not giggle.",
   '(e/giggle-01 :polarity - :ARG0 (x/boy))').
 expected(
   '4b',
@@ -127,7 +127,7 @@ expected(
              :ARG1 (p/play-01 :ARG3 g))').
 expected(
   '9a',
-  "no boy who doesn't whistle",
+  "no boy who does not whistle",
   '(x / boy :polarity -
             :ARG0-of (e / whistle-01
                           :polarity -))').
@@ -141,7 +141,7 @@ expected(
                :ARG1 b))').
 expected(
   'AMR-1N',
-  "The boy doesn't want that the girl believes him.",
+  "The boy does not want that the girl believes him.",
   '(w / want-01
          :polarity -
          :ARG0 (b / boy)
@@ -150,7 +150,7 @@ expected(
                :ARG1 b))').
 expected(
   'AMR-1NN',
-  "The boy wants that the girl doesn't believe him.",
+  "The boy wants that the girl does not believe him.",
   '(w / want-01
          :ARG0 (b / boy)
          :ARG1 (b2 / believe-01
@@ -159,14 +159,14 @@ expected(
                :ARG1 b))').
 expected(
   'AMR-2',
-  "The boy wants to go he.",
+  "The boy wants that he goes.",
   '(w / want-01
           :ARG0 (b / boy)
-          :ARG1 (g / go-01
+          :ARG1 (g / go-02
                 :ARG0 b))').
 expected(
   'AMR-3',
-  "UN says that about 14000 persons flee his home the weekends after the tsunami is warned in the local in its [[web]] site.",
+  "UN says that about 14000 persons flee his home the weekend after the tsunami is warned in the local in its web site.",
   '(s / say-01
      :ARG0 (g / organization
           :name (n / name
@@ -187,7 +187,7 @@ expected(
             :mod (w3 / web)))').
 expected(
   'SemEval-1',
-  "The soldier doesn't fear the death.",
+  "The soldier does not fear the death.",
   '(f / fear-01
      :polarity -
      :ARG0 ( s / soldier )
@@ -195,7 +195,7 @@ expected(
              :ARG1 s ))').
 expected(
   'SemEval-3',
-  "He claims that the singer 28 year old exposes to him himself that is repeated.",
+  "He claims that the singer 28 years old exposes to him himself that is repeated.",
   '(c/claim-01
        :ARG0 (h/he)
        :ARG1 (e/expose-01
@@ -208,7 +208,7 @@ expected(
                 :ARG1-of (r/repeat-01)))').
 expected(
   'SemEval-5',
-  "<a href=\"https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina\">Bosnia</a> remains under that it is divided about ethnic, the violence the [[football]] match that is major in here occasional and when follows the war from 1992 to 1995",
+  "<a href=\"https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina\">Bosnia</a> remains under that it is divided about ethnic, the occasional violence the football match that is major in here and when follows the war from 1992 to 1995",
   '(a / and
      :op1 (r / remain-01
            :ARG1 (c / country :wiki "Bosnia_and_Herzegovina"
@@ -328,7 +328,7 @@ expected(
 
 expected(
     'isi_0002.324',
-    "Up to 853 passengers are seated in <a href=\"https://en.wikipedia.org/wiki/Airbus_A380\">Airbus A380</a>.",
+    "Up to 853 passengers are seated in <a href=\"https://en.wikipedia.org/wiki/Airbus_A380\">Airbus A380.</a>",
     '(s / seat-01
      :ARG1 (p / passenger
           :quant (u / up-to

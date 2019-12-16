@@ -9,8 +9,9 @@ processRole(Role,_OuterConcept,OuterPOS,AMR,Env,OptionsIn,[Role:DSyntRout|Env],O
     isArgOp(Role),!, 
     amr2dsr(AMR,_Concept,POS,DSyntRin),
     processFrameOpRole(OuterPOS,POS,Role,DSyntRin,OptionsIn,DSyntRout,OptionsOut).
- processFrameOpRole('Verb',_POS,_Role,DSyntR,Options,DSyntR*t("b"),Options):-
-     DSyntR=..[s,null|_]. % infinitive when the sentence is a verb without subject
+ processFrameOpRole('Verb',_POS,_Role,DSyntR,Options,pp(p("to"),DSyntR1),Options):-
+     DSyntR=..[s,null,VP],               % infinitive when the sentence is a verb without subject
+     VP=..[vp,v(V)|Comp],DSyntR1=..[vp,v(V)*t("b")|Comp]. 
  processFrameOpRole('Verb',_,Role,"*unknown*",Options,null,[typ({"int":Type})|Options]):-
      questionType(Role,Type).
  processFrameOpRole('Verb',_,Role,s("*unknown*",DSyntR),Options,DSyntR,[typ({"int":Type})|Options]):-
@@ -236,10 +237,10 @@ processRole(':mod',OuterConcept,OuterPOS,AMR,EnvIn,OptionsIn,EnvOut,OptionsOut):
  processSimpleModNoun([Atom,_],_Env,Options,[':*',no(Number)],Options):-atom_number(Atom,Number).     
  %% suppose qu'on ne combine pas les :mod de noms ou d'adjectifs
  %%   préfixe les :mod pour les noms  
- processSimpleModNoun([Noun,_],EnvIn,Options,['A':a(NewA)|EnvOut],Options):-
+ processSimpleModNoun([Noun,_],EnvIn,Options,['A':AOut|EnvOut],Options):-
      noun(Noun,_),cleanConcept(Noun,NounC),
-     (select('A':a(A),EnvIn,EnvOut),atomics_to_string([NounC,A],' ',NewA);
-      atom_string(NounC,NewA),EnvOut=EnvIn).
+     (select('A':a(A),EnvIn,EnvOut),atomics_to_string([NounC,A],' ',NewA),AOut=a(NewA);
+      atom_string(NounC,NewC),AOut=n(NewC),EnvOut=EnvIn).
  %% postfixe les :mod pour les adjectifs
  processSimpleModNoun([Adjective,_],EnvIn,Options,['A':a(NewA)|EnvOut],Options):-
      adjective(Adjective,_),cleanConcept(Adjective,AdjectiveC),
