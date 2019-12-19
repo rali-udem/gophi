@@ -36,9 +36,10 @@ amrGenerate:-
     current_output(Stream),set_stream(Stream, encoding(utf8)),
     cgi_get_form(Arguments),
     get_arg(Arguments,amr,AMRstring),
+    get_arg(Arguments,editorHeight,EditorHeight),
     amrParseValidate(AMRstring,SemR,Errors),
     (Errors=""-> createStructs(SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors),
-                 createHTML('amrVerbalizer.cgi',Arguments,AMRstring,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors);
+                 createHTML('amrVerbalizer.cgi',Arguments,AMRstring,EditorHeight,SemR,FOL,SemRnoInv,DSyntR,SSyntR,SemRerrors);
       split_string(Errors,'\n','\n',ErrorList),
       inputPage('amrGenerate.cgi',Arguments,ErrorList)),
     halt(0).

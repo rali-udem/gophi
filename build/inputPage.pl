@@ -22,6 +22,7 @@ cbAttributes(_Arguments,Name,[type=checkbox,name=Name,id=Name]).
 
 inputPage(Action,Arguments,ErrorList):-
    (get_arg(Arguments,amr,AMRstring);initialAMR(AMRstring)), %% get the AMR
+   (get_arg(Arguments,editorHeight,EditorHeight);EditorHeight='300'), %% get the current height of the editor
    cbAttributes(Arguments,fol,FolAttrs),
    cbAttributes(Arguments,semR,SemRAttrs),
    cbAttributes(Arguments,dsyntR,DsyntRAttrs),
@@ -47,12 +48,13 @@ inputPage(Action,Arguments,ErrorList):-
                  ])
          ]),
          div([id='amr_wrapper',class='app_editor_wrapper'],
-             [div(id='amr',''),
+             [div([id='amr',style=('height:'+EditorHeight+'px')],''),
               div([id='amr_dragbar',class='app_editor_dragbar'],'')]),
          div(id='inputAMR',AMRstring),
          textarea([name=amr],''),
          input([id=indent, type=button, value='Indent'], []),
          input([name=submit, type=submit, value='Verbalize'], []),
+         input([name=editorHeight,type=hidden,value=EditorHeight],[]), %% value will be updated by js
          p(\errors(ErrorList)),
          \gotoFirstError(ErrorList),
          fieldset(

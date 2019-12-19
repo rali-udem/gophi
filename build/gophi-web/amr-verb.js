@@ -81,6 +81,7 @@ function makeAceEditorResizable(editor){
             // Trigger ace editor resize()
             editor.resize();
             window.draggingAceEditor[id_editor] = false;
+            $("input[name='editorHeight']").prop("value",eheight-3);
         }
     });
 }
