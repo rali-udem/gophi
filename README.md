@@ -136,14 +136,15 @@ More information about the design and the rationale of the system [in this paper
 A CGI that creates a web page in which a user can edit an AMR, which is then transformed and realised by jsRealB in that same web page.
 
 * `inputPage.pl`     : creates a web page with an embedded editor that contains an AMR with checkboxes for selecting the intermediary structures to show.
-* `replyPage.pl` : creates a web page showing the original AMR, the selected representations and the English realization. The generated web page loads `gophi-web/jsRealB-dme.min.js` and `gophi-web/addLexicon-dme.js` which realizes the English sentence.
+* `replyPage.pl` : creates a web page showing the original AMR, the selected representations and the English realization. The generated web page loads `gophi-web/jsRealB.min.js` and `gophi-web/addLexicon-dme.js` which realizes the English sentence.
 * `amrVerbalizer.pl` : shows the input page with either an initial AMR or the current one
 * `amrGenerate.pl`   : parses the AMR (using `checkParse.pl`) if it detects errors it displays the input page with error messages; if there are no errors, then it realizes the AMR and displays the intermediary structures that the user has chosen when submitting the form.
 * `gophi-web` directory
-    * `addLexicon-dme.js` : local modifications to the jsRealB lexicon
+    * `addLexicon-dme.js` : load *big* lexicon `lexicon-dme.json` and make some local modifications
     * `amr-verb.css` : CSS for the generated web pages
     * `amr-verb.js`  : javascript for use in the generated web pages
-    * `jsRealB-dme.min.js` : minifyed jsRealB that generates from the SSurfR
+    * `jsRealB.min.js` : minifyed jsRealB that generates from the SSurfR
+    * `lexicon-dme.json` : *big* lexicon in json format
 * `makefile`         : compiles two CGis from `amrVerbalizer.pl` and `amrGenerate.pl` and moves them to a directory that an Apache server can use (compilation is not mandatory but it improves the efficiency of the system)
 * `gophiWeb.pl`        : a version of the web application that uses the internal SWI-Prolog web server. It is appropriate for developing on a single machine, but at RALI we use the CGIs.
 
@@ -166,6 +167,7 @@ A CGI that creates a web page in which a user can edit an AMR, which is then tra
 
 * `addGender.py`: create `gender.pl` from `data/englishGenderWords.txt`
 * `amrConceptsVSPropBankNLexicon.py` : compute statistics of occurrences of concepts found (or not) in PropBank
+* `amrIndent.py` : indent an AMR read from stdin, taking into account the parentheses level and starting a new line at each role, intended to be used as a filter
 * `amrStats.py`            : parses `.out` files, computes BLEU scores and creates an Excel file for manual evaluation
 * `calculatebleu.py` : used by amrStats.py
 * `compareGoPhiOutputs.py` : compare the outputs (i.e. out files) of two runs on the same examples and output the differences between them
